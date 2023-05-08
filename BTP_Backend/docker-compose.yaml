@@ -1,0 +1,32 @@
+version: '3.8'
+
+services: 
+  mysqldb:
+    image: mysql:8.0.30
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
+    environment:
+      - MYSQL_DATABASE=Applicants2019
+      - MYSQL_PASSWORD=MySqlPassword@123
+      - MYSQL_ROOT_PASSWORD=MySqlPassword@123
+      - MYSQL_HOSTNAME="mysqldb"
+    ports:
+      - 4545:3306
+    volumes: 
+      - db-config:/etc/mysql
+      - db-data:/var/lib/mysql
+      - ./db/backup/files/:/data_backup/data
+
+  app:
+      build: ./
+      image: btp-backend-compose
+      depends_on:
+        - mysqldb
+      ports:
+        - 4444:4444
+      stdin_open: true
+      tty: true
+
+volumes: 
+  db-config:
+  db-data:
