@@ -1,0 +1,47 @@
+version: '3.8'
+
+services: 
+  mysqldb:
+    image: mysql:8.0.30
+    restart: always
+    command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
+    environment:
+      - MYSQL_DATABASE=Applicants2023
+      - MYSQL_PASSWORD=Your_MySql_Password
+      - MYSQL_ROOT_PASSWORD=Your_MySql_Root_Password
+      - MYSQL_HOSTNAME=mysqldb
+    ports:
+      - 5545:3306
+    volumes: 
+      - db-config:/etc/mysql
+      - db-data:/var/lib/mysql
+      - ./db/backup/files/:/data_backup/data
+
+  backend:
+    build: ./BTP_Backend
+    image: btp-backend-compose
+    environment:
+      - MYSQL_DATABASE=Applicants2023
+      # Note that the MYSQL_PASSWORD should be same as MYSQL_ROOT_PASSWORD here
+      - MYSQL_PASSWORD=Your_MySql_Root_Password
+      - MYSQL_ROOT_PASSWORD=Your_MySql_Root_Password
+      - MYSQL_HOSTNAME=mysqldb
+    depends_on:
+      - mysqldb
+    ports:
+      - 4444:4444
+    stdin_open: true
+    tty: true
+    restart: on-failure
+  frontend:
+    build: ./BTP_Frontend
+    image: btp-frontend-compose
+    ports:
+      - 3000:8004
+    stdin_open: true
+
+volumes: 
+  db-config:
+  db-data:
+
+

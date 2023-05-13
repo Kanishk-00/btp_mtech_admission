@@ -22,5 +22,10 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
+  console.log(process.env.MYSQL_ROOT_PASSWORD);
+  console.log(process.env.MYSQL_DATABASE);
+  console.log(process.env.MYSQL_PASSWORD);
+  console.log(process.env.MYSQL_HOSTNAME);
+
   console.log(`Example app listening on port ${port}`)
 })
