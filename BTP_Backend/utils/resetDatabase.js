@@ -3,8 +3,8 @@ const fs = require('fs');
 var mysql = require('mysql2');
 const userFilePath=path.join(__dirname,'..','files');
 async function resetDatabase(){
-    var modifiedFilePath=`${userFilePath}\\modifiedFile.xlsx`;
-    var uploadedFilePath=`${userFilePath}\\uploadedFile.xlsx`;
+    var modifiedFilePath=`${userFilePath}/modifiedFile.xlsx`;
+    var uploadedFilePath=`${userFilePath}/uploadedFile.xlsx`;
     //deleting files
     if(fs.existsSync(modifiedFilePath)){
         fs.unlink(modifiedFilePath, (err) => {
