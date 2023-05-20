@@ -17,7 +17,7 @@ async function updateDecision(con,applicant,round,coapIdColumnName,candidateDeci
         // console.log(checkPreviousStatus[0]);
         bool_previousRetain = (checkPreviousStatus[0].RetainRound != '') //check if previously retained
         bool_previousRejectOrAccept = (checkPreviousStatus[0].RejectOrAcceptRound != '') //check if previously rejectedOrAccepted
-        if (currDecision== `Accept and Freeze`) {
+        if (currDecision.includes(`ACCEPTED`)) {
                 try {
                     //setting status to E (not eligible)
                     var [updatedStatus]=await con.query(`UPDATE applicationstatus
