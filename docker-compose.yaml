@@ -15,7 +15,6 @@ services:
     volumes: 
       - db-config:/etc/mysql
       - db-data:/var/lib/mysql
-      - ./db/backup/files/:/data_backup/data
 
   backend:
     build: ./BTP_Backend
@@ -30,6 +29,11 @@ services:
       - mysqldb
     ports:
       - 4444:4444
+    volumes: 
+      - ./backend-files:/usr/src/app/files
+      - ./backend-files/generatedOffers:/usr/src/app/files/generatedOffers
+      - ./backend-files/roundUpdates:/usr/src/app/files/roundUpdates
+
     stdin_open: true
     tty: true
     restart: on-failure
