@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const path = require('path');
 const fs = require('fs');
+var fs1 = require('fs-extra');
+
 const e = require("express");
 const userFilePath=path.join(__dirname,'..','files');
 const {generateOffers}=require("../utils/generateOffers");
@@ -178,7 +180,7 @@ router.post("/putFile/:fileName/:roundNumber", async (req, res) => {
         var newpath = `${updatesFromRoundsDirectoryPath}/round${roundNumber}_${fileName}.xlsx`;
         console.log("oldPath",oldpath);
         // console.log("new function start");
-        fs.rename(oldpath, newpath, async function (err) {
+        fs1.move(oldpath, newpath, async function (err) {
             if (err){console.log(err)}
             //saving the file based on the input file name and calling updates status function 
             try {
@@ -261,7 +263,7 @@ router.post("/getColumnNames", async (req, res) => {
         var newpath = `${"intermediate"}.xlsx`;
         console.log("oldPath",oldpath);
         // console.log("new function start");
-        fs.rename(oldpath, newpath, async function (err) {
+        fs1.move(oldpath, newpath, async function (err) {
             if (err){console.log(err)}
             //saving the file based on the input file name and calling updates status function 
             try {

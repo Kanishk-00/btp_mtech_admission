@@ -13,6 +13,8 @@ const {mapColumnNames}=require("../utils/changeColumnNames");
 const {initialiseSeatMatrix} = require("../utils/initialiseSeatMatrix");
 const userFilePath=path.join(__dirname,'..','files');
 const {resetDatabase}=require("../utils/resetDatabase")
+var fs1 = require('fs-extra');
+
 /*
     Route:/api/initialise/getFile
     incoming data:uploaded coap file
@@ -26,10 +28,10 @@ router.post("/getFile", (req, res) => {
             return res.status(500).send({ error: 'File parsing failed' });
         }
         var oldpath = files.file.filepath;
-        var newpath = `${userFilePath}\\uploadedFile.xlsx`;
+        var newpath = `${userFilePath}/uploadedFile.xlsx`;
         console.log("oldPath",oldpath);
         // console.log("new function start");
-        fs.rename(oldpath, newpath, async function (err) {
+        fs1.move(oldpath, newpath, async function (err) {
             if (err){console.log(err);
                 return res.status(500).send({ "result": 'File rename failed' });
             }
@@ -46,7 +48,7 @@ router.post("/getFile", (req, res) => {
     Functionality: initiaises mtechappl table,seatmatrix table
 */ 
 router.post("/saveToDataBase", async (req, res) => {
-    var filePath = `${userFilePath}\\uploadedFile.xlsx`;
+    var filePath = `${userFilePath}/uploadedFile.xlsx`;
     var matchedColumns=req.body.result;
     // console.log(req.body)
     //reading the uploaded file
@@ -76,10 +78,10 @@ router.post("/saveToDataBase", async (req, res) => {
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Responses');
-    XLSX.writeFile(wb, `${userFilePath}\\modifiedFile.xlsx`);
+    XLSX.writeFile(wb, `${userFilePath}/modifiedFile.xlsx`);
     //initialising the seatmatrix table
     try {
-        let res2= await enterCandidateDetailsToDatabase(`${userFilePath}\\modifiedFile.xlsx`,process.env.MYSQL_DATABASE);
+        let res2= await enterCandidateDetailsToDatabase(`${userFilePath}/modifiedFile.xlsx`,process.env.MYSQL_DATABASE);
         let res1=await initialiseSeatMatrix(process.env.MYSQL_DATABASE,[
             ["ST_FandM",0],
             ["ST_Female",0],
@@ -124,7 +126,7 @@ router.post("/saveToDataBase", async (req, res) => {
 */ 
 router.get("/getMatchedColumnNames", (req, res) => {
     try {
-        var result=mapColumnNames(`${userFilePath}\\uploadedFile.xlsx`);
+        var result=mapColumnNames(`${userFilePath}/uploadedFile.xlsx`);
         // throw err;
         res.status(200).send({"result":result});
     } catch (error) {
@@ -140,7 +142,7 @@ router.get("/getMatchedColumnNames", (req, res) => {
 router.get("/getMasterFileUploadStatus", (req, res) => {
    try {
         //checking if a file exists
-        if(fs.existsSync(`${userFilePath}\\uploadedFile.xlsx`)) res.status(200).send({"result":true});
+        if(fs.existsSync(`${userFilePath}/uploadedFile.xlsx`)) res.status(200).send({"result":true});
         else res.status(200).send({"result":false});
     } catch (error) {
         console.log(error);
@@ -156,7 +158,7 @@ router.get("/getMasterFileModifiedStatus", (req, res) => {
    
    try {
      //checking if a file exists
-    if(fs.existsSync(`${userFilePath}\\modifiedFile.xlsx`)) res.status(200).send({"result":true});
+    if(fs.existsSync(`${userFilePath}/modifiedFile.xlsx`)) res.status(200).send({"result":true});
     else res.status(200).send({"result":false});
 } catch (error) {
     console.log(error);
@@ -187,7 +189,7 @@ router.get("/uploadedFile", async (req, res) => {
         root: path.join(__dirname)
     };
     //sending stored file
-    var fileName =`${userFilePath}\\uploadedFile.xlsx`;
+    var fileName =`${userFilePath}/uploadedFile.xlsx`;
     res.sendFile(fileName, function (err) {
         if (err) {
             console.log(err);
@@ -207,7 +209,7 @@ router.get("/modifiedFile", async (req, res) => {
         root: path.join(__dirname)
     };
     //sending stored file
-    var fileName =`${userFilePath}\\modifiedFile.xlsx`;
+    var fileName =`${userFilePath}/modifiedFile.xlsx`;
     res.sendFile(fileName, function (err) {
         if (err) {
             console.log(err);
