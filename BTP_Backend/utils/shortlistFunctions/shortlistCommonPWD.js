@@ -62,8 +62,18 @@ async function shortlistCommonPWDCandidates(con,limit,round ){
             }
             var cat=shortlistedCandidates['Category'];
             if(cat==='GEN' && shortlistedCandidates.EWS=='Yes' ){
-                var seats=await findAvailableSeats(con,"EWS_FandM",round);
-                if(seats>0){
+                var seats_male=await findAvailableSeats(con,"EWS_FandM",round);
+                var seats_female=await findAvailableSeats(con,"EWS_Female",round);
+                if(shortlistedCandidates['Gender']==='Female' && seats_female>0){
+                    try {
+                        var res=await updateCandidateStatus(con,shortlistedCandidates,'EWS_Female_PWD',round);
+                    } catch (error) {
+                        throw error;
+                    }
+                    limit-=1;
+                    // console.log("limit",limit);
+                }
+                else if(seats_male>0){
                     try {
                         var res=await updateCandidateStatus(con,shortlistedCandidates,'EWS_FandM_PWD',round);
                     } catch (error) {
@@ -74,48 +84,91 @@ async function shortlistCommonPWDCandidates(con,limit,round ){
                 }
             }
             else if(cat==='GEN'){
-                var seats=await findAvailableSeats(con,"GEN_FandM",round);
-                if(seats>0){
+                var seats_male=await findAvailableSeats(con,"GEN_FandM",round);
+                var seats_female=await findAvailableSeats(con,"GEN_Female",round);
+                if(shortlistedCandidates['Gender']==='Female' && seats_female>0){
+                    try {
+                        var res=await updateCandidateStatus(con,shortlistedCandidates,'GEN_Female_PWD',round);
+                    } catch (error) {
+                        throw error;
+                    }
+                    limit-=1;
+                    // console.log("limit",limit);
+                }
+                else if(seats_male>0){
                     try {
                         var res=await updateCandidateStatus(con,shortlistedCandidates,'GEN_FandM_PWD',round);
                     } catch (error) {
                         throw error;
                     }
                     limit-=1;
+                    // console.log("limit",limit);
                 }
             }
             else if(cat==='OBC'){
-                var seats=await findAvailableSeats(con,"OBC_FandM",round);
-                if(seats>0){
+                var seats_male=await findAvailableSeats(con,"OBC_FandM",round);
+                var seats_female=await findAvailableSeats(con,"OBC_Female",round);
+                if(shortlistedCandidates['Gender']==='Female' && seats_female>0){
+                    try {
+                        var res=await updateCandidateStatus(con,shortlistedCandidates,'OBC_Female_PWD',round);
+                    } catch (error) {
+                        throw error;
+                    }
+                    limit-=1;
+                    // console.log("limit",limit);
+                }
+                else if(seats_male>0){
                     try {
                         var res=await updateCandidateStatus(con,shortlistedCandidates,'OBC_FandM_PWD',round);
                     } catch (error) {
                         throw error;
                     }
                     limit-=1;
+                    // console.log("limit",limit);
                 }
             }
             else if(cat==='SC'){
-                var seats=await findAvailableSeats(con,"SC_FandM",round);
-                if(seats>0){
+                var seats_male=await findAvailableSeats(con,"SC_FandM",round);
+                var seats_female=await findAvailableSeats(con,"SC_Female",round);
+                if(shortlistedCandidates['Gender']==='Female' && seats_female>0){
+                    try {
+                        var res=await updateCandidateStatus(con,shortlistedCandidates,'SC_Female_PWD',round);
+                    } catch (error) {
+                        throw error;
+                    }
+                    limit-=1;
+                    // console.log("limit",limit);
+                }
+                else if(seats_male>0){
                     try {
                         var res=await updateCandidateStatus(con,shortlistedCandidates,'SC_FandM_PWD',round);
                     } catch (error) {
                         throw error;
                     }
-                    
                     limit-=1;
+                    // console.log("limit",limit);
                 }
             }
             else if(cat==='ST'){
-                var seats=await findAvailableSeats(con,"ST_FandM",round,round);
-                if(seats>0){
+                var seats_male=await findAvailableSeats(con,"ST_FandM",round);
+                var seats_female=await findAvailableSeats(con,"ST_Female",round);
+                if(shortlistedCandidates['Gender']==='Female' && seats_female>0){
+                    try {
+                        var res=await updateCandidateStatus(con,shortlistedCandidates,'ST_Female_PWD',round);
+                    } catch (error) {
+                        throw error;
+                    }
+                    limit-=1;
+                    // console.log("limit",limit);
+                }
+                else if(seats_male>0){
                     try {
                         var res=await updateCandidateStatus(con,shortlistedCandidates,'ST_FandM_PWD',round);
                     } catch (error) {
                         throw error;
                     }
                     limit-=1;
+                    // console.log("limit",limit);
                 }
             }
             checkedCandidatesCoapID.push(shortlistedCandidates['COAP']);
