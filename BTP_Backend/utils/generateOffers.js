@@ -9,7 +9,7 @@ const {writeToExcel,writeToExcelAllOffers,writeToExcelEWS,writeToExcelGeneral,wr
 const path = require('path');
 const reader = require('xlsx');
 const fs = require('fs');
-const {findAvailableSeats,findAvailableSeatsPWD,findAvailableSeatsCommonPWD}=require("./findAvailableSeats");
+const {findAvailableSeats,findAvailableSeatsPWD,findAvailableSeatsCommonPWD,findAvailableSeatsGeneral}=require("./findAvailableSeats");
 
 /*
     Name: generateOffers
@@ -34,9 +34,9 @@ async function generateOffers(databaseName,round,filePath){
         var STPWDCandidates=await shortListPWDCandidates(con,await findAvailableSeatsPWD(con,"ST_FandM_PWD",round),round,'ST','ST_FandM_PWD');
         var EWSPWDCandidates=await shortListEWSPWDCandidates(con,await findAvailableSeatsPWD(con,"EWS_FandM_PWD",round),round,'Gen','EWS_FandM_PWD');
         //shortlisting General Female Candidates
-        var generalFemaleCandidates=await shortListGeneralFemaleCandidates(con, await findAvailableSeats(con,"GEN_Female",round),round);   
+        var generalFemaleCandidates=await shortListGeneralFemaleCandidates(con, await findAvailableSeatsGeneral(con,"GEN_Female",round),round);   
         //shortlisting General Candidates
-        var generalCandidates=await shortListGeneralCandidates(con,await findAvailableSeats(con,"GEN_FandM",round),round);    
+        var generalCandidates=await shortListGeneralCandidates(con,await findAvailableSeatsGeneral(con,"GEN_FandM",round),round);    
 
         // console.log("candidates",generalCandidates);
         // console.log("Femalecandidates",generalFemaleCandidates);

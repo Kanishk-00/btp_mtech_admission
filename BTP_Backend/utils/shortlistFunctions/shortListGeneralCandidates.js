@@ -15,7 +15,7 @@ async function shortListGeneralCandidates(con,limit,round){
     from mtechappl
     left join applicationstatus
     on mtechappl.COAP = applicationstatus.COAP 
-    where Offered is null
+    where Offered is null or Accepted='R'
     order by MaxGateScore desc,EWS ASC,HSSCper desc,SSCper desc
     Limit ${limit}`
     //variable to store shortlisted candidates
@@ -32,8 +32,17 @@ async function shortListGeneralCandidates(con,limit,round){
     try {
         let valuesToBeInserted=[]        
         for (const candidate of shortlistedCandidates) {
-          valuesToBeInserted.push([candidate.COAP,'Y','',round,'','',"GEN_FandM"]);
-          console.log(`shortlisted ${candidate.COAP} in GEN_FandM category `);
+            if(candidate['Accepted'] && candidate['Accepted']=='R'){
+                const [updateResult]=await con.query(`UPDATE applicationstatus
+                SET  OfferedRound=${round},OfferCat="GEN_FandM"
+                WHERE COAP = '${candidate.COAP}';`); 
+
+            }
+            else{
+                valuesToBeInserted.push([candidate.COAP,'Y','',round,'','',"GEN_FandM"]);
+                console.log(`shortlisted ${candidate.COAP} in GEN_FandM category `);
+            }
+
         }
         /*
             updating 
@@ -82,9 +91,17 @@ async function shortListGeneralFemaleCandidates(con,limit,round){
     try {
         let valuesToBeInserted=[]        
         for (const candidate of shortlistedCandidates) {
-          valuesToBeInserted.push([candidate.COAP,'Y','',round,'','',"GEN_Female"]);
-          console.log(`shortlisted ${candidate.COAP} in GEN_Female category `);
+            if(candidate['Accepted'] && candidate['Accepted']=='R'){
+                const [updateResult]=await con.query(`UPDATE applicationstatus
+                SET  OfferedRound=${round},OfferCat="GEN_Female"
+                WHERE COAP = '${candidate.COAP}';`); 
+            }
+            else{
+                valuesToBeInserted.push([candidate.COAP,'Y','',round,'','',"GEN_Female"]);
+                console.log(`shortlisted ${candidate.COAP} in GEN_Female category `);
+            }
         }
+
         /*
             updating 
             COAP with shortlisted candidate coap
