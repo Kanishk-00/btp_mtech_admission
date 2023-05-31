@@ -86,9 +86,7 @@ async function findAvailableSeatsGeneral(con,category,round) {
     from applicationstatus table for a particular category.
     */
     try {
-        [availableSeats]=await con.query(`select SeatsAllocated,
-        (select count(*) from applicationstatus where (accepted='Y' ) and offercat='${category}') 
-        as SeatsTaken from seatmatrix where category='${category}';`);
+        [availableSeats]=await con.query(`select SeatsAllocated from seatmatrix where category='${category}';`);
         [availablePWDSeats]=await con.query(`select SeatsAllocated,
         (select count(*) from applicationstatus where (accepted='Y' or accepted='R' or OfferedRound='${round}') and offercat='${category+'_PWD'}') 
         as SeatsTaken from seatmatrix where category='${category+'_PWD'}';`);
@@ -96,7 +94,7 @@ async function findAvailableSeatsGeneral(con,category,round) {
     } catch (error) {
         throw error;
     }
-    var seatsAvailable=availablePWDSeats[0].SeatsAllocated-availablePWDSeats[0].SeatsTaken+Math.max(0,availableSeats[0].SeatsAllocated-availableSeats[0].SeatsTaken)
+    var seatsAvailable=availablePWDSeats[0].SeatsAllocated-availablePWDSeats[0].SeatsTaken+Math.max(0,availableSeats[0].SeatsAllocated)
     console.log("Seats available for\t",category,"\tis:\t",seatsAvailable);
     //returning the value(seats allocated - seats booked (accepted+rejeted))
     return seatsAvailable;

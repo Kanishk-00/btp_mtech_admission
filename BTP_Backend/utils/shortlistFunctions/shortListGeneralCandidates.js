@@ -16,7 +16,7 @@ async function shortListGeneralCandidates(con,limit,round){
     from mtechappl
     left join applicationstatus
     on mtechappl.COAP = applicationstatus.COAP 
-    where Offered is null or Accepted='R'
+    where Offered is null or Accepted='R' or Accepted='Y'
     order by MaxGateScore desc,EWS ASC,HSSCper desc,SSCper desc
     Limit ${limit}`
     //variable to store shortlisted candidates
@@ -34,6 +34,13 @@ async function shortListGeneralCandidates(con,limit,round){
         let valuesToBeInserted=[]        
         for (const candidate of shortlistedCandidates) {
             if(candidate['Accepted'] && candidate['Accepted']=='R'){
+                if(candidate['OfferCat']!='GEN_FandM'){
+                    const [updateResult]=await con.query(`UPDATE applicationstatus
+                    SET  OfferedRound=${round},OfferCat="GEN_FandM"
+                    WHERE COAP = '${candidate.COAP}';`); 
+                }
+            }
+            else if(candidate['Accepted'] && candidate['Accepted']=='Y'){
                 if(candidate['OfferCat']!='GEN_FandM'){
                     const [updateResult]=await con.query(`UPDATE applicationstatus
                     SET  OfferedRound=${round},OfferCat="GEN_FandM"
@@ -77,7 +84,7 @@ async function shortListGeneralFemaleCandidates(con,limit,round){
     from mtechappl
     left join applicationstatus
     on mtechappl.COAP = applicationstatus.COAP 
-    where (Offered is null or Accepted='R') and Gender = "Female"
+    where (Offered is null or Accepted='R' or Accepted='Y') and Gender = "Female"
     order by MaxGateScore desc,EWS ASC,HSSCper desc,SSCper desc
     Limit ${limit}`
     //variable to store shortlisted candidates
@@ -95,6 +102,14 @@ async function shortListGeneralFemaleCandidates(con,limit,round){
         let valuesToBeInserted=[]        
         for (const candidate of shortlistedCandidates) {
             if(candidate['Accepted'] && candidate['Accepted']=='R'){
+                if(candidate['OfferCat']!='GEN_Female'){
+                    const [updateResult]=await con.query(`UPDATE applicationstatus
+                    SET  OfferedRound=${round},OfferCat="GEN_Female"
+                    WHERE COAP = '${candidate.COAP}';`); 
+                }
+
+            }
+            else if(candidate['Accepted'] && candidate['Accepted']=='Y'){
                 if(candidate['OfferCat']!='GEN_Female'){
                     const [updateResult]=await con.query(`UPDATE applicationstatus
                     SET  OfferedRound=${round},OfferCat="GEN_Female"
