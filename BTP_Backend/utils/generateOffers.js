@@ -10,7 +10,7 @@ const path = require('path');
 const reader = require('xlsx');
 const fs = require('fs');
 const {findAvailableSeats,findAvailableSeatsPWD,findAvailableSeatsCommonPWD,findAvailableSeatsGeneral}=require("./findAvailableSeats");
-
+const {updateFemaleCandidatesOfferedCategory}=require('./shortlistFunctions/femaleUpgradation');
 /*
     Name: generateOffers
     Input : databaseName,current round,filepath to which these results are to be written.
@@ -26,6 +26,14 @@ async function generateOffers(databaseName,round,filePath){
         database: process.env.MYSQL_DATABASE
     }).promise();
     try {
+        //Reallocating or upgrading gender-neutral to female category (if Possible).
+        var generalFemaleUpdates=updateFemaleCandidatesOfferedCategory(con,'GEN',round,await findAvailableSeats(con,"GEN_Female",round));
+        var EWSFemaleUpdates=updateFemaleCandidatesOfferedCategory(con,'EWS',round,await findAvailableSeats(con,"EWS_Female",round));
+        var OBCFemaleUpdates=updateFemaleCandidatesOfferedCategory(con,'OBC',round,await findAvailableSeats(con,"OBC_Female",round));
+        var SCFemaleUpdates=updateFemaleCandidatesOfferedCategory(con,'SC',round,await findAvailableSeats(con,"SC_Female",round));
+        var STFemaleUpdates=updateFemaleCandidatesOfferedCategory(con,'ST',round,await findAvailableSeats(con,"ST_Female",round));
+
+
         //shortlisting PWD candidates
         var commonPWDCandidates=await shortlistCommonPWDCandidates(con,await findAvailableSeatsCommonPWD(con,round),round);
         var generalPWDCandidates=await shortListPWDCandidates(con,await findAvailableSeatsPWD(con,"GEN_FandM_PWD",round),round,'\w*','GEN_FandM_PWD');
