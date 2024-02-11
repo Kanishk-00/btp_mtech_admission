@@ -7,8 +7,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
     environment:
       - MYSQL_DATABASE=Applicants2023
-      - MYSQL_PASSWORD=Your_MySql_Password
-      - MYSQL_ROOT_PASSWORD=Your_MySql_Root_Password
+      - MYSQL_PASSWORD=new_password
+      - MYSQL_ROOT_PASSWORD=root
       - MYSQL_HOSTNAME=mysqldb
     ports:
       - 5545:3306
