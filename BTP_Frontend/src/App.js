@@ -9,7 +9,7 @@ import Rounds from "./components/rounds/Rounds";
 import Home from "./components/Home";
 import FilterOptions from "./components/search/FilterOptions";
 import CandidateDisplay from "./components/candidatePage/CandidateDisplay";
-import Login from "./components/login/login.js";
+import Homepage from "./components/pages/homepage.jsx";
 function App() {
   return (
     <div className="App flex-col gap-14 h-full">
@@ -22,7 +22,7 @@ function App() {
           <Route path="/rounds" element={<Rounds />}></Route>
           <Route path="/search" element={<FilterOptions />}></Route>
           <Route path="/search/:coapid" element={<CandidateDisplay />}></Route>
-          <Route path="/login" element={<Login />} />{" "}
+          <Route path="/home" element={<Homepage />} />{" "}
         </Routes>
       </div>
 
