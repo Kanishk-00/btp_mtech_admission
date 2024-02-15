@@ -18,6 +18,7 @@ function Initialise(props) {
       });
       window.location.reload();
     } catch (error) {
+      console.log("this is coming, ", error);
       alert(error);
     }
   };
