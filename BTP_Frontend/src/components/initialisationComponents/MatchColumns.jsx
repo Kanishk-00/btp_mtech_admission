@@ -11,19 +11,25 @@ import documentImage from "../../images/docmentimage.jpg";
 import fileDownload from "js-file-download";
 
 const MatchColumns = () => {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
+
   const [columnNamesMatched, setColumnNamesMatched] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [fileExists, setFileExists] = useState(false);
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get(`${serverLink}/api/initialise/getMasterFileModifiedStatus`, {
-        withCredentials: false,
+      .get(`http://localhost:4444/api/initialise/getMasterFileModifiedStatus`, {
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
           "Access-Control-Allow-Credentials": true,
         },
+        withCredentials: true,
       })
       .then((res) => {
         setFileExists(res.data.result);
@@ -45,27 +51,30 @@ const MatchColumns = () => {
     setColumnNamesMatched(prevState);
     // console.log(uploadedcolumnName,selectedColumnName,columnNamesMatched)
   };
+
   const getMatchedColumnNames = async () => {
     setIsLoading(true);
-    axios
-      .get(`${serverLink}/api/initialise/getMatchedColumnNames`, {
-        withCredentials: false,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
-      })
-      .then((res) => {
-        //   console.log(res.data.result);
-        setColumnNamesMatched(res.data.result);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setIsLoading(false);
-      });
+    try {
+      const jwtToken = getCookie("jwtToken");
+      const response = await axios.get(
+        `http://localhost:4444/api/initialise/getMatchedColumnNames`,
+        {
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      setColumnNamesMatched(response.data.result);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
   };
+
   const sendSelectedColumnNames = () => {
     for (const actualColumnName of applicantsSchemaColumnNames) {
       let count = 0;
@@ -87,15 +96,15 @@ const MatchColumns = () => {
     setIsLoading(true);
     axios
       .post(
-        `${serverLink}/api/initialise/saveToDataBase`,
+        `http://localhost:4444/api/initialise/saveToDataBase`,
         { result: columnNamesMatched },
         {
-          withCredentials: false,
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
             "Access-Control-Allow-Credentials": true,
           },
+          withCredentials: true,
         }
       )
       .then((res) => {
@@ -108,30 +117,29 @@ const MatchColumns = () => {
       });
   };
   const handleDownload = () => {
-    axios
-      .get(
-        `${serverLink}/api/initialise/modifiedFile`,
-        {
+    try {
+      const jwtToken = getCookie("jwtToken");
+      axios
+        .get(`http://localhost:4444/api/initialise/modifiedFile`, {
           responseType: "blob",
-        },
-        {
-          withCredentials: false,
           headers: {
-            responseType: "blob",
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
+            Authorization: `Bearer ${jwtToken}`,
           },
-        }
-      )
-      .then((res) => {
-        console.log(res);
-        fileDownload(res.data, "modifiedFile.xlsx");
-      })
-      .catch((err) => {
-        alert(err.response.data.result);
-      });
+          withCredentials: true,
+        })
+        .then((res) => {
+          console.log(res);
+          fileDownload(res.data, "modifiedFile.xlsx");
+        })
+        .catch((err) => {
+          alert(err.response.data.result);
+        });
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Failed to download file.");
+    }
   };
+
   return (
     <div className="flex flex-col max-w-[800px] min-w-[80%] shadow-lg rounded-xl ">
       <div className="flex justify-center items-center w-full h-11 bg-zinc-100 rounded-t-xl gap-10">

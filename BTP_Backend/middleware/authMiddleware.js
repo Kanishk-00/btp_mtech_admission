@@ -1,24 +1,30 @@
+// middleware/authMiddleware.js
+
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 
-const verifyToken = (req, res, next) => {
-  // Extract token from request headers
-  const token = req.headers["authorization"];
+const isAuthenticated = (req, res, next) => {
+  // Check if JWT token exists in the request cookies
+  const token = req.cookies.jwtToken;
+  console.log("tokenee: ", token);
 
+  // If token does not exist, send unauthorized response
   if (!token) {
-    return res.status(403).json({ error: "Token not provided" });
+    return res.status(401).json({ error: "Unauthorized" });
   }
 
-  // Verify token
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ error: "Failed to authenticate token" });
-    } else {
-      // If token is valid, save decoded token to request object
-      req.user = decoded;
-      next();
-    }
-  });
+  try {
+    // Verify JWT token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("decoded: ", decoded);
+    // If token is valid, set user information in request object
+    req.user = decoded;
+    // Proceed to next middleware or route handler
+    next();
+  } catch (error) {
+    // If token is invalid, send unauthorized response
+    console.error("Error verifying JWT token:", error.message);
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 };
 
-module.exports = verifyToken;
+module.exports = isAuthenticated;

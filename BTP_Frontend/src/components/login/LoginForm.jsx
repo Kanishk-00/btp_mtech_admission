@@ -21,6 +21,7 @@ import {
 } from "@material-ui/icons";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -53,46 +54,49 @@ function LoginForm() {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validate inputs
     if (!username || !password || !branch) {
       setError("Please fill in all fields.");
       return;
     }
 
-    // Make API call to login
-    fetch("http://localhost:4444/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password,
-        branch,
-      }),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Invalid credentials");
+    try {
+      // Make API call to login
+      const response = await axios.post(
+        "http://localhost:4444/auth/login",
+        {
+          username,
+          password,
+          branch,
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Credentials": true,
+          },
         }
-        return response.json();
-      })
-      .then((data) => {
-        // Handle successful login
-        console.log("Login successful. JWT token:", data.token);
-        // Store the JWT token in localStorage
-        localStorage.setItem("jwtToken", data.token);
-        // Show toast message
-        toast.success("You are logged in successfully.");
-        // Redirect to home page
-        navigate("/home");
-      })
-      .catch((error) => {
-        // Handle login error
-        console.error("Login failed:", error.message);
-        setError("Invalid username, password, or branch.");
-      });
+      );
+
+      if (response.status !== 200) {
+        throw new Error("Invalid credentials");
+      }
+
+      // Handle successful login
+      console.log("Login successful. JWT token:", response.data.token);
+      // Store the JWT token in localStorage
+      // localStorage.setItem("jwtToken", response.data.token);
+      // Show toast message
+      toast.success("You are logged in successfully.");
+      // Redirect to home page
+      navigate("/home");
+    } catch (error) {
+      // Handle login error
+      console.error("Login failed:", error.message);
+      setError("Invalid username, password, or branch.");
+    }
   };
 
   return (

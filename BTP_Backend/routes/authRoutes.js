@@ -45,8 +45,17 @@ router.post("/login", (req, res) => {
 
       // Store JWT token in localStorage
       //   localStorage.setItem("jwtToken", token);
+      res.cookie("jwtToken", token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 8610000), //1d
+        secure: true,
+        sameSite: "none",
+        path: "/",
+      });
 
       // Send JWT token in response
+      console.log("the cookie is set:", token);
+
       res.status(200).json({ user, message: "Login successful", token });
     });
   });
@@ -54,9 +63,8 @@ router.post("/login", (req, res) => {
 
 // Route for user signout
 router.get("/signout", (req, res) => {
-  // Check if JWT token exists in localStorage
-  // Clear the JWT token from localStorage
-  //   localStorage.removeItem("jwtToken");
+  // Clear the JWT token cookie
+  res.clearCookie("jwtToken");
 
   // Send response indicating successful signout
   res.status(200).json({ message: "Signout successful" });
