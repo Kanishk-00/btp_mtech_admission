@@ -12,30 +12,43 @@ import Loader from "../Loader";
 import axios from "axios";
 
 function SeatMatrix(props) {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
+
   useEffect(() => {
     setIsLoading(true);
-    axios
-      .get(`${serverLink}/api/seatMatrix/seatMatrixData`, {
-        withCredentials: false,
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
-      })
-      .then((res) => {
-        setData(res.data.result);
-        console.log(res.data.result);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        alert(err.message);
-        setIsLoading(false);
-      });
+    try {
+      const jwtToken = getCookie("jwtToken");
+      axios
+        .get(`${serverLink}/api/seatMatrix/seatMatrixData`, {
+          withCredentials: true,
+          headers: {
+            Authorization: `Bearer ${jwtToken}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          setData(res.data.result);
+          console.log(res.data.result);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          alert(err.message);
+          setIsLoading(false);
+        });
+    } catch (error) {
+      console.error(error);
+      setIsLoading(false);
+    }
   }, []);
+
   return (
     <div className="flex justify-center w-full flex-col items-center gap-10 mt-8 mb-8">
       <div className="w-full flex justify-center">
