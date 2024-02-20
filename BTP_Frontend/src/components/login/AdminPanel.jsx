@@ -287,6 +287,9 @@ function AdminPanel() {
                     <TableRow key={user.id}>
                       <TableCell>{user.username}</TableCell>
                       <TableCell>{user.branch}</TableCell>
+                      {user.isAdmin ? (
+                      <TableCell></TableCell>
+                    ) : (
                       <TableCell>
                         <IconButton
                           onClick={() => handleDeleteUser(user.id)}
@@ -295,6 +298,7 @@ function AdminPanel() {
                           <DeleteIcon />
                         </IconButton>
                       </TableCell>
+                    )}
                       <TableCell>
                         <TextField
                           type="password"
