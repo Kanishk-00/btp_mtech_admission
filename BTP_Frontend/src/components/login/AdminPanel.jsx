@@ -184,7 +184,7 @@ function AdminPanel() {
   };
 
   return (
-    <Container maxWidth="sm" style={{ height: "100vh" }}>
+    <Container maxWidth="md" style={{ height: "100vh" }}>
       <Grid
         container
         spacing={2}
@@ -198,7 +198,7 @@ function AdminPanel() {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: 20 }}>
+        <Paper elevation={3} style={{ padding: 20, maxWidth: "70%", margin: "0 auto" }}>
             <Typography variant="h6" gutterBottom align="center">
               Add User
             </Typography>
@@ -275,7 +275,7 @@ function AdminPanel() {
 
         {/* User View Section*/}
         <Grid item xs={12}>
-          <Paper elevation={3} style={{ padding: 20, marginTop: 20 }}>
+        <Paper elevation={3} style={{ padding: 20, marginTop: 20, maxHeight: "calc(100vh - 480px)", maxWidth: "100%", overflowY: "auto" }}>
             <Typography variant="h6" gutterBottom align="center">
               Added Users
             </Typography>
