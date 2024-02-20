@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import DeleteIcon from "@material-ui/icons/Delete";
+
 import {
   Container,
   Typography,
@@ -11,18 +13,58 @@ import {
   Select,
   MenuItem,
   IconButton,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
   InputAdornment,
 } from "@material-ui/core";
 import { AddCircle, Visibility, VisibilityOff } from "@material-ui/icons";
 import { Snackbar } from "@material-ui/core";
 
 function AdminPanel() {
+  const [users, setUsers] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [branch, setBranch] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [openCreateSnackbar, setOpenCreateSnackbar] = useState(false);
+  const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
+  const [openUpdateSnackbar, setOpenUpdateSnackbar] = useState(false);
+  const [newPasswordMap, setNewPasswordMap] = useState({}); // State to track new passwords for each user
+
+  useEffect(() => {
+    // Fetch users on component mount
+    fetch("http://localhost:4444/admin/users")
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error("Error fetching users:", error));
+  }, []);
+
+  const handleDeleteUser = (userId) => {
+    // Delete user by ID
+    fetch(`http://localhost:4444/admin/users/${userId}`, {
+      method: "DELETE",
+    })
+      .then((response) => {
+        if (response.ok) {
+          // User deleted successfully
+          console.log("User deleted successfully:", userId);
+          // Remove the user from the state
+          setUsers(users.filter((user) => user.id !== userId));
+          setOpenDeleteSnackbar(true);
+        } else {
+          // Error deleting user
+          return response.json().then((data) => {
+            console.error("Error deleting user:", data.error);
+          });
+        }
+      })
+      .catch((error) => console.error("Error deleting user:", error));
+  };
 
   const handleTogglePasswordVisibility = () => {
     setShowPassword((prevShowPassword) => !prevShowPassword);
@@ -62,7 +104,8 @@ function AdminPanel() {
           setError("");
           // Show success message
           //   alert("User created successfully!");
-          setOpenSnackbar(true);
+          fetchUsers();
+          setOpenCreateSnackbar(true);
         } else {
           // Error registering user
           return response.json().then((data) => {
@@ -75,6 +118,65 @@ function AdminPanel() {
         console.error("Error registering user:", error);
       });
   };
+
+  const fetchUsers = () => {
+    // Fetch updated list of users
+    fetch("http://localhost:4444/admin/users")
+      .then((response) => response.json())
+      .then((data) => setUsers(data))
+      .catch((error) => console.error("Error fetching users:", error));
+  };
+
+  const handleNewPasswordChange = (userId, newPassword) => {
+    setNewPasswordMap((prevMap) => ({
+      ...prevMap,
+      [userId]: newPassword,
+    }));
+  };
+
+  const handleUpdatePassword = (userId) => {
+    const newPassword = newPasswordMap[userId];
+
+    // Validate new password
+    if (!newPassword) {
+      setError("Please enter a new password.");
+      return;
+    }
+
+    // Make API call to update password
+    fetch(`http://localhost:4444/admin/users/${userId}/password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newPassword,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Password updated successfully
+          console.log("Password updated successfully for user:", userId);
+          // Clear new password field
+          setNewPasswordMap((prevMap) => ({
+            ...prevMap,
+            [userId]: "",
+          }));
+          // Show success message
+          setOpenUpdateSnackbar(true);
+        } else {
+          // Error updating password
+          return response.json().then((data) => {
+            setError(data.error || "Failed to update password.");
+          });
+        }
+      })
+      .catch((error) => {
+        setError("Failed to update password. Please try again later.");
+        console.error("Error updating password:", error);
+      });
+  };
+
 
   return (
     <Container maxWidth="sm" style={{ height: "100vh" }}>
@@ -157,13 +259,88 @@ function AdminPanel() {
             </Grid>
           </Paper>
         </Grid>
+
+        {/* User View Section*/}
+        <Grid item xs={12}>
+          <Paper elevation={3} style={{ padding: 20, marginTop: 20 }}>
+            <Typography variant="h6" gutterBottom align="center">
+              Added Users
+            </Typography>
+            {error && (
+              <Typography variant="body2" color="error" align="center">
+                {error}
+              </Typography>
+            )}
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Username</TableCell>
+                    <TableCell>Branch</TableCell>
+                    <TableCell>Action</TableCell>
+                    <TableCell>New Password</TableCell> {/* New column */}
+                    <TableCell>Update</TableCell> {/* New column */}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>{user.username}</TableCell>
+                      <TableCell>{user.branch}</TableCell>
+                      <TableCell>
+                        <IconButton
+                          onClick={() => handleDeleteUser(user.id)}
+                          color="secondary"
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          type="password"
+                          value={newPasswordMap[user.id] || ""}
+                          onChange={(e) => handleNewPasswordChange(user.id, e.target.value)}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          onClick={() => handleUpdatePassword(user.id)}
+                        >
+                          Update Password
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Grid>
+
+        
         <Snackbar
-          open={openSnackbar}
+          open={openCreateSnackbar}
           autoHideDuration={6000}
-          onClose={() => setOpenSnackbar(false)}
+          onClose={() => setOpenCreateSnackbar(false)}
           message="User created successfully!"
         />
       </Grid>
+      
+      <Snackbar
+        open={openUpdateSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenUpdateSnackbar(false)}
+        message="Password updated successfully!"
+      />
+
+      <Snackbar
+        open={openDeleteSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenDeleteSnackbar(false)}
+        message="User Deleted successfully!"
+      />
     </Container>
   );
 }
