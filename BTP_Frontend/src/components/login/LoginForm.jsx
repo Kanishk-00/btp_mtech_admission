@@ -13,6 +13,8 @@ import {
   FormControl,
   Select,
   InputLabel,
+  Checkbox,
+  FormControlLabel,
 } from "@material-ui/core";
 import {
   LockOutlined as LockOutlinedIcon,
@@ -47,6 +49,7 @@ function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [branch, setBranch] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -56,19 +59,18 @@ function LoginForm() {
 
   const handleSubmit = async () => {
     // Validate inputs
-    if (!username || !password || !branch) {
+    if (!username || !password) {
       setError("Please fill in all fields.");
       return;
     }
 
     try {
-      // Make API call to login
+      // Make API call to check admin status
       const response = await axios.post(
-        "http://localhost:4444/auth/login",
+        "http://localhost:4444/api/admin/checkAdmin",
         {
           username,
           password,
-          branch,
         },
         {
           withCredentials: true,
@@ -80,14 +82,37 @@ function LoginForm() {
         }
       );
 
-      if (response.status !== 200) {
+      if (response.data.isAdmin) {
+        // If user is admin, redirect to '/admin' route
+        navigate("/admin");
+        return;
+      }
+
+      // Handle login for non-admin users
+      // Make API call to login
+      const loginResponse = await axios.post(
+        "http://localhost:4444/auth/login",
+        {
+          username,
+          password,
+          branch: isAdmin ? "admin" : branch, // Set branch to "admin" if isAdmin is true
+        },
+        {
+          withCredentials: true,
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Credentials": true,
+          },
+        }
+      );
+
+      if (loginResponse.status !== 200) {
         throw new Error("Invalid credentials");
       }
 
       // Handle successful login
-      console.log("Login successful. JWT token:", response.data.token);
-      // Store the JWT token in localStorage
-      // localStorage.setItem("jwtToken", response.data.token);
+      console.log("Login successful. JWT token:", loginResponse.data.token);
       // Show toast message
       toast.success("You are logged in successfully.");
       // Redirect to home page
@@ -95,7 +120,7 @@ function LoginForm() {
     } catch (error) {
       // Handle login error
       console.error("Login failed:", error.message);
-      setError("Invalid username, password, or branch.");
+      setError("Invalid username or password.");
     }
   };
 
@@ -144,12 +169,23 @@ function LoginForm() {
               value={branch}
               onChange={(e) => setBranch(e.target.value)}
               label="Branch"
+              disabled={isAdmin} // Disable the Branch field if isAdmin is true
             >
               <MenuItem value={"CSE"}>CSE</MenuItem>
               <MenuItem value={"EE"}>EE</MenuItem>
               <MenuItem value={"ME"}>ME</MenuItem>
             </Select>
           </FormControl>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={isAdmin}
+                onChange={(e) => setIsAdmin(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Are you an admin?"
+          />
           <Button
             type="button"
             fullWidth
@@ -167,3 +203,5 @@ function LoginForm() {
 }
 
 export default LoginForm;
+
+///
