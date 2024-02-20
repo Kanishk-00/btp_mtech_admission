@@ -20,9 +20,9 @@ import {
   TableCell,
   TableBody,
   InputAdornment,
+  Snackbar,
 } from "@material-ui/core";
 import { AddCircle, Visibility, VisibilityOff } from "@material-ui/icons";
-import { Snackbar } from "@material-ui/core";
 
 function AdminPanel() {
   const [users, setUsers] = useState([]);
@@ -74,6 +74,12 @@ function AdminPanel() {
     // Validate inputs
     if (!username || !password || !branch) {
       setError("Please fill in all fields.");
+      return;
+    }
+
+    // Check if username is 'admin'
+    if (username.toLowerCase() === "admin") {
+      setError("You can't add a user with the username 'admin'.");
       return;
     }
 
@@ -177,7 +183,6 @@ function AdminPanel() {
       });
   };
 
-
   return (
     <Container maxWidth="sm" style={{ height: "100vh" }}>
       <Grid
@@ -209,6 +214,14 @@ function AdminPanel() {
                   label="Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
+                />
+                <Snackbar
+                  open={
+                    error === "You can't add a user with the username 'admin'."
+                  }
+                  autoHideDuration={6000}
+                  onClose={() => setError("")}
+                  message="You can't add admin"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -299,7 +312,9 @@ function AdminPanel() {
                         <TextField
                           type="password"
                           value={newPasswordMap[user.id] || ""}
-                          onChange={(e) => handleNewPasswordChange(user.id, e.target.value)}
+                          onChange={(e) =>
+                            handleNewPasswordChange(user.id, e.target.value)
+                          }
                         />
                       </TableCell>
                       <TableCell>
@@ -319,7 +334,6 @@ function AdminPanel() {
           </Paper>
         </Grid>
 
-        
         <Snackbar
           open={openCreateSnackbar}
           autoHideDuration={6000}
@@ -327,7 +341,7 @@ function AdminPanel() {
           message="User created successfully!"
         />
       </Grid>
-      
+
       <Snackbar
         open={openUpdateSnackbar}
         autoHideDuration={6000}

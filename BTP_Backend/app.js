@@ -11,7 +11,8 @@ const manualUpdate = require("./routes/manualUpdate");
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const { initializeUsersTable } = require("./utils/initialiseUsers"); // Import the function
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
+const adminCheckRoutes = require("../BTP_Backend/routes/adminCheckRoutes");
 
 require("dotenv").config();
 // app.use(cors());
@@ -52,7 +53,7 @@ app.use(
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(plainPassword, salt);
     await initializeUsersTable(process.env.MYSQL_DATABASE, [
-      [1, user, hashedPassword, "admin", true]
+      [1, user, hashedPassword, "admin", true],
     ]);
   } catch (error) {
     console.error("Error initializing users table:", error);
@@ -65,6 +66,7 @@ app.use("/api/rounds", roundsRoutes);
 app.use("/api/search", searchCandidatesRoutes);
 app.use("/api/candidate", manualUpdate);
 app.use("/admin", adminRoutes);
+app.use("/api/admin", adminCheckRoutes);
 
 // Apply authentication middleware to all routes except authRoutes
 // app.use((req, res, next) => {
