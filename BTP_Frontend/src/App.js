@@ -11,10 +11,33 @@ import FilterOptions from "./components/search/FilterOptions";
 import CandidateDisplay from "./components/candidatePage/CandidateDisplay";
 import AdminPanel from "./components/login/AdminPanel.jsx";
 import LoginForm from "./components/login/LoginForm.jsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(true);
+
+  // useEffect(() => {
+  //   async function fetchAdminStatus() {
+  //     try {
+  //       const response = await axios.post(
+  //         "http://localhost:4444/api/admin/checkAdmin",
+  //         {
+  //           username: "username_here", // Replace with actual username
+  //           password: "password_here", // Replace with actual password
+  //         },
+  //         { withCredentials: true }
+  //       );
+  //       setIsAdmin(response.data.isAdmin);
+  //     } catch (error) {
+  //       setIsAdmin(false); // Set isAdmin to false if there's an error or if user is not admin
+  //       console.error("Error fetching admin status:", error);
+  //     }
+  //   }
+
+  //   fetchAdminStatus();
+  // }, []);
+
   return (
     <div>
       <div className="App flex-col gap-14 h-full">
@@ -34,27 +57,10 @@ function App() {
             <Route path="/home" element={<Home />}></Route>
           </Routes>
         </div>
-        {/* <div className="min-h-[100vh]">
-            <Routes>
-              <Route path="/" element={<LoginForm />}></Route>
-              <ProtectedRoute path="/initialise" element={<Initialise />} />
-              <ProtectedRoute path="/seatmatrix" element={<SeatMatrix />} />
-              <ProtectedRoute path="/rounds" element={<Rounds />} />
-              <ProtectedRoute path="/search" element={<FilterOptions />} />
-              <ProtectedRoute
-                path="/search/:coapid"
-                element={<CandidateDisplay />}
-              />
-              <ProtectedRoute path="/home" element={<Home />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="*" element={<Navigate to="/" />} />{" "}
-              {/* Redirect to login page if route not found */}
-        {/* </Routes> */}
-        {/* </div>  */}
         <Footer />
       </div>
     </div>
   );
 }
-// <Footer/>
+
 export default App;

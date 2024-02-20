@@ -49,9 +49,9 @@ function LoginForm() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [branch, setBranch] = useState("");
-  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const handleTogglePassword = () => {
     setShowPassword(!showPassword);
@@ -65,44 +65,19 @@ function LoginForm() {
     }
 
     try {
-      // Make API call to check admin status
-      const response = await axios.post(
-        "http://localhost:4444/api/admin/checkAdmin",
-        {
-          username,
-          password,
-        },
-        {
-          withCredentials: true,
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-          },
-        }
-      );
-
-      if (response.data.isAdmin) {
-        // If user is admin, redirect to '/admin' route
-        navigate("/admin");
-        return;
-      }
-
-      // Handle login for non-admin users
       // Make API call to login
       const loginResponse = await axios.post(
         "http://localhost:4444/auth/login",
         {
           username,
           password,
-          branch: isAdmin ? "admin" : branch, // Set branch to "admin" if isAdmin is true
+          branch: isAdmin ? "admin" : branch,
         },
         {
           withCredentials: true,
           headers: {
             Accept: "application/json",
             "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
           },
         }
       );
@@ -203,5 +178,3 @@ function LoginForm() {
 }
 
 export default LoginForm;
-
-///
