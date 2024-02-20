@@ -16,28 +16,11 @@ import axios from "axios";
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(true);
-
-  // useEffect(() => {
-  //   async function fetchAdminStatus() {
-  //     try {
-  //       const response = await axios.post(
-  //         "http://localhost:4444/api/admin/checkAdmin",
-  //         {
-  //           username: "username_here", // Replace with actual username
-  //           password: "password_here", // Replace with actual password
-  //         },
-  //         { withCredentials: true }
-  //       );
-  //       setIsAdmin(response.data.isAdmin);
-  //     } catch (error) {
-  //       setIsAdmin(false); // Set isAdmin to false if there's an error or if user is not admin
-  //       console.error("Error fetching admin status:", error);
-  //     }
-  //   }
-
-  //   fetchAdminStatus();
-  // }, []);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const handleLogin = (status) => {
+    setIsLoggedIn(status);
+  };
   return (
     <div>
       <div className="App flex-col gap-14 h-full">
@@ -46,6 +29,17 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginForm />}></Route>
             <Route path="/initialise" element={<Initialise />}></Route>
+            {/* <Route
+              path="/"
+              element={<LoginForm onLogin={handleLogin} />}
+            ></Route>
+            {isLoggedIn ? (
+              <>
+                <Route path="/initialise" element={<Initialise />} />
+              </>
+            ) : (
+              <Route path="/" element={<LoginForm onLogin={handleLogin} />} />
+            )} */}
             <Route path="/seatmatrix" element={<SeatMatrix />}></Route>
             <Route path="/rounds" element={<Rounds />}></Route>
             <Route path="/search" element={<FilterOptions />}></Route>

@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function LoginForm() {
+function LoginForm({ onLogin }) {
   const classes = useStyles();
   const navigate = useNavigate();
 
@@ -90,6 +90,8 @@ function LoginForm() {
       console.log("Login successful. JWT token:", loginResponse.data.token);
       // Show toast message
       toast.success("You are logged in successfully.");
+      // Update parent component with login status
+      onLogin(true);
       // Redirect to home page
       navigate("/home");
     } catch (error) {

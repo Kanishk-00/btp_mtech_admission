@@ -39,23 +39,23 @@ router.post("/login", (req, res) => {
 
       // User authenticated, generate JWT token
       const token = jwt.sign(
-        { username: user.username },
+        {
+          username: user.username,
+          isAdmin: user.isAdmin, // assuming isAdmin field exists in the database
+        },
         process.env.JWT_SECRET
       );
 
-      // Store JWT token in localStorage
-      //   localStorage.setItem("jwtToken", token);
+      // Store JWT token in cookie
       res.cookie("jwtToken", token, {
         httpOnly: true,
-        expires: new Date(Date.now() + 8610000), //1d
-        secure: true,
-        sameSite: "none",
-        path: "/",
+        expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day in milliseconds
+        secure: true, // For HTTPS only, remove this in development if not using HTTPS
+        sameSite: "none", // For cross-site cookies, requires secure:true
+        path: "/", // Cookie path
       });
 
       // Send JWT token in response
-      console.log("the cookie is set:", token);
-
       res.status(200).json({ user, message: "Login successful", token });
     });
   });

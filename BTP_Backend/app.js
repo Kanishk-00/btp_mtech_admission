@@ -13,6 +13,7 @@ const authRoutes = require("./routes/authRoutes");
 const { initializeUsersTable } = require("./utils/initialiseUsers"); // Import the function
 const bcrypt = require("bcrypt");
 const adminCheckRoutes = require("../BTP_Backend/routes/adminCheckRoutes");
+const authenticationRouter = require("./routes/authenticationRouter");
 
 require("dotenv").config();
 // app.use(cors());
@@ -67,6 +68,7 @@ app.use("/api/search", searchCandidatesRoutes);
 app.use("/api/candidate", manualUpdate);
 app.use("/admin", adminRoutes);
 app.use("/api/admin", adminCheckRoutes);
+app.use("/api", authenticationRouter);
 
 // Apply authentication middleware to all routes except authRoutes
 // app.use((req, res, next) => {

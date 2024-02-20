@@ -83,12 +83,14 @@ function FileUploader(props) {
       console.log("the error, ", error.response.status);
       if (error.response && error.response.status === 401) {
         // toast.error("Please log in to access the website");
-        <Alert severity="error">Please log in to access the website.</Alert>;
+        // <Alert severity="error">Please log in to access the website.</Alert>;
+        alert("File upload failed. Please log in with correct credentials.");
       } else {
         // toast.error("File upload failed. Please check console for details.");
-        <Alert severity="error">
-          File upload failed. Please check console for details.
-        </Alert>;
+        // <Alert severity="error">
+        //   File upload failed. Please check console for details.
+        // </Alert>;
+        alert("File upload failed. Please log in with correct credentials.");
       }
     }
   };
