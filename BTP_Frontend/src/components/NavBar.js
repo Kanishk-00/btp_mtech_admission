@@ -47,7 +47,7 @@ function NavBar(props) {
         </div>
       </div>
       <div className="w-[fit-content] h-full flex justify-center items-center gap-4 ml-auto">
-        <Link to="/">
+        <Link to="/home">
           <button className="flex h-full p-2 justify-center items-center hover:border-b-4">
             <p className="text-lg text-white">Home</p>
           </button>

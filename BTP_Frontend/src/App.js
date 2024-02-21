@@ -18,9 +18,7 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
-  const handleLogin = (status) => {
-    setIsLoggedIn(status);
-  };
+
   return (
     <div>
       <div className="App flex-col gap-14 h-full">
@@ -29,26 +27,15 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginForm />}></Route>
             <Route path="/initialise" element={<Initialise />}></Route>
-            {/* <Route
-              path="/"
-              element={<LoginForm onLogin={handleLogin} />}
-            ></Route>
-            {isLoggedIn ? (
-              <>
-                <Route path="/initialise" element={<Initialise />} />
-              </>
-            ) : (
-              <Route path="/" element={<LoginForm onLogin={handleLogin} />} />
-            )} */}
             <Route path="/seatmatrix" element={<SeatMatrix />}></Route>
             <Route path="/rounds" element={<Rounds />}></Route>
             <Route path="/search" element={<FilterOptions />}></Route>
+            <Route path="/home" element={<Home />}></Route>
             <Route
               path="/search/:coapid"
               element={<CandidateDisplay />}
             ></Route>
             {isAdmin && <Route path="/admin" element={<AdminPanel />} />}{" "}
-            <Route path="/home" element={<Home />}></Route>
           </Routes>
         </div>
         <Footer />

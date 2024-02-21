@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -42,9 +42,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function LoginForm({ onLogin }) {
+function LoginForm() {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
   const classes = useStyles();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const jwtToken = getCookie("jwtToken");
+      try {
+        const response = await axios.get(
+          `http://localhost:4444/api/check-authentication/`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        console.log("the response is: ", response.data);
+        navigate("/home");
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          console.log("User is not authenticated. Navigating to '/'...");
+          navigate("/");
+        } else {
+          console.error("Error checking authentication:", error);
+        }
+      }
+    };
+    checkAuthentication();
+  }, []);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -89,10 +123,7 @@ function LoginForm({ onLogin }) {
       // Handle successful login
       console.log("Login successful. JWT token:", loginResponse.data.token);
       // Show toast message
-      toast.success("You are logged in successfully.");
-      // Update parent component with login status
-      onLogin(true);
-      // Redirect to home page
+      toast.success("You are logged in successfully."); // Redirect to home page
       navigate("/home");
     } catch (error) {
       // Handle login error

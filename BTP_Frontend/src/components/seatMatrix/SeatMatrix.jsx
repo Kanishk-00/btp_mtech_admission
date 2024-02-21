@@ -10,8 +10,10 @@ import SeatMatrixRow from "./SeatMatrixRow";
 import { serverLink } from "../../serverLink";
 import Loader from "../Loader";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function SeatMatrix(props) {
+  const navigate = useNavigate();
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -40,7 +42,11 @@ function SeatMatrix(props) {
         })
         .catch((err) => {
           console.log(err);
-          alert(err.message);
+          if (err.response && err.response.status === 401) {
+            navigate("/");
+          } else {
+            alert(err.message);
+          }
           setIsLoading(false);
         });
     } catch (error) {

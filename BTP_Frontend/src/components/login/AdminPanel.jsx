@@ -23,8 +23,15 @@ import {
   Snackbar,
 } from "@material-ui/core";
 import { AddCircle, Visibility, VisibilityOff } from "@material-ui/icons";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function AdminPanel() {
+  function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+  }
   const [users, setUsers] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -35,6 +42,7 @@ function AdminPanel() {
   const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
   const [openUpdateSnackbar, setOpenUpdateSnackbar] = useState(false);
   const [newPasswordMap, setNewPasswordMap] = useState({}); // State to track new passwords for each user
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch users on component mount
@@ -42,6 +50,36 @@ function AdminPanel() {
       .then((response) => response.json())
       .then((data) => setUsers(data))
       .catch((error) => console.error("Error fetching users:", error));
+
+    const checkAuthentication = async () => {
+      const jwtToken = getCookie("jwtToken");
+      try {
+        const response = await axios.get(
+          `http://localhost:4444/api/check-authentication/`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        );
+        console.log("the response is: ", response.data);
+        if (!response.data.isAdmin) {
+          // alert("You need to be an admin to access admin console");
+          navigate("/home");
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          console.log("User is not authenticated. Navigating to '/'...");
+          navigate("/");
+        } else {
+          console.error("Error checking authentication:", error);
+        }
+      }
+    };
+    checkAuthentication();
   }, []);
 
   const handleDeleteUser = (userId) => {
@@ -198,7 +236,10 @@ function AdminPanel() {
           </Typography>
         </Grid>
         <Grid item xs={12}>
-        <Paper elevation={3} style={{ padding: 20, maxWidth: "70%", margin: "0 auto" }}>
+          <Paper
+            elevation={3}
+            style={{ padding: 20, maxWidth: "70%", margin: "0 auto" }}
+          >
             <Typography variant="h6" gutterBottom align="center">
               Add User
             </Typography>
@@ -275,7 +316,16 @@ function AdminPanel() {
 
         {/* User View Section*/}
         <Grid item xs={12}>
-        <Paper elevation={3} style={{ padding: 20, marginTop: 20, maxHeight: "calc(100vh - 480px)", maxWidth: "100%", overflowY: "auto" }}>
+          <Paper
+            elevation={3}
+            style={{
+              padding: 20,
+              marginTop: 20,
+              maxHeight: "calc(100vh - 480px)",
+              maxWidth: "100%",
+              overflowY: "auto",
+            }}
+          >
             <Typography variant="h6" gutterBottom align="center">
               Added Users
             </Typography>
@@ -301,17 +351,17 @@ function AdminPanel() {
                       <TableCell>{user.username}</TableCell>
                       <TableCell>{user.branch}</TableCell>
                       {user.isAdmin ? (
-                      <TableCell></TableCell>
-                    ) : (
-                      <TableCell>
-                        <IconButton
-                          onClick={() => handleDeleteUser(user.id)}
-                          color="secondary"
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </TableCell>
-                    )}
+                        <TableCell></TableCell>
+                      ) : (
+                        <TableCell>
+                          <IconButton
+                            onClick={() => handleDeleteUser(user.id)}
+                            color="secondary"
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      )}
                       <TableCell>
                         <TextField
                           type="password"

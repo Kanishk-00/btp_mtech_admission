@@ -5,12 +5,14 @@ import axios from "axios";
 import { serverLink } from "../../serverLink";
 import Search from "@mui/icons-material/Search";
 import FilteredCandidatesTable from "./FilteredCandidatesTable";
+import { useNavigate } from "react-router-dom";
 function FilterOptions(props) {
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(";").shift();
   }
+  const navigate = useNavigate();
   const genderLabels = [{ label: "Male" }, { label: "Female" }];
   const CategoryLabels = [
     { label: "GEN" },
@@ -24,10 +26,11 @@ function FilterOptions(props) {
   const [category, setCategory] = React.useState(null);
   const [coapIds, setCoapIds] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(false);
+
   useEffect(() => {
     setIsLoading(true);
     try {
-      const jwtToken = getCookie("jwtToken"); // Assuming you have a getCookie function to extract the JWT token from cookies
+      const jwtToken = getCookie("jwtToken");
       axios
         .get(`${serverLink}/api/search/getCoapIds`, {
           headers: {
@@ -45,7 +48,12 @@ function FilterOptions(props) {
         })
         .catch((err) => {
           console.log(err);
-          alert(err.message);
+          if (err.response && err.response.status === 401) {
+            console.log("aagaya hai idhar bhi search wala");
+            navigate("/");
+          } else {
+            alert(err.message);
+          }
           setIsLoading(false);
         });
     } catch (error) {

@@ -5,8 +5,11 @@ import { useEffect } from "react";
 import RoundDetails from "./RoundDetails";
 import { serverLink } from "../../serverLink";
 import Loader from "../Loader";
+import { useNavigate } from "react-router-dom";
 
 function Rounds(props) {
+  const navigate = useNavigate();
+
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -18,6 +21,7 @@ function Rounds(props) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    setIsLoading(true);
     try {
       const jwtToken = getCookie("jwtToken");
       axios
@@ -41,6 +45,10 @@ function Rounds(props) {
         })
         .catch((err) => {
           console.log(err);
+          if (err.response && err.response.status === 401) {
+            console.log("aagaya hai ishar");
+            navigate("/");
+          }
         });
     } catch (error) {
       console.error(error);

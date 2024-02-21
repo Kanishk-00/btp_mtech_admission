@@ -9,11 +9,13 @@ import documentImage from "../../images/docmentimage.jpg";
 import fileDownload from "js-file-download";
 import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
+import { useNavigate } from "react-router-dom";
 
 function FileUploader(props) {
   const [file, setFile] = useState(null);
   const [fileExists, setFileExists] = useState(false);
   const [loading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -43,6 +45,10 @@ function FileUploader(props) {
           console.log(err);
           console.log("1");
           setIsLoading(false);
+          if (err.response && err.response.status === 401) {
+            console.log("aaya kya iddhe?");
+            navigate("/");
+          }
         });
     } catch (error) {
       console.error(error);
