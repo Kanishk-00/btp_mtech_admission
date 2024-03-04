@@ -124,6 +124,7 @@ function AdminPanel() {
       .then((response) => {
         if (response.ok) {
           console.log("New program added successfully");
+          fetchPrograms();
         } else {
           // Error registering user
           return response.json().then((data) => {
@@ -134,7 +135,6 @@ function AdminPanel() {
       .catch((error) => {
         setError("Failed to add new program Please try again later.");
       });
-      fetchPrograms();
   };
 
   const handleSubmit = () => {

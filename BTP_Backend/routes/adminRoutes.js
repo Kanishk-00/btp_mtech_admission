@@ -3,12 +3,15 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const connection = require("../config/dbConfig");
-
+const {createTable} = require("../utils/sqlqueries");
+const { branchesSchema } = require("../schemas/branchesSchema");
+const branchesTableName = "branches";
 
 router.get("/branches",(req,res)=>{
-      console.log("Fetch branches");
-      const query="SELECT * FROM branches;";
-      connection.query(query,(error,result)=>{
+      console.log("Branches fetched");
+      createTable(connection, branchesTableName, branchesSchema);
+      const query="SELECT * FROM branches";
+      connection.query(query, branchesTableName, (error,result)=>{
       if(error) {
           console.log("the error is: ", error);
           res.status(500).json({ error: "Internal server error" });
@@ -22,7 +25,6 @@ router.get("/branches",(req,res)=>{
 });
 
 router.put("/addProgram", (req, res) => {
-  
   const {newProgram} = req.body;
   console.log(newProgram);
   const query = "INSERT INTO branches VALUES (?)";
@@ -38,7 +40,11 @@ router.put("/addProgram", (req, res) => {
 
 router.post("/register", (req, res) => {
   const { username, password, branch } = req.body;
-
+  if (branch === "Other") {
+    return res
+      .status(400)
+      .json({ error: "Invalid branch. Please enter a branch name" });
+  }
   // Hash the password
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
