@@ -36,7 +36,9 @@ function AdminPanel() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [branch, setBranch] = useState("");
+  const [programs, setProgramDropdown] = useState([]);
   const [error, setError] = useState("");
+  const [newProgram, setNewProgram] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [openCreateSnackbar, setOpenCreateSnackbar] = useState(false);
   const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
@@ -50,7 +52,7 @@ function AdminPanel() {
       .then((response) => response.json())
       .then((data) => setUsers(data))
       .catch((error) => console.error("Error fetching users:", error));
-
+    fetchPrograms();
     const checkAuthentication = async () => {
       const jwtToken = getCookie("jwtToken");
       try {
@@ -108,6 +110,33 @@ function AdminPanel() {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
+  const handleNewProgram = () => {
+    console.log(newProgram);
+    fetch("http://localhost:4444/admin/addProgram", {
+    method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newProgram,
+      }),
+    })
+      .then((response) => {
+        if (response.ok) {
+          console.log("New program added successfully");
+        } else {
+          // Error registering user
+          return response.json().then((data) => {
+            setError(data.error || "Failed to add new program.");
+          });
+        }
+      })
+      .catch((error) => {
+        setError("Failed to add new program Please try again later.");
+      });
+      fetchPrograms();
+  };
+
   const handleSubmit = () => {
     // Validate inputs
     if (!username || !password || !branch) {
@@ -121,6 +150,7 @@ function AdminPanel() {
       return;
     }
 
+    
     // Make API call to register user
     fetch("http://localhost:4444/admin/register", {
       method: "POST",
@@ -170,6 +200,15 @@ function AdminPanel() {
       .then((data) => setUsers(data))
       .catch((error) => console.error("Error fetching users:", error));
   };
+
+  const fetchPrograms = () => {
+    // Fetch updated list of users
+    fetch("http://localhost:4444/admin/branches")
+      .then((response) => response.json())
+      .then((data) => {setProgramDropdown(data)})
+      .catch((error) => console.error("Error fetching branches:", error));
+    };
+  
 
   const handleNewPasswordChange = (userId, newPassword) => {
     setNewPasswordMap((prevMap) => ({
@@ -293,10 +332,23 @@ function AdminPanel() {
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
                   >
-                    <MenuItem value={"CSE"}>CSE</MenuItem>
-                    <MenuItem value={"EE"}>EE</MenuItem>
-                    <MenuItem value={"ME"}>ME</MenuItem>
+                   {programs.map(program => (
+                    <MenuItem key={program.branch} value={program.branch} >{program.branch}</MenuItem>
+                    ))}
+                    <MenuItem value="Other">Other</MenuItem>
                   </Select>
+                {branch === 'Other' && (
+                  <div>
+                    <TextField
+                      label="Enter new program"
+                      value={newProgram}
+                      onChange={(e) => setNewProgram(e.target.value)}
+                    />
+                    <Button variant="contained" color="primary" onClick={handleNewProgram}>
+                      Add
+                    </Button>
+                  </div>
+      )}
                 </FormControl>
               </Grid>
               <Grid item xs={12}>

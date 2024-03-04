@@ -4,16 +4,40 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const connection = require("../config/dbConfig");
 
+
+router.get("/branches",(req,res)=>{
+      console.log("Fetch branches");
+      const query="SELECT * FROM branches;";
+      connection.query(query,(error,result)=>{
+      if(error) {
+          console.log("the error is: ", error);
+          res.status(500).json({ error: "Internal server error" });
+        }
+      else
+      {
+        res.status(200).json(result);
+      }
+      console.log(result);
+      });
+});
+
+router.put("/addProgram", (req, res) => {
+  
+  const {newProgram} = req.body;
+  console.log(newProgram);
+  const query = "INSERT INTO branches VALUES (?)";
+  connection.query(query, newProgram, (error, results) => {
+    if (error) {
+      res.status(400).json({ error: "Error adding programs" });
+    }
+    else {
+      res.status(201).json({ message: "New branch added successfully" });
+    }
+  }) 
+})
+
 router.post("/register", (req, res) => {
   const { username, password, branch } = req.body;
-
-  // Validate branch
-  const allowedBranches = ["EE", "CSE", "ME"];
-  if (!allowedBranches.includes(branch)) {
-    return res
-      .status(400)
-      .json({ error: "Invalid branch. Please select EE, CSE, or ME." });
-  }
 
   // Hash the password
   bcrypt.hash(password, 10, (err, hashedPassword) => {
