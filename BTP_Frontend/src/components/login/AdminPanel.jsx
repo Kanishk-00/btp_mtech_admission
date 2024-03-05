@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
-
 import {
   Container,
   Typography,
@@ -33,17 +32,19 @@ function AdminPanel() {
     if (parts.length === 2) return parts.pop().split(";").shift();
   }
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [branch, setBranch] = useState("");
-  const [programs, setProgramDropdown] = useState([]);
   const [error, setError] = useState("");
-  const [newProgram, setNewProgram] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [openCreateSnackbar, setOpenCreateSnackbar] = useState(false);
   const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
   const [openUpdateSnackbar, setOpenUpdateSnackbar] = useState(false);
-  const [newPasswordMap, setNewPasswordMap] = useState({}); // State to track new passwords for each user
+  const [newPasswordMap, setNewPasswordMap] = useState({});
+  const [branchFilter, setBranchFilter] = useState("All");
+  const [programs, setProgramDropdown] = useState([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -84,20 +85,48 @@ function AdminPanel() {
     checkAuthentication();
   }, []);
 
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    filterUsersByBranch();
+  }, [users, branchFilter]);
+
+  const fetchUsers = async () => {
+    const response = await fetch("http://localhost:4444/admin/users");
+    const data = await response.json();
+    setUsers(data);
+  };
+
+  const fetchPrograms = () => {
+    // Fetch updated list of users
+    fetch("http://localhost:4444/admin/branches")
+      .then((response) => response.json())
+      .then((data) => {
+        setProgramDropdown(data);
+      })
+      .catch((error) => console.error("Error fetching branches:", error));
+  };
+
+  const filterUsersByBranch = () => {
+    if (branchFilter === "All") {
+      setFilteredUsers(users);
+    } else {
+      const filtered = users.filter((user) => user.branch === branchFilter);
+      setFilteredUsers(filtered);
+    }
+  };
+
   const handleDeleteUser = (userId) => {
-    // Delete user by ID
     fetch(`http://localhost:4444/admin/users/${userId}`, {
       method: "DELETE",
     })
       .then((response) => {
         if (response.ok) {
-          // User deleted successfully
-          console.log("User deleted successfully:", userId);
-          // Remove the user from the state
           setUsers(users.filter((user) => user.id !== userId));
           setOpenDeleteSnackbar(true);
         } else {
-          // Error deleting user
           return response.json().then((data) => {
             console.error("Error deleting user:", data.error);
           });
@@ -110,48 +139,17 @@ function AdminPanel() {
     setShowPassword((prevShowPassword) => !prevShowPassword);
   };
 
-  const handleNewProgram = () => {
-    console.log(newProgram);
-    fetch("http://localhost:4444/admin/addProgram", {
-    method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        newProgram,
-      }),
-    })
-      .then((response) => {
-        if (response.ok) {
-          console.log("New program added successfully");
-          fetchPrograms();
-        } else {
-          // Error registering user
-          return response.json().then((data) => {
-            setError(data.error || "Failed to add new program.");
-          });
-        }
-      })
-      .catch((error) => {
-        setError("Failed to add new program Please try again later.");
-      });
-  };
-
   const handleSubmit = () => {
-    // Validate inputs
     if (!username || !password || !branch) {
       setError("Please fill in all fields.");
       return;
     }
 
-    // Check if username is 'admin'
     if (username.toLowerCase() === "admin") {
       setError("You can't add a user with the username 'admin'.");
       return;
     }
 
-    
-    // Make API call to register user
     fetch("http://localhost:4444/admin/register", {
       method: "POST",
       headers: {
@@ -165,23 +163,13 @@ function AdminPanel() {
     })
       .then((response) => {
         if (response.ok) {
-          // User successfully registered
-          console.log("User registered successfully:", {
-            username,
-            password,
-            branch,
-          });
-          // Clear form fields
           setUsername("");
           setPassword("");
           setBranch("");
           setError("");
-          // Show success message
-          //   alert("User created successfully!");
           fetchUsers();
           setOpenCreateSnackbar(true);
         } else {
-          // Error registering user
           return response.json().then((data) => {
             setError(data.error || "Failed to register user.");
           });
@@ -193,23 +181,6 @@ function AdminPanel() {
       });
   };
 
-  const fetchUsers = () => {
-    // Fetch updated list of users
-    fetch("http://localhost:4444/admin/users")
-      .then((response) => response.json())
-      .then((data) => setUsers(data))
-      .catch((error) => console.error("Error fetching users:", error));
-  };
-
-  const fetchPrograms = () => {
-    // Fetch updated list of users
-    fetch("http://localhost:4444/admin/branches")
-      .then((response) => response.json())
-      .then((data) => {setProgramDropdown(data)})
-      .catch((error) => console.error("Error fetching branches:", error));
-    };
-  
-
   const handleNewPasswordChange = (userId, newPassword) => {
     setNewPasswordMap((prevMap) => ({
       ...prevMap,
@@ -220,13 +191,11 @@ function AdminPanel() {
   const handleUpdatePassword = (userId) => {
     const newPassword = newPasswordMap[userId];
 
-    // Validate new password
     if (!newPassword) {
       setError("Please enter a new password.");
       return;
     }
 
-    // Make API call to update password
     fetch(`http://localhost:4444/admin/users/${userId}/password`, {
       method: "PUT",
       headers: {
@@ -238,17 +207,12 @@ function AdminPanel() {
     })
       .then((response) => {
         if (response.ok) {
-          // Password updated successfully
-          console.log("Password updated successfully for user:", userId);
-          // Clear new password field
           setNewPasswordMap((prevMap) => ({
             ...prevMap,
             [userId]: "",
           }));
-          // Show success message
           setOpenUpdateSnackbar(true);
         } else {
-          // Error updating password
           return response.json().then((data) => {
             setError(data.error || "Failed to update password.");
           });
@@ -258,6 +222,10 @@ function AdminPanel() {
         setError("Failed to update password. Please try again later.");
         console.error("Error updating password:", error);
       });
+  };
+
+  const handleBranchFilterChange = (event) => {
+    setBranchFilter(event.target.value);
   };
 
   return (
@@ -332,23 +300,10 @@ function AdminPanel() {
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
                   >
-                   {programs.map(program => (
-                    <MenuItem key={program.branch} value={program.branch} >{program.branch}</MenuItem>
-                    ))}
-                    <MenuItem value="Other">Other</MenuItem>
+                    <MenuItem value={"CSE"}>CSE</MenuItem>
+                    <MenuItem value={"EE"}>EE</MenuItem>
+                    <MenuItem value={"ME"}>ME</MenuItem>
                   </Select>
-                {branch === 'Other' && (
-                  <div>
-                    <TextField
-                      label="Enter new program"
-                      value={newProgram}
-                      onChange={(e) => setNewProgram(e.target.value)}
-                    />
-                    <Button variant="contained" color="primary" onClick={handleNewProgram}>
-                      Add
-                    </Button>
-                  </div>
-      )}
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
@@ -381,27 +336,40 @@ function AdminPanel() {
             <Typography variant="h6" gutterBottom align="center">
               Added Users
             </Typography>
-            {error && (
-              <Typography variant="body2" color="error" align="center">
-                {error}
-              </Typography>
-            )}
             <TableContainer>
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>Username</TableCell>
-                    <TableCell>Branch</TableCell>
+                    <TableCell align="center">
+                      <Grid container alignItems="center">
+                        <Grid item>
+                          <FormControl style={{ marginLeft: 10 }}>
+                            <InputLabel>Branch</InputLabel>
+                            <Select
+                              value={branchFilter}
+                              onChange={handleBranchFilterChange}
+                            >
+                              <MenuItem value="All">All</MenuItem>
+                              <MenuItem value="CSE">CSE</MenuItem>
+                              <MenuItem value="EE">EE</MenuItem>
+                              <MenuItem value="ME">ME</MenuItem>
+                            </Select>
+                          </FormControl>
+                        </Grid>
+                      </Grid>
+                    </TableCell>
                     <TableCell>Action</TableCell>
-                    <TableCell>New Password</TableCell> {/* New column */}
-                    <TableCell>Update</TableCell> {/* New column */}
+                    <TableCell>New Password</TableCell>
+                    <TableCell>Update</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>{user.username}</TableCell>
-                      <TableCell>{user.branch}</TableCell>
+                      <TableCell align="center">{user.branch}</TableCell>
+
                       {user.isAdmin ? (
                         <TableCell></TableCell>
                       ) : (
@@ -414,6 +382,7 @@ function AdminPanel() {
                           </IconButton>
                         </TableCell>
                       )}
+
                       <TableCell>
                         <TextField
                           type="password"
@@ -466,5 +435,3 @@ function AdminPanel() {
 }
 
 export default AdminPanel;
-
-//
