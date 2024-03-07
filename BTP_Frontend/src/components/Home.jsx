@@ -122,19 +122,6 @@ function Home(props) {
           </div>
         </Link>
       </div>
-      <div className="mt-4">
-        <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          // onClick={handleButtonClick}
-        >
-          Test API Endpoint
-        </button>
-      </div>
-      {apiResponse && (
-        <div className="mt-4">
-          <pre>{JSON.stringify(apiResponse, null, 2)}</pre>
-        </div>
-      )}
     </div>
   );
 }
