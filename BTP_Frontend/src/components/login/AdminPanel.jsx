@@ -32,7 +32,6 @@ function AdminPanel() {
     if (parts.length === 2) return parts.pop().split(";").shift();
   }
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [branch, setBranch] = useState("");
@@ -43,7 +42,8 @@ function AdminPanel() {
   const [openUpdateSnackbar, setOpenUpdateSnackbar] = useState(false);
   const [newPasswordMap, setNewPasswordMap] = useState({});
   const [branchFilter, setBranchFilter] = useState("All");
-  const [programs, setProgramDropdown] = useState([]);
+  const [programs, setPrograms] = useState([]);
+  const [newProgram, setNewProgram] = useState("");
 
   const navigate = useNavigate();
 
@@ -53,7 +53,6 @@ function AdminPanel() {
       .then((response) => response.json())
       .then((data) => setUsers(data))
       .catch((error) => console.error("Error fetching users:", error));
-    fetchPrograms();
     const checkAuthentication = async () => {
       const jwtToken = getCookie("jwtToken");
       try {
@@ -87,34 +86,35 @@ function AdminPanel() {
 
   useEffect(() => {
     fetchUsers();
+    fetchBranches();
   }, []);
 
-  useEffect(() => {
-    filterUsersByBranch();
-  }, [users, branchFilter]);
-
-  const fetchUsers = async () => {
-    const response = await fetch("http://localhost:4444/admin/users");
-    const data = await response.json();
-    setUsers(data);
+  const fetchBranches = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:4444/api/branch/branches"
+      );
+      setPrograms(response.data);
+    } catch (error) {
+      console.error("Error fetching branches:", error);
+    }
   };
 
-  const fetchPrograms = () => {
-    // Fetch updated list of users
-    fetch("http://localhost:4444/admin/branches")
-      .then((response) => response.json())
-      .then((data) => {
-        setProgramDropdown(data);
-      })
-      .catch((error) => console.error("Error fetching branches:", error));
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:4444/admin/users");
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
   };
 
   const filterUsersByBranch = () => {
     if (branchFilter === "All") {
-      setFilteredUsers(users);
+      return users;
     } else {
-      const filtered = users.filter((user) => user.branch === branchFilter);
-      setFilteredUsers(filtered);
+      return users.filter((user) => user.branch === branchFilter);
     }
   };
 
@@ -228,8 +228,67 @@ function AdminPanel() {
     setBranchFilter(event.target.value);
   };
 
+  const handleAddBranch = () => {
+    if (!newProgram) {
+      setError("Please enter a new branch.");
+      return;
+    }
+
+    fetch("http://localhost:4444/api/branch/addBranch", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newBranch: newProgram,
+      }),
+    })
+      .then((response) => {
+        console.log("response for adding the branch: ", response);
+        if (response.ok) {
+          setPrograms([...programs, newProgram]);
+          setBranch(newProgram);
+          setNewProgram("");
+          setError("");
+        } else {
+          return response.json().then((data) => {
+            setError(data.error || "Failed to add new branch.");
+          });
+        }
+      })
+      .catch((error) => {
+        setError("Failed to add new branch. Please try again later.");
+      });
+  };
+
+  const handleDeleteBranch = (branchName) => {
+    // Show confirmation dialog
+    const isConfirmed = window.confirm(
+      `Are you sure that you want to delete the branch "${branchName}"?`
+    );
+
+    if (isConfirmed) {
+      fetch(`http://localhost:4444/admin/deleteBranch/${branchName}`, {
+        method: "DELETE",
+      })
+        .then((response) => {
+          if (response.ok) {
+            setPrograms(programs.filter((program) => program !== branchName));
+            setUsers(users.filter((user) => user.branch !== branchName));
+          } else {
+            return response.json().then((data) => {
+              setError(data.error || "Failed to delete branch.");
+            });
+          }
+        })
+        .catch((error) => {
+          setError("Failed to delete branch. Please try again later.");
+        });
+    }
+  };
+
   return (
-    <Container maxWidth="md" style={{ height: "100vh" }}>
+    <Container maxWidth="md" style={{}}>
       <Grid
         container
         spacing={2}
@@ -293,6 +352,7 @@ function AdminPanel() {
                   }}
                 />
               </Grid>
+
               <Grid item xs={12}>
                 <FormControl fullWidth>
                   <InputLabel>Branch</InputLabel>
@@ -300,9 +360,11 @@ function AdminPanel() {
                     value={branch}
                     onChange={(e) => setBranch(e.target.value)}
                   >
-                    <MenuItem value={"CSE"}>CSE</MenuItem>
-                    <MenuItem value={"EE"}>EE</MenuItem>
-                    <MenuItem value={"ME"}>ME</MenuItem>
+                    {programs.map((program) => (
+                      <MenuItem key={program} value={program}>
+                        {program}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Grid>
@@ -321,6 +383,65 @@ function AdminPanel() {
           </Paper>
         </Grid>
 
+        {/* Add/Delete Branch Section*/}
+        <Grid item xs={12}>
+          <Paper
+            elevation={3}
+            style={{
+              padding: 20,
+              marginTop: 20,
+              maxWidth: "70%",
+              margin: "0 auto",
+            }}
+          >
+            <Typography variant="h6" gutterBottom align="center">
+              Manage Branches
+            </Typography>
+            {error && (
+              <Typography variant="body2" color="error" align="center">
+                {error}
+              </Typography>
+            )}
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="New Branch"
+                  value={newProgram}
+                  onChange={(e) => setNewProgram(e.target.value)}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleAddBranch}
+                  fullWidth
+                >
+                  Add Branch
+                </Button>
+              </Grid>
+            </Grid>
+            <Typography variant="body2" color="error" align="center">
+              Note: Deleting a branch will delete all users associated with that
+              branch.
+            </Typography>
+            <FormControl fullWidth style={{ marginTop: 10 }}>
+              <InputLabel>Delete Branch</InputLabel>
+              <Select
+                value=""
+                onChange={(e) => handleDeleteBranch(e.target.value)}
+              >
+                {programs.map((program) => (
+                  <MenuItem key={program} value={program}>
+                    {program}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Paper>
+        </Grid>
+
         {/* User View Section*/}
         <Grid item xs={12}>
           <Paper
@@ -331,6 +452,7 @@ function AdminPanel() {
               maxHeight: "calc(100vh - 480px)",
               maxWidth: "100%",
               overflowY: "auto",
+              marginBottom: 20,
             }}
           >
             <Typography variant="h6" gutterBottom align="center">
@@ -351,9 +473,11 @@ function AdminPanel() {
                               onChange={handleBranchFilterChange}
                             >
                               <MenuItem value="All">All</MenuItem>
-                              <MenuItem value="CSE">CSE</MenuItem>
-                              <MenuItem value="EE">EE</MenuItem>
-                              <MenuItem value="ME">ME</MenuItem>
+                              {programs.map((program) => (
+                                <MenuItem key={program} value={program}>
+                                  {program}
+                                </MenuItem>
+                              ))}
                             </Select>
                           </FormControl>
                         </Grid>
@@ -365,14 +489,12 @@ function AdminPanel() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filteredUsers.map((user) => (
+                  {filterUsersByBranch().map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>{user.username}</TableCell>
                       <TableCell align="center">{user.branch}</TableCell>
 
-                      {user.isAdmin ? (
-                        <TableCell></TableCell>
-                      ) : (
+                      {!user.isAdmin && (
                         <TableCell>
                           <IconButton
                             onClick={() => handleDeleteUser(user.id)}

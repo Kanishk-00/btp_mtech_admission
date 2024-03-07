@@ -3,40 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const connection = require("../config/dbConfig");
-const {createTable} = require("../utils/sqlqueries");
-const { branchesSchema } = require("../schemas/branchesSchema");
-const branchesTableName = "branches";
-
-router.get("/branches",(req,res)=>{
-      console.log("Branches fetched");
-      createTable(connection, branchesTableName, branchesSchema);
-      const query="SELECT * FROM branches";
-      connection.query(query, branchesTableName, (error,result)=>{
-      if(error) {
-          console.log("the error is: ", error);
-          res.status(500).json({ error: "Internal server error" });
-        }
-      else
-      {
-        res.status(200).json(result);
-      }
-      console.log(result);
-      });
-});
-
-router.put("/addProgram", (req, res) => {
-  const {newProgram} = req.body;
-  console.log(newProgram);
-  const query = "INSERT INTO branches VALUES (?)";
-  connection.query(query, newProgram, (error, results) => {
-    if (error) {
-      res.status(400).json({ error: "Error adding programs" });
-    }
-    else {
-      res.status(201).json({ message: "New branch added successfully" });
-    }
-  }) 
-})
+const { createTable } = require("../utils/sqlqueries");
 
 router.post("/register", (req, res) => {
   const { username, password, branch } = req.body;
@@ -115,7 +82,9 @@ router.put("/users/:id/password", (req, res) => {
         } else {
           if (results.affectedRows > 0) {
             console.log(`User password updated`);
-            res.status(200).json({ message: "User password updated successfully" });
+            res
+              .status(200)
+              .json({ message: "User password updated successfully" });
           } else {
             res.status(404).json({ error: "User not found" });
           }

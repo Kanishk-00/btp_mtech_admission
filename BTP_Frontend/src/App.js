@@ -35,7 +35,7 @@ function App() {
               path="/search/:coapid"
               element={<CandidateDisplay />}
             ></Route>
-            {isAdmin && <Route path="/admin" element={<AdminPanel />} />}{" "}
+            <Route path="/admin" element={<AdminPanel />} />
           </Routes>
         </div>
         <Footer />
