@@ -35,17 +35,21 @@ function NavBar(props) {
 
   return (
     <nav className="flex justify-start items-center h-20 box shadow-md  px-8 gap-8 bg-[#1B3058] w-full">
+      <Link to="/home">
       <div className=" h-full flex justify-center items-center gap-2 ">
-        <img
-          src={iitgoalogo}
-          alt={"not found"}
-          className=" shadow-lg bg-white"
-          style={{ width: "70px", height: "70px", borderRadius: "50%" }}
-        ></img>
-        <div className="flex justify-center items-center">
-          <p className="text-xl text-white">IIT Goa</p>
-        </div>
+        
+            <img
+              src={iitgoalogo}
+              alt={"not found"}
+              className=" shadow-lg bg-white"
+              style={{ width: "70px", height: "70px", borderRadius: "50%" }}
+            ></img>
+            <div className="flex justify-center items-center">
+              <p className="text-xl text-white">IIT Goa</p>
+            </div>
+        
       </div>
+      </Link>
       <div className="w-[fit-content] h-full flex justify-center items-center gap-4 ml-auto">
         <Link to="/home">
           <button className="flex h-full p-2 justify-center items-center hover:border-b-4">
