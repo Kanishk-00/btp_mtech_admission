@@ -95,7 +95,9 @@ function LoginForm() {
         const response = await axios.get(
           "http://localhost:4444/api/branch/branches"
         );
-        setBranches(response.data);
+
+        const filteredData = response.data.filter(item => item !== 'admin');
+        setBranches(filteredData);
       } catch (error) {
         console.error("Error fetching branches:", error);
       }

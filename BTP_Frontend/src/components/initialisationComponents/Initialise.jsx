@@ -6,38 +6,6 @@ import { serverLink } from "../../serverLink";
 import axios from "axios";
 
 function Initialise(props) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    console.log("hits useeffect");
-    const checkAuthentication = async () => {
-      try {
-        const authResponse = await axios.get(
-          "http://localhost:4444/api/check-authentication",
-          {
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            withCredentials: true,
-          }
-        );
-
-        console.log("authresponse is here: ", authResponse);
-
-        setIsAuthenticated(authResponse.data.isAuthenticated);
-        setLoading(false);
-      } catch (error) {
-        console.log("Error:", error);
-        setIsAuthenticated(false);
-        setLoading(false);
-      }
-    };
-
-    checkAuthentication();
-  }, []);
-
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
@@ -48,12 +16,6 @@ function Initialise(props) {
   const handleReset = async () => {
     try {
       const jwtToken = getCookie("jwtToken"); // Get JWT token from cookie
-
-      // Check if user is authenticated
-      if (!isAuthenticated) {
-        alert("User is not authenticated");
-        return;
-      }
 
       // Proceed with resetting database
       const response = await axios.get(
@@ -75,19 +37,7 @@ function Initialise(props) {
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
-  console.log("isUTH", isAuthenticated);
-
-  if (!isAuthenticated) {
-    return (
-      <div>
-        Hello this is the page to be displayed when the user is not logged in
-      </div>
-    ); // Or you can return a message like "You are not authenticated"
-  }
 
   return (
     <div className="flex w-full justify-center flex-col items-center gap-6 p-8">

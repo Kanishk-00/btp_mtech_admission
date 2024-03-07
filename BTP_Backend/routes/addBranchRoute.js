@@ -3,17 +3,17 @@ const express = require("express");
 const router = express.Router();
 const db = require("../config/dbConfig"); // Import the MySQL connection
 
-// Import the branch schema
-const { branchSchema } = require("../schemas/branchesSchema");
+// // Import the branch schema
+// const { branchSchema } = require("../schemas/branchesSchema");
 
-// Check if branches table exists, if not, create it
-const createTableQuery = `CREATE TABLE IF NOT EXISTS branches ${branchSchema}`;
-db.query(createTableQuery, (err, result) => {
-  if (err) {
-    throw err;
-  }
-  console.log("Branches table created or already exists");
-});
+// // Check if branches table exists, if not, create it
+// const createTableQuery = `CREATE TABLE IF NOT EXISTS branches ${branchSchema}`;
+// db.query(createTableQuery, (err, result) => {
+//   if (err) {
+//     throw err;
+//   }
+//   console.log("Branches table created or already exists");
+// });
 
 // Route to add a new branch
 router.put("/addBranch", (req, res) => {

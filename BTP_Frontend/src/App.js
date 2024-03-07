@@ -13,6 +13,9 @@ import AdminPanel from "./components/login/AdminPanel.jsx";
 import LoginForm from "./components/login/LoginForm.jsx";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import ProtectedRoutes from "./components/protectedRoute/ProtectedRoute.js";
+import ProtectedRoutesAdmin from "./components/protectedRoute/ProtectedRouteAdmin.js";
+import ProtectedRoutesLogin from "./components/protectedRoute/ProtectedRoutesLogin.js";
 
 function App() {
   const [isAdmin, setIsAdmin] = useState(true);
@@ -25,17 +28,25 @@ function App() {
         <NavBar />
         <div className="min-h-[100vh]">
           <Routes>
-            <Route path="/" element={<LoginForm />}></Route>
-            <Route path="/initialise" element={<Initialise />}></Route>
-            <Route path="/seatmatrix" element={<SeatMatrix />}></Route>
-            <Route path="/rounds" element={<Rounds />}></Route>
-            <Route path="/search" element={<FilterOptions />}></Route>
-            <Route path="/home" element={<Home />}></Route>
-            <Route
-              path="/search/:coapid"
-              element={<CandidateDisplay />}
-            ></Route>
-            <Route path="/admin" element={<AdminPanel />} />
+            <Route element={<ProtectedRoutesLogin/>}>
+                <Route path="/" element={<LoginForm />}></Route>
+            </Route>
+
+            <Route element={<ProtectedRoutes/>}>
+                <Route path="/initialise" element={<Initialise />}></Route>
+                <Route path="/seatmatrix" element={<SeatMatrix />}></Route>
+                <Route path="/rounds" element={<Rounds />}></Route>
+                <Route path="/search" element={<FilterOptions />}></Route>
+                <Route path="/home" element={<Home />}></Route>
+                <Route
+                  path="/search/:coapid"
+                  element={<CandidateDisplay />}
+                ></Route>
+            </Route>
+
+            <Route element={<ProtectedRoutesAdmin/>}>
+                <Route path="/admin" element={<AdminPanel />} />
+            </Route>
           </Routes>
         </div>
         <Footer />

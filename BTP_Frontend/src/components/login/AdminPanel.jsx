@@ -36,6 +36,8 @@ function AdminPanel() {
   const [password, setPassword] = useState("");
   const [branch, setBranch] = useState("");
   const [error, setError] = useState("");
+  const [duplicateEntryError, setDuplicateEntryError] = useState(null);
+  const [branchExistsError, setBranchExistsError] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [openCreateSnackbar, setOpenCreateSnackbar] = useState(false);
   const [openDeleteSnackbar, setOpenDeleteSnackbar] = useState(false);
@@ -94,7 +96,8 @@ function AdminPanel() {
       const response = await axios.get(
         "http://localhost:4444/api/branch/branches"
       );
-      setPrograms(response.data);
+      const filteredData = response.data.filter(item => item !== 'admin');
+      setPrograms(filteredData);
     } catch (error) {
       console.error("Error fetching branches:", error);
     }
@@ -169,9 +172,12 @@ function AdminPanel() {
           setError("");
           fetchUsers();
           setOpenCreateSnackbar(true);
+          setDuplicateEntryError(null); // Clear duplicate entry error
+          setBranchExistsError(null); // Clear branch exists error
         } else {
           return response.json().then((data) => {
-            setError(data.error || "Failed to register user.");
+            setDuplicateEntryError(data.error || "Failed to register user.");
+            setBranchExistsError(null);
           });
         }
       })
@@ -253,9 +259,12 @@ function AdminPanel() {
           setBranch(trimmedBranch); // Set the new branch in the select dropdown
           setNewProgram(""); // Clear the input field
           setError(""); // Clear any previous errors
+          setDuplicateEntryError(null); // Clear duplicate entry error
+          setBranchExistsError(null); // Clear branch exists error
         } else {
           return response.json().then((data) => {
-            setError(data.error || "Failed to add new branch.");
+            setBranchExistsError(data.error || "Failed to add new branch.");
+            setDuplicateEntryError(null);
           });
         }
       })
@@ -312,9 +321,9 @@ function AdminPanel() {
             <Typography variant="h6" gutterBottom align="center">
               Add User
             </Typography>
-            {error && (
+            {duplicateEntryError && (
               <Typography variant="body2" color="error" align="center">
-                {error}
+                {duplicateEntryError}
               </Typography>
             )}
             <Grid container spacing={2}>
@@ -400,9 +409,9 @@ function AdminPanel() {
             <Typography variant="h6" gutterBottom align="center">
               Manage Branches
             </Typography>
-            {error && (
+            {branchExistsError && (
               <Typography variant="body2" color="error" align="center">
-                {error}
+                {branchExistsError}
               </Typography>
             )}
             <Grid container spacing={2}>

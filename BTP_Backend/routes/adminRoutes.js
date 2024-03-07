@@ -7,11 +7,7 @@ const { createTable } = require("../utils/sqlqueries");
 
 router.post("/register", (req, res) => {
   const { username, password, branch } = req.body;
-  if (branch === "Other") {
-    return res
-      .status(400)
-      .json({ error: "Invalid branch. Please enter a branch name" });
-  }
+  
   // Hash the password
   bcrypt.hash(password, 10, (err, hashedPassword) => {
     if (err) {
@@ -21,8 +17,14 @@ router.post("/register", (req, res) => {
       const query = "INSERT INTO users SET ?";
       connection.query(query, newUser, (error, results) => {
         if (error) {
-          console.log("the error is: ", error);
-          res.status(500).json({ error: "Internal server error" });
+          if (error.code === 'ER_DUP_ENTRY') {
+            // Send specific error message to frontend
+            res.status(400).json({ error: "Duplicate entry for username" });
+          } else {
+            // Handle other errors
+            console.log("the error is: ", error);
+            res.status(500).json({ error: "Internal server error" });
+          }
         } else {
           console.log("user");
           res.status(201).json({ message: "User created successfully" });
