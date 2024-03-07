@@ -1,3 +1,8 @@
+const tempDate = new Date();
+let tempYear = tempDate.getFullYear();
+const currYear = tempYear - 2000;
+const prevYear = currYear - 1;
+const prevprevYear = currYear - 2;
 export const applicantsSchemaColumnNames = [
   "COAP",
   "AppNo",
@@ -10,18 +15,18 @@ export const applicantsSchemaColumnNames = [
   "Ews",
   "Gender",
   "Category",
-  "GATE21RollNo",
-  "GATE21Rank",
-  "GATE21Score",
-  "GATE21Disc",
-  "GATE23RollNo",
-  "GATE23Rank",
-  "GATE23Score",
-  "GATE23Disc",
-  "GATE22RollNo",
-  "GATE22Rank",
-  "GATE22Score",
-  "GATE22Disc",
+  "GATE" + currYear + "RollNo",
+    "GATE" + currYear + "Rank",
+    "GATE" + currYear + "Score",
+    "GATE" + currYear + "Disc",
+    "GATE" + prevYear + "RollNo",
+    "GATE" + prevYear + "Rank",
+    "GATE" + prevYear + "Score",
+    "GATE" + prevYear + "Disc",
+    "GATE" + prevprevYear + "Disc",
+    "GATE" + prevprevYear + "RollNo",
+    "GATE" + prevprevYear + "Rank",
+    "GATE" + prevprevYear + "Score",
   "HSSCboard",
   "HSSCdate",
   "HSSCper",
