@@ -234,22 +234,25 @@ function AdminPanel() {
       return;
     }
 
+    const trimmedBranch = newProgram.trim().toUpperCase(); // Convert to uppercase and trim
+    setNewProgram(trimmedBranch); // Update the input field with the trimmed and uppercase branch
+
     fetch("http://localhost:4444/api/branch/addBranch", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        newBranch: newProgram,
+        newBranch: trimmedBranch, // Pass the trimmed and uppercase branch to the backend
       }),
     })
       .then((response) => {
         console.log("response for adding the branch: ", response);
         if (response.ok) {
-          setPrograms([...programs, newProgram]);
-          setBranch(newProgram);
-          setNewProgram("");
-          setError("");
+          setPrograms([...programs, trimmedBranch]); // Update the programs state with the new uppercase branch
+          setBranch(trimmedBranch); // Set the new branch in the select dropdown
+          setNewProgram(""); // Clear the input field
+          setError(""); // Clear any previous errors
         } else {
           return response.json().then((data) => {
             setError(data.error || "Failed to add new branch.");
@@ -494,7 +497,13 @@ function AdminPanel() {
                       <TableCell>{user.username}</TableCell>
                       <TableCell align="center">{user.branch}</TableCell>
 
-                      {!user.isAdmin && (
+                      {user.isAdmin ? (
+                        <TableCell>
+                          <IconButton disabled color="secondary">
+                            <DeleteIcon />
+                          </IconButton>
+                        </TableCell>
+                      ) : (
                         <TableCell>
                           <IconButton
                             onClick={() => handleDeleteUser(user.id)}

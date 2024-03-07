@@ -3,7 +3,6 @@ import {
   Container,
   Typography,
   Paper,
-  Grid,
   TextField,
   Button,
   IconButton,
@@ -51,6 +50,18 @@ function LoginForm() {
   const classes = useStyles();
   const navigate = useNavigate();
 
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [branch, setBranch] = useState("");
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [branches, setBranches] = useState([]);
+
+  const handleTogglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
   useEffect(() => {
     const checkAuthentication = async () => {
       const jwtToken = getCookie("jwtToken");
@@ -78,18 +89,20 @@ function LoginForm() {
       }
     };
     checkAuthentication();
+
+    const fetchBranches = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:4444/api/branch/branches"
+        );
+        setBranches(response.data);
+      } catch (error) {
+        console.error("Error fetching branches:", error);
+      }
+    };
+
+    fetchBranches();
   }, []);
-
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [branch, setBranch] = useState("");
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  const handleTogglePassword = () => {
-    setShowPassword(!showPassword);
-  };
 
   const handleSubmit = async () => {
     // Validate inputs
@@ -179,9 +192,11 @@ function LoginForm() {
               label="Branch"
               disabled={isAdmin} // Disable the Branch field if isAdmin is true
             >
-              <MenuItem value={"CSE"}>CSE</MenuItem>
-              <MenuItem value={"EE"}>EE</MenuItem>
-              <MenuItem value={"ME"}>ME</MenuItem>
+              {branches.map((branch) => (
+                <MenuItem key={branch} value={branch}>
+                  {branch}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
           <FormControlLabel
