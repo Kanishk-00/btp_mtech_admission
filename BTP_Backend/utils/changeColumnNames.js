@@ -1,12 +1,60 @@
 var XLSX = require("xlsx");
 const { distance} = require("closest-match");
-var applicantsSchemaColumnNames=require("../schemas/applicantsSchema").applicantsSchemaColumnNames;
+//var applicantsSchemaColumnNames=require("../schemas/applicantsSchema").applicantsSchemaColumnNames;
 /*
     Name: mapColumnNames
     Input : file path to the upload overall applicant data file
     output: JSON object containing all the old column name as the key and mapped column name as the value.
     Functionality : just matches the uploaded file column name to the closest matched column name of the database table. 
 */
+
+const tempDate = new Date();
+let tempYear = tempDate.getFullYear();
+const currYear = tempYear - 2000;
+const prevYear = currYear - 1;
+const prevprevYear = currYear - 2;
+
+var applicantsSchemaColumnNames=
+[
+    "COAP",
+    "AppNo" , 
+    "Email",
+    "FullName",
+    "MaxGateScore",
+    "Adm",
+    "Pwd",
+    "Ews",
+    "Gender",
+    "Category",
+    "GATE" + currYear + "RollNo",
+    "GATE" + currYear + "Rank",
+    "GATE" + currYear + "Score",
+    "GATE" + currYear + "Disc",
+    "GATE" + prevYear + "RollNo",
+    "GATE" + prevYear + "Rank",
+    "GATE" + prevYear + "Score",
+    "GATE" + prevYear + "Disc",
+    "GATE" + prevprevYear + "Disc",
+    "GATE" + prevprevYear + "RollNo",
+    "GATE" + prevprevYear + "Rank",
+    "GATE" + prevprevYear + "Score", 
+    "HSSCboard" ,
+    "HSSCdate" , 
+    "HSSCper", 
+    "SSCboard" , 
+    "SSCdate" , 
+    "SSCper" ,
+    "DegreeQual" , 
+    "DegreePassingDate" ,
+    "DegreeBranch" ,
+    "DegreeOtherBranch" ,
+    "DegreeInstitute" ,
+    "DegreeCGPA7thSem" ,
+    "DegreeCGPA8thSem" , 
+    "DegreePer7thSem" ,
+    "DegreePer8thSem" 
+]
+
 function mapColumnNames(filePath) {
     //reading excel file
     var workbook = XLSX.readFile(filePath);

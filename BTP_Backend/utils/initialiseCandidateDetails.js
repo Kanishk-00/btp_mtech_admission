@@ -3,6 +3,13 @@ var sqlQueries=require("./sqlqueries");
 var applicantsSchema=require("../schemas/applicantsSchema").applicantsSchema;
 var applicantsSchemaColumnNames=require("../schemas/applicantsSchema").applicantsSchemaColumnNames;
 var mysql = require('mysql2');
+
+const tempDate = new Date();
+let tempYear = tempDate.getFullYear();
+const currYear = tempYear - 2000;
+const prevYear = currYear - 1;
+const prevprevYear = currYear - 2;
+
 /*
     Name: enterCandidateDetailsToDatabase
     Input : modified columnnames file path,databasename
@@ -26,6 +33,7 @@ async function enterCandidateDetailsToDatabase(filePath,databaseName) {
   var applicantsDataSheet = workbook.Sheets[workbook.SheetNames[0]];
   var applicantsData=XLSX.utils.sheet_to_json(applicantsDataSheet);
   
+  
   /*
     Creating the values array which will be used to query(insert in) the database
   */
@@ -38,9 +46,9 @@ async function enterCandidateDetailsToDatabase(filePath,databaseName) {
           var currYearScore=-1;
           var prevYearScore=-1;
           var prevPrevYearScore=-1;
-          if(applicant["GATE22Score"]!=null) currYearScore=applicant["GATE22Score"];
-          if(applicant["GATE21Score"]!=null) prevYearScore=applicant["GATE21Score"];
-          if(applicant["GATE23Score"]!=null) prevPrevYearScore=applicant["GATE23Score"];
+          if(applicant["GATE" + currYear + "Score"]!=null) currYearScore=applicant["GATE" + currYear + "Score"];
+          if(applicant["GATE" + prevYear + "Score"]!=null) prevYearScore=applicant["GATE" + prevYear + "Score"];
+          if(applicant["GATE" + prevprevYear + "Score"]!=null) prevPrevYearScore=applicant["GATE" + prevprevYear + "Score"];
           var maxScore=Math.max(currYearScore,Math.max(prevPrevYearScore,prevYearScore));
           applicantAttributes.push(maxScore);
         }
@@ -53,6 +61,48 @@ async function enterCandidateDetailsToDatabase(filePath,databaseName) {
           }
           applicantAttributes.push(applicant[columnName]);
         }
+
+
+        else if(columnName === 'currYearScore') {
+          applicantAttributes.push(applicant["GATE" + currYear + "Score"])
+        }
+        else if(columnName === 'currYearRollNo') {
+          applicantAttributes.push(applicant["GATE" + currYear + "RollNo"])
+        }
+        else if(columnName === 'currYearRank') {
+          applicantAttributes.push(applicant["GATE" + currYear + "Rank"])
+        }
+        else if(columnName === 'currYearDisc') {
+          applicantAttributes.push(applicant["GATE" + currYear + "Disc"])
+        }
+        
+        else if(columnName === 'prevYearScore') {
+          applicantAttributes.push(applicant["GATE" + prevYear + "Score"])
+        }
+        else if(columnName === 'prevYearRollNo') {
+          applicantAttributes.push(applicant["GATE" + prevYear + "RollNo"])
+        }
+        else if(columnName === 'prevYearRank') {
+          applicantAttributes.push(applicant["GATE" + prevYear + "Rank"])
+        }
+        else if(columnName === 'prevYearDisc') {
+          applicantAttributes.push(applicant["GATE" + prevYear + "Disc"])
+        }
+        
+        else if(columnName === 'prevprevYearScore') {
+          applicantAttributes.push(applicant["GATE" + prevprevYear + "Score"])
+        }
+        else if(columnName === 'prevprevYearRollNo') {
+          applicantAttributes.push(applicant["GATE" + prevprevYear + "RollNo"])
+        }
+        else if(columnName === 'prevprevYearRank') {
+          applicantAttributes.push(applicant["GATE" + prevprevYear + "Rank"])
+        }
+        else if(columnName === 'prevprevYearDisc') {
+          applicantAttributes.push(applicant["GATE" + prevprevYear + "Disc"])
+        }
+        
+        
         else{
           applicantAttributes.push(applicant[columnName]);
         }
