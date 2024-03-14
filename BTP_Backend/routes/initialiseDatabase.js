@@ -27,44 +27,17 @@ const app = express();
 // Enable CORS for all routes
 app.use(cors());
 
-// router.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept"
-//   );
-//   next();
-// });
-
 /*
     Route:/api/initialise/getFile
     incoming data:uploaded coap file
     respone: 200 if the file is saved
 */
-
 router.post("/getFile", isAuthenticated, (req, res) => {
-  // Middleware will have already verified the JWT token and attached user data to req.user if it's valid
-  // Now you can access user data from req.user and perform authorization checks if required
   if (!req.user) {
-    // User is not authenticated, trigger alert message
     return res
       .status(401)
       .send({ error: "Please log in with correct credentials" });
   }
-
-  const branchFilePath = path.join(__dirname, "../", "branchStore.txt");
-
-  fs.readFile(branchFilePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-    else {
-      console.log("File read branch = ", data);
-    }
-  });
-
-  
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     if (err) {
@@ -73,9 +46,9 @@ router.post("/getFile", isAuthenticated, (req, res) => {
     }
 
     var oldpath = files.file.filepath;
-    var newpath = `${userFilePath}/uploadedFile.xlsx`;
+    var branchFolder = `${userFilePath}/${req.user.branch}`;
+    var newpath = `${branchFolder}/uploadedFile.xlsx`;
 
-    // Check if the destination file already exists
     fs1.pathExists(newpath, async function (err, exists) {
       if (exists) {
         console.log("Destination file already exists");
@@ -84,13 +57,23 @@ router.post("/getFile", isAuthenticated, (req, res) => {
           .send({ error: "Destination file already exists" });
       }
 
-      // Move the file to the destination path
-      fs1.move(oldpath, newpath, { overwrite: true }, async function (err) {
+      // Make sure the branch folder exists before moving the file
+      fs1.ensureDir(branchFolder, function (err) {
         if (err) {
           console.error(err);
-          return res.status(500).send({ error: "File rename failed" });
+          return res
+            .status(500)
+            .send({ error: "Failed to create branch folder" });
         }
-        res.status(200).send({ result: "File renamed" });
+
+        // Move the file to the destination path
+        fs1.move(oldpath, newpath, { overwrite: true }, async function (err) {
+          if (err) {
+            console.error(err);
+            return res.status(500).send({ error: "File rename failed" });
+          }
+          res.status(200).send({ result: "File renamed" });
+        });
       });
     });
   });
@@ -104,7 +87,11 @@ router.post("/getFile", isAuthenticated, (req, res) => {
 */
 
 router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
-  var filePath = `${userFilePath}/uploadedFile.xlsx`;
+  const branch = req.user.branch;
+  console.log("Branch:", branch);
+  console.log("save to database ke andar hu ab");
+  var branchFolder = `${userFilePath}/${req.user.branch}`;
+  var filePath = `${branchFolder}/uploadedFile.xlsx`;
   console.log("request body: ", req.body);
   var matchedColumns = req.body.result;
   // console.log(req.body);
@@ -113,9 +100,11 @@ router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
   try {
     var workbook = XLSX.readFile(filePath);
     var applicantsDataSheet = workbook.Sheets[workbook.SheetNames[0]];
+    // console.log("the length ?? ", workbook.SheetNames[0]);
     var applicantsData = XLSX.utils.sheet_to_json(applicantsDataSheet, {
       defval: "",
     });
+    // console.log("applicants ka data idhar hai?", applicantsData);
     var data = [];
     //modyfing the column names
     for (const applicant of applicantsData) {
@@ -128,6 +117,7 @@ router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
       }
       data.push(row);
     }
+    // console.log("the data is present in here: ", data);
   } catch (error) {
     console.error(error);
     res.status(500).send({ result: "Error in reading the uploaded file" });
@@ -137,14 +127,15 @@ router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
   const ws = XLSX.utils.json_to_sheet(data);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, "Responses");
-  XLSX.writeFile(wb, `${userFilePath}/modifiedFile.xlsx`);
+  XLSX.writeFile(wb, `${branchFolder}/modifiedFile.xlsx`);
   //initialising the seatmatrix table
   try {
     let res2 = await enterCandidateDetailsToDatabase(
-      `${userFilePath}/modifiedFile.xlsx`,
+      req.user.branch,
+      `${branchFolder}/modifiedFile.xlsx`,
       process.env.MYSQL_DATABASE
     );
-    let res1 = await initialiseSeatMatrix(process.env.MYSQL_DATABASE, [
+    let res1 = await initialiseSeatMatrix(req.user.branch, [
       ["ST_FandM", 0],
       ["ST_Female", 0],
       ["ST_Female_PWD", 0],
@@ -167,7 +158,10 @@ router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
       ["GEN_FandM_PWD", 0],
       ["COMMON_PWD", 0],
     ]);
-    let response = await initializeAppicantsStatus(process.env.MYSQL_DATABASE);
+    let response = await initializeAppicantsStatus(
+      req.user.branch,
+      process.env.MYSQL_DATABASE
+    );
     res.status(200).send({ result: "success" });
   } catch (error) {
     console.log(error);
@@ -187,7 +181,8 @@ router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
 */
 router.get("/getMatchedColumnNames", isAuthenticated, (req, res) => {
   try {
-    var result = mapColumnNames(`${userFilePath}/uploadedFile.xlsx`);
+    var branchFolder = `${userFilePath}/${req.user.branch}`;
+    var result = mapColumnNames(`${branchFolder}/uploadedFile.xlsx`);
     res.status(200).send({ result: result });
   } catch (error) {
     console.log(error);
@@ -202,8 +197,9 @@ router.get("/getMatchedColumnNames", isAuthenticated, (req, res) => {
 */
 router.get("/getMasterFileUploadStatus", isAuthenticated, (req, res) => {
   try {
+    var branchFolder = `${userFilePath}/${req.user.branch}`;
     //checking if a file exists
-    if (fs.existsSync(`${userFilePath}/uploadedFile.xlsx`))
+    if (fs.existsSync(`${branchFolder}/uploadedFile.xlsx`))
       res.status(200).send({ result: true });
     else res.status(200).send({ result: false });
   } catch (error) {
@@ -211,7 +207,6 @@ router.get("/getMasterFileUploadStatus", isAuthenticated, (req, res) => {
     res.status(500).send({ result: error.message });
   }
 });
-
 /*
     Route:/api/initialise/getMasterFileModifiedStatus
     incoming data: --
@@ -219,8 +214,9 @@ router.get("/getMasterFileUploadStatus", isAuthenticated, (req, res) => {
 */
 router.get("/getMasterFileModifiedStatus", isAuthenticated, (req, res) => {
   try {
+    var branchFolder = `${userFilePath}/${req.user.branch}`;
     // Checking if a file exists
-    if (fs.existsSync(`${userFilePath}/modifiedFile.xlsx`))
+    if (fs.existsSync(`${branchFolder}/modifiedFile.xlsx`))
       res.status(200).send({ result: true });
     else res.status(200).send({ result: false });
   } catch (error) {
@@ -237,7 +233,7 @@ router.get("/getMasterFileModifiedStatus", isAuthenticated, (req, res) => {
 router.get("/reset", isAuthenticated, async (req, res) => {
   // Dropping databases
   try {
-    const response = await resetDatabase();
+    await resetDatabase(req.user.branch);
     res
       .status(200)
       .send({ result: true, message: "Database reset successful" });
@@ -257,7 +253,7 @@ router.get("/uploadedFile", isAuthenticated, async (req, res) => {
     root: path.join(__dirname),
   };
   //sending stored file
-  var fileName = `${userFilePath}/uploadedFile.xlsx`;
+  var fileName = `${userFilePath}/${req.user.branch}/uploadedFile.xlsx`;
   res.sendFile(fileName, function (err) {
     if (err) {
       console.log(err);
@@ -278,7 +274,7 @@ router.get("/modifiedFile", isAuthenticated, async (req, res) => {
       root: path.join(__dirname),
     };
     // Sending stored file
-    var fileName = `${userFilePath}/modifiedFile.xlsx`;
+    var fileName = `${userFilePath}/${req.user.branch}/modifiedFile.xlsx`;
     res.sendFile(fileName, function (err) {
       if (err) {
         console.log(err);
@@ -292,5 +288,4 @@ router.get("/modifiedFile", isAuthenticated, async (req, res) => {
     res.status(500).send({ result: "Failed to send modified file" });
   }
 });
-
 module.exports = router;

@@ -1,12 +1,13 @@
 const router = require("express").Router();
-var { selectQuery } = require("../utils/sqlqueries");
-var mysql = require("mysql2");
+const mysql = require("mysql2");
 const isAuthenticated = require("../middleware/authMiddleware");
 
 router.get("/getCoapIds", isAuthenticated, async (req, res) => {
-  var con;
+  console.log("csearch wala request", req.user);
+  console.log("csearch wala request branch", req.user.branch);
+  const { branch } = req.user.branch;
   try {
-    con = mysql
+    const con = mysql
       .createPool({
         host: process.env.MYSQL_HOSTNAME,
         user: "root",
@@ -14,26 +15,21 @@ router.get("/getCoapIds", isAuthenticated, async (req, res) => {
         database: process.env.MYSQL_DATABASE,
       })
       .promise();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ result: "Error creating database connection" });
-    return;
-  }
-  try {
     const [coapIdsList] = await con.query(
-      `SELECT COAP as label from mtechappl `
+      `SELECT COAP as label FROM ${branch}_mtechappl`
     );
+
     res.status(200).send({ result: coapIdsList });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ result: "NO Table Exists" });
+    console.error(error);
+    res.status(500).send({ result: "Internal Server Error" });
   }
 });
 
 router.post("/getinfo", isAuthenticated, async (req, res) => {
-  var con;
+  console.log("req.user.branch is :", req.user.branch);
   try {
-    con = mysql
+    const con = mysql
       .createPool({
         host: process.env.MYSQL_HOSTNAME,
         user: "root",
@@ -41,70 +37,59 @@ router.post("/getinfo", isAuthenticated, async (req, res) => {
         database: process.env.MYSQL_DATABASE,
       })
       .promise();
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({ result: "Error creating database connection" });
-    return;
-  }
-  // console.log(req.body);
-  var category = null;
-  var gender = null;
-  var coapId = null;
-  if (req.body.category != null) category = req.body.category.label;
-  if (req.body.gender != null) gender = req.body.gender.label;
-  if (req.body.coapId != null) coapId = req.body.coapId.label;
+    const { category, gender, coapId } = req.body;
 
-  try {
-    const [filteredList] =
-      await con.query(`SELECT COAP as coap,gender as gender,Category as category,
-        maxgatescore as maxgatescore,ews as ews,pwd as pwd,AppNo as appno
-        from mtechappl where
-       category REGEXP ${
-         category === null || category === "" ? `'\w*'` : `'${category}'`
-       } 
-       and COAP REGEXP ${
-         coapId === null || coapId === "" ? `'\w*'` : `'${coapId}'`
-       } 
-       and gender REGEXP ${
-         gender === null || gender === "" ? `'\w*'` : `'${gender}'`
-       } order by maxGateScore DESC limit 50; `);
+    const filteredCategory = category ? category.label : "\\w*";
+    const filteredGender = gender ? gender.label : "\\w*";
+    const filteredCoapId = coapId ? coapId.label : "\\w*";
+
+    const [filteredList] = await con.query(`
+      SELECT COAP as coap, gender, Category as category,
+      maxgatescore, ews, pwd, AppNo as appno
+      FROM ${req.user.branch}_mtechappl
+      WHERE category REGEXP '${filteredCategory}' 
+      AND COAP REGEXP '${filteredCoapId}' 
+      AND gender REGEXP '${filteredGender}'
+      ORDER BY maxGateScore DESC
+      LIMIT 50
+    `);
+
     res.status(200).send({ result: filteredList });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send({ result: "Internal Server Error" });
   }
 });
 
-router.get("/getinfo/:coapid", async (req, res) => {
-  var con = mysql
-    .createPool({
-      host: process.env.MYSQL_HOSTNAME,
-      user: "root",
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-    })
-    .promise();
-
-  var coapid = req.params.coapid;
-
+router.get("/getinfo/:coapid", isAuthenticated, async (req, res) => {
+  const { branch } = req.user.branch;
   try {
-    const [filteredList] =
-      await con.query(`select FullName,AppNo as ApplicationNumber,mtechappl.COAP,Email,MaxGateScore,Gender, Category,
-        EWS,PWD,Adm,SSCper,HSSCper,DegreeCGPA8thSem,
-        Offered,
-        Accepted,        
-        OfferCat,
-        IsOfferPwd,
-        OfferedRound,
-        RetainRound,
-        RejectOrAcceptRound
-        from mtechappl        
-        left join applicationstatus
-        on mtechappl.COAP = applicationstatus.COAP where mtechappl.COAP ='${coapid}'; `);
+    const con = mysql
+      .createPool({
+        host: process.env.MYSQL_HOSTNAME,
+        user: "root",
+        password: process.env.MYSQL_PASSWORD,
+        database: process.env.MYSQL_DATABASE,
+      })
+      .promise();
+    const coapid = req.params.coapid;
+
+    const [filteredList] = await con.query(`
+      SELECT FullName, AppNo AS ApplicationNumber, mtechappl.COAP, Email, MaxGateScore, Gender, Category,
+      EWS, PWD, Adm, SSCper, HSSCper, DegreeCGPA8thSem,
+      Offered, Accepted, OfferCat, IsOfferPwd, OfferedRound,
+      RetainRound, RejectOrAcceptRound
+      FROM ${branch}_mtechappl
+      LEFT JOIN ${branch}_applicationstatus
+      ON mtechappl.COAP = applicationstatus.COAP
+      WHERE mtechappl.COAP ='${coapid}'
+    `);
+
     res.status(200).send({ result: filteredList });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send({ result: "Internal Server Error" });
   }
 });
+
 module.exports = router;

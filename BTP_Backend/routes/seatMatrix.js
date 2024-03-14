@@ -7,10 +7,10 @@ var mysql = require("mysql2");
     incoming data: --
     outgoing data: seat matrix table as JSON object
 */
+
 router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
-  //connecting to database
   try {
-    var con = mysql
+    const con = mysql
       .createPool({
         host: process.env.MYSQL_HOSTNAME,
         user: "root",
@@ -18,19 +18,18 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
         database: process.env.MYSQL_DATABASE,
       })
       .promise();
-  } catch (error) {
-    console.log("Error connecting to the database:", error);
-    res.status(500).send({ result: "Error connecting to the database" });
-  }
-  //quering seat matrix data
-  try {
-    const [resultSeatMatrix] = await con.query(`select category,seatsAllocated,
-        (select count(*) from applicationstatus where (accepted='Y' or accepted='R') and offercat=category) as seatsBooked from seatmatrix;`);
-    // console.log(resultSeatMatrix);
+
+    const branch = req.user.branch;
+
+    const query = `SELECT category, seatsAllocated,
+        (SELECT COUNT(*) FROM ${branch}_applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat=category) AS seatsBooked
+        FROM ${branch}_seatmatrix;`;
+
+    const [resultSeatMatrix] = await con.query(query);
     res.status(200).send({ result: resultSeatMatrix });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ result: "NO Table Exists" });
+    console.log("Error:", error);
+    res.status(500).send({ result: "Error retrieving seat matrix data" });
   }
 });
 /*
@@ -41,7 +40,7 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
 */
 router.post("/updateSeats", isAuthenticated, async (req, res) => {
   try {
-    var con = mysql
+    const con = mysql
       .createPool({
         host: process.env.MYSQL_HOSTNAME,
         user: "root",
@@ -49,18 +48,16 @@ router.post("/updateSeats", isAuthenticated, async (req, res) => {
         database: process.env.MYSQL_DATABASE,
       })
       .promise();
-  } catch (error) {
-    console.log("Error connecting to the database:", error);
-    res.status(500).send({ result: "Error connecting to the database" });
-  }
-  try {
-    const [resultSeatMatrix] = await con.query(
-      `UPDATE seatMatrix SET SeatsAllocated=${req.body.seats} where Category='${req.body.category}' `
-    );
+
+    const branch = req.user.branch;
+
+    const query = `UPDATE ${branch}_seatMatrix SET SeatsAllocated=${req.body.seats} WHERE Category='${req.body.category}'`;
+
+    const [resultSeatMatrix] = await con.query(query);
     res.status(200).send({ result: resultSeatMatrix });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ result: "NO Table Exists" });
+    console.log("Error:", error);
+    res.status(500).send({ result: "Error updating seats" });
   }
 });
 

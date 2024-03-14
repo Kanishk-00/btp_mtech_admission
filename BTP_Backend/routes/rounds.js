@@ -3,22 +3,21 @@ const path = require("path");
 const fs = require("fs");
 var fs1 = require("fs-extra");
 
-
 const e = require("express");
 const userFilePath = path.join(__dirname, "..", "files");
 const { generateOffers } = require("../utils/generateOffers");
-const generatedOffersDirectoryPath = path.join(
-  __dirname,
-  "..",
-  "files",
-  "generatedOffers"
-);
-const updatesFromRoundsDirectoryPath = path.join(
-  __dirname,
-  "..",
-  "files",
-  "roundUpdates"
-);
+// const generatedOffersDirectoryPath = path.join(
+//   __dirname,
+//   "..",
+//   "files",
+//   "generatedOffers"
+// );
+// const updatesFromRoundsDirectoryPath = path.join(
+//   __dirname,
+//   "..",
+//   "files",
+//   "roundUpdates"
+// );
 const { updateStatusIITGList } = require("../utils/updateStatusIITGList.js");
 const {
   updateStatusIITGNotInterested,
@@ -57,26 +56,41 @@ const getFilesInDirectory = (directoryPath) => {
     outgoing data: sends the current round.
 */
 router.get("/getRounds", isAuthenticated, async (req, res) => {
+  let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
+  let updatesFromRoundsDirectoryPath = path.join(
+    branchDirectory,
+    "roundUpdates"
+  );
+  let generatedOffersDirectoryPath = path.join(
+    branchDirectory,
+    "generatedOffers"
+  );
   let OffersfilesList = [];
   let updatesFromRoundsFiles = [];
   try {
-    //reading files from generateoffers directory
+    // Check if the directory exists
+    if (!fs.existsSync(updatesFromRoundsDirectoryPath)) {
+      // If the directory doesn't exist, create it
+      fs.mkdirSync(updatesFromRoundsDirectoryPath, { recursive: true });
+    }
+
+    // Reading files from generateoffers directory
     OffersfilesList = await getFilesInDirectory(generatedOffersDirectoryPath);
   } catch (error) {
     console.log(error);
-    res.status(500).send({ result: "Internal Server Error" });
+    return res.status(500).send({ result: "Internal Server Error" });
   }
   try {
-    //reading files from updateRounds directory
+    // Reading files from updateRounds directory
     updatesFromRoundsFiles = await getFilesInDirectory(
       updatesFromRoundsDirectoryPath
     );
   } catch (error) {
     console.log(error);
-    res.status(500).send({ result: "Internal Server Error" });
+    return res.status(500).send({ result: "Internal Server Error" });
   }
-  //based on the files in generatedOffersDirectory and updatesFromRoundsDirectory returning the round number
-  //popping to ignore the .gitignore files
+  // Based on the files in generatedOffersDirectory and updatesFromRoundsDirectory returning the round number
+  // Popping to ignore the .gitignore files
   if (OffersfilesList.includes(".gitignore")) {
     OffersfilesList.splice(OffersfilesList.indexOf(".gitignore"), 1);
   }
@@ -86,7 +100,6 @@ router.get("/getRounds", isAuthenticated, async (req, res) => {
       1
     );
   }
-  // console.log(OffersfilesList,updatesFromRoundsFiles);
   if (
     OffersfilesList.length === 0 ||
     updatesFromRoundsFiles.length === 3 * OffersfilesList.length
@@ -110,6 +123,16 @@ router.get("/getRounds", isAuthenticated, async (req, res) => {
     }
 */
 router.get("/getRoundDetails/:roundId", isAuthenticated, async (req, res) => {
+  let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
+  let generatedOffersDirectoryPath = path.join(
+    branchDirectory,
+    "generatedOffers"
+  );
+
+  let updatesFromRoundsDirectoryPath = path.join(
+    branchDirectory,
+    "roundUpdates"
+  );
   let roundId = req.params.roundId;
   let OffersfilesList = [];
   let updatesFromRoundsFiles = [];
@@ -120,9 +143,13 @@ router.get("/getRoundDetails/:roundId", isAuthenticated, async (req, res) => {
     IITGOfferedButNotInterested: false,
     ConsolidatedFile: false,
   };
+
+  console.log("Bhosar pappu 222222");
   try {
     // Reading files from generateoffers directory
+    console.log(generatedOffersDirectoryPath);
     OffersfilesList = await getFilesInDirectory(generatedOffersDirectoryPath);
+    console.log(OffersfilesList);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ result: "Internal Server Error" });
@@ -136,8 +163,10 @@ router.get("/getRoundDetails/:roundId", isAuthenticated, async (req, res) => {
     console.log(error);
     return res.status(500).send({ result: "Internal Server Error" });
   }
-  // Checking if offers are generated
+  // Checking if offers are
+
   if (OffersfilesList.includes(`round${roundId}.xlsx`)) {
+    console.log("Teri maa ko salam....");
     response.offersGenerated = true;
   }
   // Checking for updates
@@ -169,31 +198,51 @@ router.get("/getRoundDetails/:roundId", isAuthenticated, async (req, res) => {
     outgoing data: success if offers generated 
 */
 router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
-  let roundId = req.params.roundId;
-  // console.log("generate",roundId);
-  console.log(`Generating... round ${roundId} results`);
   try {
+    let roundId = req.params.roundId;
+    let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
+    let generatedOffersDirectoryPath = path.join(
+      branchDirectory,
+      "generatedOffers"
+    );
+    console.log(`Generating... round ${roundId} results`);
+
+    // Check if the directory exists, if not, create it
+    if (!fs.existsSync(generatedOffersDirectoryPath)) {
+      fs.mkdirSync(generatedOffersDirectoryPath, { recursive: true });
+    }
+
+    // Create an empty XLSX file for offers generation
     fs.writeFile(
       `${generatedOffersDirectoryPath}/round${roundId}.xlsx`,
       ``,
-      (error) => {
+      async (error) => {
         if (error) {
           console.log(error);
+          throw error; // Throw an error if file creation fails
         }
+
+        console.log("getoffers hit hogaya re abab: ", req.user.branch);
+        // Generate offers using the specified function
+        let generated = await generateOffers(
+          process.env.MYSQL_DATABASE,
+          roundId,
+          `${generatedOffersDirectoryPath}/round${roundId}.xlsx`,
+          req.user.branch
+        );
+
+        console.log("generated offer ne result de diya.....");
+
+        res.status(200).send({ result: "Offers Generated Successfully" });
       }
     );
-
-    let generated = await generateOffers(
-      process.env.MYSQL_DATABASE,
-      roundId,
-      `${generatedOffersDirectoryPath}/round${roundId}.xlsx`
-    );
-    res.status(200).send({ result: "Offers Generated Successfully" });
   } catch (error) {
+    console.log(error);
     try {
-      let result = await resetRound(roundId);
-    } catch (error) {
-      console.log(error);
+      // Attempt to reset the round if an error occurs
+      let result = await resetRound(req.params.roundId, req.user.branch);
+    } catch (resetError) {
+      console.log(resetError);
     }
     res.status(500).send({ result: "Internal Server Error" });
   }
@@ -206,60 +255,72 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
     functionality: saves the files based on the file name and updates the status
     //error checking should be implemented
 */
-router.post("/putFile/:fileName/:roundNumber", async (req, res) => {
-  console.log("putfile");
-  let roundNumber = req.params.roundNumber;
-  let fileName = req.params.fileName;
-  var form = new formidable.IncomingForm();
-  //parsing file using formiddable library
-  let x = form.parse(req, async function (err, fields, files) {
-    var oldpath = files.file.filepath;
-    var candidateDecisonColumnName = fields.candidateDecision;
-    var coapIdColumnName = fields.coap;
-    // console.log(fields);
-    // console.log("idcoap",coapIdColumnName);
-    // console.log("decision",candidateDecisonColumnName);
-    var newpath = `${updatesFromRoundsDirectoryPath}/round${roundNumber}_${fileName}.xlsx`;
-    console.log("oldPath", oldpath);
-    // console.log("new function start");
-    fs1.move(oldpath, newpath, async function (err) {
-      if (err) {
-        console.log(err);
-      }
-      //saving the file based on the input file name and calling updates status function
-      try {
-        if (fileName === "IITGCandidateDecision") {
-          updateStatusIITGList(
-            process.env.MYSQL_DATABASE,
-            newpath,
-            roundNumber,
-            coapIdColumnName,
-            candidateDecisonColumnName
-          );
-        } else if (fileName === "IITGOfferedButNotInterested") {
-          updateStatusIITGNotInterested(
-            process.env.MYSQL_DATABASE,
-            newpath,
-            roundNumber,
-            coapIdColumnName,
-            candidateDecisonColumnName
-          );
-        } else if (fileName === "ConsolidatedFile") {
-          updateStatusConsolidatedFile(
-            process.env.MYSQL_DATABASE,
-            newpath,
-            roundNumber,
-            coapIdColumnName,
-            candidateDecisonColumnName
-          );
+router.post(
+  "/putFile/:fileName/:roundNumber",
+  isAuthenticated,
+  async (req, res) => {
+    console.log("putfile");
+    let roundNumber = req.params.roundNumber;
+    let fileName = req.params.fileName;
+    let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
+    let updatesFromRoundsDirectoryPath = path.join(
+      branchDirectory,
+      "roundUpdates"
+    );
+    var form = new formidable.IncomingForm();
+    //parsing file using formiddable library
+    let x = form.parse(req, async function (err, fields, files) {
+      var oldpath = files.file.filepath;
+      var candidateDecisonColumnName = fields.candidateDecision;
+      var coapIdColumnName = fields.coap;
+      // console.log(fields);
+      // console.log("idcoap",coapIdColumnName);
+      // console.log("decision",candidateDecisonColumnName);
+      var newpath = `${updatesFromRoundsDirectoryPath}/round${roundNumber}_${fileName}.xlsx`;
+      console.log("oldPath", oldpath);
+      // console.log("new function start");
+      fs1.move(oldpath, newpath, async function (err) {
+        if (err) {
+          console.log(err);
         }
-        res.status(200).send({});
-      } catch (error) {
-        res.status(500).send({});
-      }
+        //saving the file based on the input file name and calling updates status function
+        try {
+          if (fileName === "IITGCandidateDecision") {
+            updateStatusIITGList(
+              process.env.MYSQL_DATABASE,
+              newpath,
+              roundNumber,
+              coapIdColumnName,
+              candidateDecisonColumnName,
+              req.user.branch
+            );
+          } else if (fileName === "IITGOfferedButNotInterested") {
+            updateStatusIITGNotInterested(
+              process.env.MYSQL_DATABASE,
+              newpath,
+              roundNumber,
+              coapIdColumnName,
+              candidateDecisonColumnName,
+              req.user.branch
+            );
+          } else if (fileName === "ConsolidatedFile") {
+            updateStatusConsolidatedFile(
+              process.env.MYSQL_DATABASE,
+              newpath,
+              roundNumber,
+              coapIdColumnName,
+              candidateDecisonColumnName,
+              req.user.branch
+            );
+          }
+          res.status(200).send({});
+        } catch (error) {
+          res.status(500).send({});
+        }
+      });
     });
-  });
-});
+  }
+);
 /*
     Route:/api/rounds/getFile/roundNumber
     incoming data: round number in link,filename
@@ -267,6 +328,12 @@ router.post("/putFile/:fileName/:roundNumber", async (req, res) => {
 */
 router.get("/getFile/:roundNumber", isAuthenticated, async (req, res) => {
   let roundNumber = req.params.roundNumber;
+  let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
+  let generatedOffersDirectoryPath = path.join(
+    branchDirectory,
+    "generatedOffers"
+  );
+
   let queriedfileName = req.params.fileName;
   var fileName = `${generatedOffersDirectoryPath}/round${roundNumber}.xlsx`;
   res.sendFile(fileName, function (err) {
@@ -289,6 +356,11 @@ router.get(
   isAuthenticated,
   async (req, res) => {
     let roundNumber = req.params.roundNumber;
+    let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
+    let updatesFromRoundsDirectoryPath = path.join(
+      branchDirectory,
+      "roundUpdates"
+    );
     let queriedfileName = req.params.fileName;
     var fileName = `${generated}/round${roundNumber}_${queriedfileName}.xlsx`;
     res.sendFile(fileName, function (err) {
@@ -308,7 +380,7 @@ router.get(
 router.get("/reset/:roundNumber", isAuthenticated, async (req, res) => {
   let roundNumber = req.params.roundNumber;
   try {
-    let result = await resetRound(roundNumber);
+    let result = await resetRound(roundNumber, req.user.branch);
     console.log(`Reseted Round Number:${roundNumber}`);
     res.status(200).send({ result: `Reseted Round Number:${roundNumber}` });
   } catch (error) {
