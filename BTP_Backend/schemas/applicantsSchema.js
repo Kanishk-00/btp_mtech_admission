@@ -84,3 +84,6 @@ applicantsSchemaColumnNames=
     "DegreePer8thSem" 
 ]
 module.exports={applicantsSchema,applicantsSchemaColumnNames};
+
+
+// 

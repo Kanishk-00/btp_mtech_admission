@@ -52,6 +52,19 @@ router.post("/getFile", isAuthenticated, (req, res) => {
       .send({ error: "Please log in with correct credentials" });
   }
 
+  const branchFilePath = path.join(__dirname, "../", "branchStore.txt");
+
+  fs.readFile(branchFilePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    else {
+      console.log("File read branch = ", data);
+    }
+  });
+
+  
   var form = new formidable.IncomingForm();
   form.parse(req, function (err, fields, files) {
     if (err) {

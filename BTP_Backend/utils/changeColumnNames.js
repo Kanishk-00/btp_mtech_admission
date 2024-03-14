@@ -95,3 +95,5 @@ function mapColumnNames(filePath) {
 }
 // mapColumnNames(`C:\\Users\\Desktop\\BTP_Backend\\ApplicantData_withCOAPcorr_maxGateRoll.xlsx`)
 module.exports={mapColumnNames}
+
+// lqknefoewofnowen
