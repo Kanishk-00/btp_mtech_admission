@@ -4,21 +4,10 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const connection = require("../config/dbConfig");
 const e = require("express");
-var globalBranch;
 // Route for user login
 router.post("/login", (req, res) => {
   const { username, password, branch } = req.body;
-  globalBranch = branch;
 
-  fs.writeFile('branchStore.txt', String(globalBranch), err => {
-    if (err) {
-      console.error(err);
-    } else {
-      // done!
-    }
-  });
-  
-  console.log("Global branch in sign in: ", globalBranch);
   // Query database to check if user exists
   const query = "SELECT * FROM users WHERE username = ?";
   connection.query(query, [username], (error, results) => {
@@ -52,7 +41,8 @@ router.post("/login", (req, res) => {
       const token = jwt.sign(
         {
           username: user.username,
-          isAdmin: user.isAdmin, // assuming isAdmin field exists in the database
+          isAdmin: user.isAdmin,
+          branch: user.branch,
         },
         process.env.JWT_SECRET
       );
@@ -72,13 +62,10 @@ router.post("/login", (req, res) => {
   });
 });
 
-
-const fs = require('node:fs');
-
+const fs = require("node:fs");
 
 // Route for user signout
 router.get("/signout", (req, res) => {
-  console.log("Global branch in sign out: ", globalBranch);
   // Clear the JWT token cookie
   res.clearCookie("jwtToken");
 

@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 
-const userFilePath=process.env.userFilePath;
-module.exports={userFilePath};
+const userFilePath = process.env.userFilePath;
+module.exports = { userFilePath };

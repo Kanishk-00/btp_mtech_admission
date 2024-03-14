@@ -1,27 +1,24 @@
-var {createTable}=require("./sqlqueries.js");
-var {applicantsStatusSchema}=require("../schemas/applicantsStatus.js");
-var mysql = require('mysql2');
-/*
-    Name: initializeAppicantsStatus
-    Input : database name
-    output: void
-    Functionality :creates applicationStatus table.
-*/
+const mysql = require("mysql2");
+const { createTable } = require("./sqlqueries.js");
+const { applicantsStatusSchema } = require("../schemas/applicantsStatus.js");
 
-async function initializeAppicantsStatus(databaseName) {
-    var con =mysql.createPool({
-        host: process.env.MYSQL_HOSTNAME,
-        user: "root",
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    }).promise();
-    // console.log(applicantsStatusSchema);
-    try {
-        const x= await createTable(con,"applicationStatus",applicantsStatusSchema);
-        
-    } catch (error) {
-        console.log(error)
-    }
+async function initializeAppicantsStatus(branch, databaseName) {
+  var con = mysql
+    .createPool({
+      host: process.env.MYSQL_HOSTNAME,
+      user: "root",
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+    })
+    .promise();
 
+  try {
+    const schema = applicantsStatusSchema(branch);
+    console.log("Creating table with schema:", schema);
+    const x = await createTable(con, `${branch}_applicationStatus`, schema);
+  } catch (error) {
+    console.log(error);
+  }
 }
-module.exports={initializeAppicantsStatus};
+
+module.exports = { initializeAppicantsStatus };
