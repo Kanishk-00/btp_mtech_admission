@@ -9,11 +9,13 @@ import Loader from "../Loader";
 import fileDownload from "js-file-download";
 
 function RoundDetails(props) {
+
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(";").shift();
   }
+  
   const [isLoading, setIsLoading] = useState(true);
   const [offersGenerated, setOffersGenerated] = useState(false);
   // const [updatedStatus,setUpdatedStatus]=useState(false);
@@ -56,6 +58,7 @@ function RoundDetails(props) {
         })
         .then((res) => {
           console.log(res.data.result);
+          console.log("bhosar pappu...");
           setOffersGenerated(res.data.result.offersGenerated);
           // setUpdatedStatus(res.data.result.updatedRound);
           setRoundstatus(res.data.result);

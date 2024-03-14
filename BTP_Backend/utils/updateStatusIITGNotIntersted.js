@@ -1,74 +1,94 @@
-var XLSX = require("xlsx");
-var mysql = require('mysql2');
+const XLSX = require("xlsx");
+const mysql = require("mysql2");
 const { selectQuery } = require("./sqlqueries");
-// const { checkFileLegitimacy } = require('./checkLegitimacy');
-/* 
-    function Name:updateDecision
-    input :connection object,applicant data,current round
-    output: void
-*/
-async function updateDecision(con,applicant,round,coapIdColumnName,candidateDecisonColumnName){
-    currCOAP = applicant[coapIdColumnName];
-    currDecision =  applicant[candidateDecisonColumnName];
-    console.log(currCOAP,currDecision);
-    try {
-        var [checkPreviousStatus] = await con.query(`SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM applicationstatus WHERE 
-        COAP = '${currCOAP}' ;`);
-        // console.log(checkPreviousStatus[0]);
-        bool_previousRetain = (checkPreviousStatus[0].RetainRound != '') //check if previously retained
-        bool_previousRejectOrAccept = (checkPreviousStatus[0].RejectOrAcceptRound != '') //check if previously rejectedOrAccepted
-        if (currDecision && currDecision.includes(`ACCEPTED`)) {
-                try {
-                    //setting status to E (not eligible)
-                    var [updatedStatus]=await con.query(`UPDATE applicationstatus
-                        set Accepted = 'E', RejectOrAcceptRound = '${round}'
-                        where COAP = '${currCOAP}'`)
-                } catch (error) {
-                    throw error
-                }
-        }
-    } catch (error) {
-        throw error;
-    }
-    console.log(`updated candidate Desion ${currCOAP}`);
 
-}
 /* 
-    function Name:updateStatusIITGNotInterested
-    input :database name,file path to the accepted and freeze at the other institute file,current round
-    output: void
+    Function Name: updateDecision
+    Input: connection object, applicant data, current round, COAP column name, candidate decision column name
+    Output: void
 */
-async function updateStatusIITGNotInterested(databaseName,filePath,round,coapIdColumnName,candidateDecisonColumnName){
-    var con =mysql.createPool({
-        host: process.env.MYSQL_HOSTNAME,
-        user: "root",
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
-    }).promise();
-    var workbook = XLSX.readFile(filePath);
-    var applicantsDataSheet = workbook.Sheets[workbook.SheetNames[0]];
-    var applicantsData=XLSX.utils.sheet_to_json(applicantsDataSheet);
-    // console.log(applicantsData);
-    for (const applicant of applicantsData) {
+async function updateDecision(
+  con,
+  applicant,
+  round,
+  coapIdColumnName,
+  candidateDecisonColumnName,
+  branch
+) {
+  const currCOAP = applicant[coapIdColumnName];
+  const currDecision = applicant[candidateDecisonColumnName];
+  console.log(currCOAP, currDecision);
+  try {
+    const [checkPreviousStatus] = await con.query(
+      `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM ${branch}_applicationstatus WHERE COAP = ?;`,
+      [currCOAP]
+    );
+    const bool_previousRetain = checkPreviousStatus[0].RetainRound !== ""; // Check if previously retained
+    const bool_previousRejectOrAccept =
+      checkPreviousStatus[0].RejectOrAcceptRound !== ""; // Check if previously rejectedOrAccepted
+    if (currDecision && currDecision.includes(`ACCEPTED`)) {
+      if (!bool_previousRejectOrAccept) {
         try {
-            // console.log("inside try");
-            //checking if the applicant is present in the database
-            var [isCS]=await con.query(`SELECT COUNT(*) AS count FROM applicationstatus WHERE 
-            COAP = '${applicant[coapIdColumnName]}' ;`)
-            // console.log(isCS[0]);
-            // console.log(applicant[`COAP Reg Id`]);
-            if(isCS[0].count==1){
-                try {
-                    //updating status
-                    var x= await updateDecision(con,applicant,round,coapIdColumnName,candidateDecisonColumnName);
-                } catch (error) {
-                    throw error;
-                }
-            }
+          // Set status to E (not eligible)
+          await con.query(
+            `UPDATE ${branch}_applicationstatus SET Accepted = 'E', RejectOrAcceptRound = ? WHERE COAP = ?`,
+            [round, currCOAP]
+          );
         } catch (error) {
-            throw error;
+          throw error;
         }
+      }
     }
+  } catch (error) {
+    throw error;
+  }
+  console.log(`Updated candidate decision ${currCOAP}`);
 }
-// updateStatus('Applicants2019',`C:\\Users\\noel vincent\\Desktop\\BTP_Backend\\IIT Goa Candidate Decision Report.xlsx`,0);
-module.exports={updateStatusIITGNotInterested};
+
+/* 
+    Function Name: updateStatusIITGNotInterested
+    Input: database name, file path to the accepted and freeze at the other institute file, current round, COAP column name, candidate decision column name, branch
+    Output: void
+*/
+async function updateStatusIITGNotInterested(
+  databaseName,
+  filePath,
+  round,
+  coapIdColumnName,
+  candidateDecisonColumnName,
+  branch
+) {
+  const con = mysql
+    .createPool({
+      host: process.env.MYSQL_HOSTNAME,
+      user: "root",
+      password: process.env.MYSQL_PASSWORD,
+      database: process.env.MYSQL_DATABASE,
+    })
+    .promise();
+  const workbook = XLSX.readFile(filePath);
+  const applicantsDataSheet = workbook.Sheets[workbook.SheetNames[0]];
+  const applicantsData = XLSX.utils.sheet_to_json(applicantsDataSheet);
+  for (const applicant of applicantsData) {
+    try {
+      const [isCS] = await con.query(
+        `SELECT COUNT(*) AS count FROM ${branch}_applicationstatus WHERE COAP = ?;`,
+        [applicant[coapIdColumnName]]
+      );
+      if (isCS[0].count == 1) {
+        await updateDecision(
+          con,
+          applicant,
+          round,
+          coapIdColumnName,
+          candidateDecisonColumnName,
+          branch
+        );
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+}
+
+module.exports = { updateStatusIITGNotInterested };
