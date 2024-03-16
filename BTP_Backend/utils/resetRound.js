@@ -47,11 +47,12 @@ async function resetRound(inputRoundNumber, branch) {
   // Deleting all the offered candidates in that round and retain and accepted round as that of current number
   try {
     const result = await con.query(`
-      DELETE FROM ${branch}_applicationstatus 
-      WHERE (Offered="Y" AND OfferedRound='${roundNumber}') 
-        OR (RetainRound='${roundNumber}')
-        OR (RejectOrAcceptRound='${roundNumber}')
-    `);
+    DELETE FROM applicationstatus 
+    WHERE (Offered="Y" AND OfferedRound='${roundNumber}') 
+      OR (RetainRound='${roundNumber}')
+      OR (RejectOrAcceptRound='${roundNumber}')
+      AND branch = '${branch}'
+  `);
   } catch (error) {
     throw error;
   }

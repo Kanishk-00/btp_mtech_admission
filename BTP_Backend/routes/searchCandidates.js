@@ -5,7 +5,8 @@ const isAuthenticated = require("../middleware/authMiddleware");
 router.get("/getCoapIds", isAuthenticated, async (req, res) => {
   console.log("csearch wala request", req.user);
   console.log("csearch wala request branch", req.user.branch);
-  const { branch } = req.user.branch;
+  const branch = req.user.branch;
+
   try {
     const con = mysql
       .createPool({
@@ -16,7 +17,7 @@ router.get("/getCoapIds", isAuthenticated, async (req, res) => {
       })
       .promise();
     const [coapIdsList] = await con.query(
-      `SELECT COAP as label FROM ${branch}_mtechappl`
+      `SELECT COAP as label FROM mtechappl WHERE branch = '${branch}'`
     );
 
     res.status(200).send({ result: coapIdsList });
@@ -46,8 +47,9 @@ router.post("/getinfo", isAuthenticated, async (req, res) => {
     const [filteredList] = await con.query(`
       SELECT COAP as coap, gender, Category as category,
       maxgatescore, ews, pwd, AppNo as appno
-      FROM ${req.user.branch}_mtechappl
-      WHERE category REGEXP '${filteredCategory}' 
+      FROM mtechappl
+      WHERE branch = '${req.user.branch}'
+      AND category REGEXP '${filteredCategory}' 
       AND COAP REGEXP '${filteredCoapId}' 
       AND gender REGEXP '${filteredGender}'
       ORDER BY maxGateScore DESC
@@ -62,7 +64,6 @@ router.post("/getinfo", isAuthenticated, async (req, res) => {
 });
 
 router.get("/getinfo/:coapid", isAuthenticated, async (req, res) => {
-  const { branch } = req.user.branch;
   try {
     const con = mysql
       .createPool({
@@ -79,10 +80,10 @@ router.get("/getinfo/:coapid", isAuthenticated, async (req, res) => {
       EWS, PWD, Adm, SSCper, HSSCper, DegreeCGPA8thSem,
       Offered, Accepted, OfferCat, IsOfferPwd, OfferedRound,
       RetainRound, RejectOrAcceptRound
-      FROM ${branch}_mtechappl
-      LEFT JOIN ${branch}_applicationstatus
+      FROM mtechappl
+      LEFT JOIN applicationstatus
       ON mtechappl.COAP = applicationstatus.COAP
-      WHERE mtechappl.COAP ='${coapid}'
+      WHERE mtechappl.COAP ='${coapid}' AND mtechappl.branch = '${req.user.branch}'
     `);
 
     res.status(200).send({ result: filteredList });

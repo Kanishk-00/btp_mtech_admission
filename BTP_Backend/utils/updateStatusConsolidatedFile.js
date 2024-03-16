@@ -2,11 +2,6 @@ const XLSX = require("xlsx");
 const mysql = require("mysql2");
 const { selectQuery } = require("./sqlqueries");
 
-/* 
-    Function Name: updateDecision
-    Input: connection object, applicant data, current round, COAP column name, candidate decision column name
-    Output: void
-*/
 async function updateDecision(
   con,
   applicant,
@@ -20,14 +15,14 @@ async function updateDecision(
   console.log(currCOAP, currDecision);
   try {
     const [checkPreviousStatus] = await con.query(
-      `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM ${branch}_applicationstatus WHERE COAP = ?;`,
-      [currCOAP]
+      `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM applicationstatus WHERE COAP = ? AND branch = ?;`,
+      [currCOAP, branch]
     );
     if (checkPreviousStatus.length === 0) {
       try {
         await con.query(
-          `INSERT INTO ${branch}_applicationstatus (COAP, Offered, Accepted, RejectOrAcceptRound) VALUES (?, '', 'E', ?)`,
-          [currCOAP, round]
+          `INSERT INTO applicationstatus (COAP, Offered, Accepted, RejectOrAcceptRound, branch) VALUES (?, '', 'E', ?, ?)`,
+          [currCOAP, round, branch]
         );
       } catch (error) {
         throw error;
@@ -39,11 +34,6 @@ async function updateDecision(
   console.log(`Updated candidate decision ${currCOAP}`);
 }
 
-/* 
-    Function Name: updateStatusConsolidatedFile
-    Input: database name, file path to the consolidated file, current round, COAP column name, candidate decision column name, branch
-    Output: void
-*/
 async function updateStatusConsolidatedFile(
   databaseName,
   filePath,
@@ -66,8 +56,8 @@ async function updateStatusConsolidatedFile(
   for (const applicant of applicantsData) {
     try {
       const [isCS] = await con.query(
-        `SELECT COUNT(*) AS count FROM ${branch}_applicationstatus WHERE COAP = ?;`,
-        [applicant[coapIdColumnName]]
+        `SELECT COUNT(*) AS count FROM applicationstatus WHERE COAP = ? AND branch = ?;`,
+        [applicant[coapIdColumnName], branch]
       );
       if (isCS[0].count === 1) {
         await updateDecision(

@@ -63,6 +63,7 @@ async function insertManyIntoTable(
   try {
     var res = await connection.query(queryString, [toBeInsertedValues]);
   } catch (error) {
+    console.log("idhar aaya fatne\n");
     throw error;
   }
 
@@ -83,6 +84,24 @@ const selectQuery = function (con, queryString) {
     });
   });
 };
+
+/* 
+    function Name: checkTableExists
+    input: connection object, Name of the table
+    output: true if the table exists, false otherwise
+*/
+
+async function checkTableExists(connection, tableName) {
+  var queryString = `SHOW TABLES LIKE '${tableName}'`;
+  console.log(queryString);
+  try {
+    var [res] = await connection.query(queryString);
+    return res.length > 0;
+  } catch (error) {
+    throw error;
+  }
+}
+
 module.exports = {
   createDataBase,
   connectToDatabase,
@@ -90,4 +109,5 @@ module.exports = {
   insertManyIntoTable,
   createTable,
   selectQuery,
+  checkTableExists,
 };

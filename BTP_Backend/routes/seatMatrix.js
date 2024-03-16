@@ -22,8 +22,8 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
     const branch = req.user.branch;
 
     const query = `SELECT category, seatsAllocated,
-        (SELECT COUNT(*) FROM ${branch}_applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat=category) AS seatsBooked
-        FROM ${branch}_seatmatrix;`;
+        (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat=category AND branch='${req.user.branch}') AS seatsBooked
+        FROM seatMatrix WHERE branch='${req.user.branch}';`;
 
     const [resultSeatMatrix] = await con.query(query);
     res.status(200).send({ result: resultSeatMatrix });
@@ -51,7 +51,7 @@ router.post("/updateSeats", isAuthenticated, async (req, res) => {
 
     const branch = req.user.branch;
 
-    const query = `UPDATE ${branch}_seatMatrix SET SeatsAllocated=${req.body.seats} WHERE Category='${req.body.category}'`;
+    const query = `UPDATE seatMatrix SET SeatsAllocated=${req.body.seats} WHERE Category='${req.body.category}' AND branch = '${req.user.branch}'`;
 
     const [resultSeatMatrix] = await con.query(query);
     res.status(200).send({ result: resultSeatMatrix });

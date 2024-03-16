@@ -4,7 +4,7 @@ const { selectQuery } = require("./sqlqueries");
 
 /* 
     Function Name: updateDecision
-    Input: connection object, applicant data, current round, COAP column name, candidate decision column name
+    Input: connection object, applicant data, current round, COAP column name, candidate decision column name, branch
     Output: void
 */
 async function updateDecision(
@@ -20,8 +20,8 @@ async function updateDecision(
   console.log(currCOAP, currDecision);
   try {
     const [checkPreviousStatus] = await con.query(
-      `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM ${branch}_applicationstatus WHERE COAP = ?;`,
-      [currCOAP]
+      `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM applicationstatus WHERE COAP = ? AND branch = ?;`,
+      [currCOAP, branch]
     );
     const bool_previousRetain = checkPreviousStatus[0].RetainRound !== ""; // Check if previously retained
     const bool_previousRejectOrAccept =
@@ -31,8 +31,8 @@ async function updateDecision(
         try {
           // Set status to E (not eligible)
           await con.query(
-            `UPDATE ${branch}_applicationstatus SET Accepted = 'E', RejectOrAcceptRound = ? WHERE COAP = ?`,
-            [round, currCOAP]
+            `UPDATE applicationstatus SET Accepted = 'E', RejectOrAcceptRound = ? WHERE COAP = ? AND branch = ?;`,
+            [round, currCOAP, branch]
           );
         } catch (error) {
           throw error;
@@ -72,8 +72,8 @@ async function updateStatusIITGNotInterested(
   for (const applicant of applicantsData) {
     try {
       const [isCS] = await con.query(
-        `SELECT COUNT(*) AS count FROM ${branch}_applicationstatus WHERE COAP = ?;`,
-        [applicant[coapIdColumnName]]
+        `SELECT COUNT(*) AS count FROM applicationstatus WHERE COAP = ? AND branch = ?;`,
+        [applicant[coapIdColumnName], branch]
       );
       if (isCS[0].count == 1) {
         await updateDecision(

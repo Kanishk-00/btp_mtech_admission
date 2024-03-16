@@ -1,7 +1,7 @@
 const { checkFileLegitimacy } = require("../utils/checkfileLegitimacy.js");
 const router = require("express").Router();
 const {
-  initializeAppicantsStatus,
+  initializeApplicantsStatus,
 } = require("../utils/initialiseApplicationStatus.js");
 const path = require("path");
 const formidable = require("formidable");
@@ -158,7 +158,7 @@ router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
       ["GEN_FandM_PWD", 0],
       ["COMMON_PWD", 0],
     ]);
-    let response = await initializeAppicantsStatus(
+    let response = await initializeApplicantsStatus(
       req.user.branch,
       process.env.MYSQL_DATABASE
     );

@@ -14,14 +14,12 @@ async function shortListReservedCandidates(
   round,
   branch
 ) {
-  // Define the table names with the branch prefix
-  const mtechapplTable = `${branch}_mtechappl`;
-  const applicationstatusTable = `${branch}_applicationstatus`;
+  const mtechapplTable = `mtechappl`;
+  const applicationstatusTable = `applicationstatus`;
 
   let queryString;
   let currCategory = category;
 
-  // Construct the query string based on gender and category
   if (gender === "F") {
     queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
             Offered, 
@@ -30,7 +28,7 @@ async function shortListReservedCandidates(
             FROM ${mtechapplTable}
             LEFT JOIN ${applicationstatusTable}
             ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-            WHERE Offered IS NULL AND Gender = "Female" AND Category="${category}"
+            WHERE Offered IS NULL AND Gender = "Female" AND Category="${category}" AND ${mtechapplTable}.branch = '${branch}'
             ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
             LIMIT ${limit}`;
     currCategory = `${currCategory}_Female`;
@@ -42,17 +40,15 @@ async function shortListReservedCandidates(
             FROM ${mtechapplTable}
             LEFT JOIN ${applicationstatusTable}
             ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-            WHERE Offered IS NULL AND Category="${category}"
+            WHERE Offered IS NULL AND Category="${category}" AND ${mtechapplTable}.branch = '${branch}'
             ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
             LIMIT ${limit}`;
     currCategory = `${currCategory}_FandM`;
   }
 
-  // Variable to store shortlisted candidates
   var shortlistedCandidates;
   try {
     var [shortlistedCandidates] = await con.query(queryString);
-    // console.log(shortlistedCandidates);
   } catch (error) {
     throw error;
   }
@@ -72,7 +68,6 @@ async function shortListReservedCandidates(
       console.log(`Shortlisted ${candidate.COAP} in ${currCategory} category`);
     }
 
-    // Inserting values into the applicationstatus table
     if (valuesToBeInserted.length > 0) {
       var x = await insertManyIntoTable(
         con,
@@ -85,7 +80,6 @@ async function shortListReservedCandidates(
     throw error;
   }
 
-  // Exporting shortlisted functions
   return shortlistedCandidates;
 }
 
