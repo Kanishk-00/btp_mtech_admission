@@ -14,11 +14,9 @@ async function shortListPWDCandidates(
   offerCat,
   branch
 ) {
-  // Define the table names with the branch prefix
-  const mtechapplTable = `${branch}_mtechappl`;
-  const applicationstatusTable = `${branch}_applicationstatus`;
+  const mtechapplTable = `mtechappl`;
+  const applicationstatusTable = `applicationstatus`;
 
-  // Query to fetch shortlisted candidates
   queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
@@ -26,20 +24,18 @@ async function shortListPWDCandidates(
     FROM ${mtechapplTable}
     LEFT JOIN ${applicationstatusTable}
     ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-    WHERE Offered IS NULL AND Pwd='Yes' AND category REGEXP '${category}'
+    WHERE Offered IS NULL AND Pwd='Yes' AND category REGEXP '${category}' AND ${mtechapplTable}.branch = '${branch}'
     ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
     LIMIT ${limit}`;
 
-  // Variable to store shortlisted candidates
   var shortlistedCandidates;
-  // Querying
+
   try {
     var [shortlistedCandidates] = await con.query(queryString);
   } catch (error) {
     throw error;
   }
 
-  // Updating the shortlisted candidates' status in the applicationstatus table
   try {
     let valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
@@ -56,7 +52,6 @@ async function shortListPWDCandidates(
       console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category`);
     }
 
-    // Inserting values into the applicationstatus table
     if (valuesToBeInserted.length > 0) {
       var x = await insertManyIntoTable(
         con,
@@ -85,11 +80,9 @@ async function shortListEWSPWDCandidates(
   offerCat,
   branch
 ) {
-  // Define the table names with the branch prefix
-  const mtechapplTable = `${branch}_mtechappl`;
-  const applicationstatusTable = `${branch}_applicationstatus`;
+  const mtechapplTable = `mtechappl`;
+  const applicationstatusTable = `applicationstatus`;
 
-  // Query to fetch shortlisted candidates
   queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
@@ -97,20 +90,18 @@ async function shortListEWSPWDCandidates(
     FROM ${mtechapplTable}
     LEFT JOIN ${applicationstatusTable}
     ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-    WHERE Offered IS NULL AND Pwd='Yes' AND EWS='Yes' AND category='GEN'
+    WHERE Offered IS NULL AND Pwd='Yes' AND EWS='Yes' AND category='GEN' AND ${mtechapplTable}.branch = '${branch}'
     ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
     LIMIT ${limit}`;
 
-  // Variable to store shortlisted candidates
   var shortlistedCandidates;
-  // Querying
+
   try {
     var [shortlistedCandidates] = await con.query(queryString);
   } catch (error) {
     throw error;
   }
 
-  // Updating the shortlisted candidates' status in the applicationstatus table
   try {
     let valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
@@ -127,7 +118,6 @@ async function shortListEWSPWDCandidates(
       console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category`);
     }
 
-    // Inserting values into the applicationstatus table
     if (valuesToBeInserted.length > 0) {
       var x = await insertManyIntoTable(
         con,
@@ -148,12 +138,11 @@ async function shortListEWSPWDCandidates(
     Output: JSON object containing all the shortlisted candidates.
     Functionality: Shortlists a limited number of PWD Female candidates based on their max gatescore. 
 */
-async function shortListPWDFemaleCandidates(con, limit, round, branch) {
-  // Define the table names with the branch prefix
-  const mtechapplTable = `${branch}_mtechappl`;
-  const applicationstatusTable = `${branch}_applicationstatus`;
 
-  // Query to fetch shortlisted candidates
+async function shortListPWDFemaleCandidates(con, limit, round, branch) {
+  const mtechapplTable = `mtechappl`;
+  const applicationstatusTable = `applicationstatus`;
+
   queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
@@ -161,20 +150,18 @@ async function shortListPWDFemaleCandidates(con, limit, round, branch) {
     FROM ${mtechapplTable}
     LEFT JOIN ${applicationstatusTable}
     ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-    WHERE Offered IS NULL AND Gender = "Female" AND Pwd='Yes'
+    WHERE Offered IS NULL AND Gender = "Female" AND Pwd='Yes' AND ${mtechapplTable}.branch = '${branch}'
     ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
     LIMIT ${limit}`;
 
-  // Variable to store shortlisted candidates
   var shortlistedCandidates;
-  // Querying
+
   try {
     var [shortlistedCandidates] = await con.query(queryString);
   } catch (error) {
     throw error;
   }
 
-  // Updating the shortlisted candidates' status in the applicationstatus table
   try {
     let valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
@@ -191,7 +178,6 @@ async function shortListPWDFemaleCandidates(con, limit, round, branch) {
       console.log(`Shortlisted ${candidate.COAP} in PWD_Female category`);
     }
 
-    // Inserting values into the applicationstatus table
     if (valuesToBeInserted.length > 0) {
       var x = await insertManyIntoTable(
         con,

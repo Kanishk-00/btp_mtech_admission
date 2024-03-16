@@ -1,17 +1,9 @@
 const { insertManyIntoTable } = require("../sqlqueries");
 
-/*
-    Name: shortListEWSCandidates
-    Input : connection object to the database, limit on how many members to shortlist, ongoing round, branch
-    Output: JSON object containing all the shortlisted candidates.
-    Functionality: Shortlists a limited number of EWS candidates based on their max gatescore.
-*/
 async function shortListEWSCandidates(con, limit, round, branch) {
-  // Define the table names with the branch prefix
-  const mtechapplTable = `${branch}_mtechappl`;
-  const applicationstatusTable = `${branch}_applicationstatus`;
+  const mtechapplTable = `mtechappl`;
+  const applicationstatusTable = `applicationstatus`;
 
-  // Query to fetch shortlisted candidates
   queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
@@ -19,22 +11,19 @@ async function shortListEWSCandidates(con, limit, round, branch) {
     FROM ${mtechapplTable}
     LEFT JOIN ${applicationstatusTable}
     ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-    WHERE Offered IS NULL AND EWS='Yes' AND category='GEN'
+    WHERE Offered IS NULL AND EWS='Yes' AND category='GEN' AND ${mtechapplTable}.branch = '${branch}'
     ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
     LIMIT ${limit}`;
 
-  // Variable to store shortlisted candidates
   var shortlistedCandidates;
-  // Querying
+
   try {
     var [shortlistedCandidates] = await con.query(queryString);
   } catch (error) {
     throw error;
   }
 
-  // Updating the shortlisted candidates' status in the applicationstatus table
   try {
-    // Values to be updated
     let valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
       valuesToBeInserted.push([
@@ -48,7 +37,6 @@ async function shortListEWSCandidates(con, limit, round, branch) {
       ]);
       console.log(`Seat offered to ${candidate.COAP} in EWS_FandM category`);
     }
-    // Inserting values into the applicationstatus table
     if (valuesToBeInserted.length > 0) {
       var x = await insertManyIntoTable(
         con,
@@ -60,22 +48,14 @@ async function shortListEWSCandidates(con, limit, round, branch) {
   } catch (error) {
     throw error;
   }
-  // Returning the shortlisted candidates
+
   return shortlistedCandidates;
 }
 
-/*
-    Name: shortListEWSFemaleCandidates
-    Input : connection object to the database, limit on how many members to shortlist, ongoing round, branch
-    Output: JSON object containing all the shortlisted candidates.
-    Functionality: Shortlists a limited number of EWS Female candidates based on their max gatescore.
-*/
 async function shortListEWSFemaleCandidates(con, limit, round, branch) {
-  // Define the table names with the branch prefix
-  const mtechapplTable = `${branch}_mtechappl`;
-  const applicationstatusTable = `${branch}_applicationstatus`;
+  const mtechapplTable = `mtechappl`;
+  const applicationstatusTable = `applicationstatus`;
 
-  // Query to fetch shortlisted candidates
   queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
@@ -83,20 +63,18 @@ async function shortListEWSFemaleCandidates(con, limit, round, branch) {
     FROM ${mtechapplTable}
     LEFT JOIN ${applicationstatusTable}
     ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-    WHERE Offered IS NULL AND Gender = "Female" AND EWS='Yes' AND category="GEN"
+    WHERE Offered IS NULL AND Gender = "Female" AND EWS='Yes' AND category="GEN" AND ${mtechapplTable}.branch = '${branch}'
     ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
     LIMIT ${limit}`;
 
-  // Variable to store shortlisted candidates
   var shortlistedCandidates;
-  // Querying
+
   try {
     var [shortlistedCandidates] = await con.query(queryString);
   } catch (error) {
     throw error;
   }
 
-  // Updating the shortlisted candidates' status in the applicationstatus table
   try {
     let valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
@@ -111,7 +89,6 @@ async function shortListEWSFemaleCandidates(con, limit, round, branch) {
       ]);
       console.log(`Seat offered to ${candidate.COAP} in EWS_Female category`);
     }
-    // Inserting values into the applicationstatus table
     if (valuesToBeInserted.length > 0) {
       var x = await insertManyIntoTable(
         con,
@@ -123,7 +100,7 @@ async function shortListEWSFemaleCandidates(con, limit, round, branch) {
   } catch (error) {
     throw error;
   }
-  // Returning the shortlisted candidates
+
   return shortlistedCandidates;
 }
 

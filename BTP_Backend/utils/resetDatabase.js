@@ -31,12 +31,23 @@ async function resetDatabase(branch) {
 
   // Dropping tables
   try {
-    const resultApplicationStatus = await con.query(
-      `DROP TABLE IF EXISTS  ${branch}_applicationstatus;`
+    await con.query(`DELETE FROM applicationstatus WHERE branch = ?;`, [
+      branch,
+    ]);
+    console.log(
+      `Entries deleted from applicationstatus where branch is ${branch} successfully.`
     );
-    const result = await con.query(`DROP TABLE IF EXISTS ${branch}_mtechappl;`);
-    const resultSeatMatrix = await con.query(
-      `DROP TABLE IF EXISTS  ${branch}_seatMatrix;`
+
+    // Delete entries from mtechappl table where branch matches
+    await con.query(`DELETE FROM mtechappl WHERE branch = ?;`, [branch]);
+    console.log(
+      `Entries deleted from mtechappl where branch is ${branch} successfully.`
+    );
+
+    // Delete entries from seatMatrix table where branch matches
+    await con.query(`DELETE FROM seatMatrix WHERE branch = ?;`, [branch]);
+    console.log(
+      `Entries deleted from seatMatrix where branch is ${branch} successfully.`
     );
   } catch (error) {
     throw error;

@@ -68,20 +68,26 @@ router.get("/getRounds", isAuthenticated, async (req, res) => {
   let OffersfilesList = [];
   let updatesFromRoundsFiles = [];
   try {
-    // Check if the directory exists
+    // Check if the roundUpdates directory exists
     if (!fs.existsSync(updatesFromRoundsDirectoryPath)) {
       // If the directory doesn't exist, create it
       fs.mkdirSync(updatesFromRoundsDirectoryPath, { recursive: true });
     }
 
-    // Reading files from generateoffers directory
+    // Check if the generatedOffers directory exists
+    if (!fs.existsSync(generatedOffersDirectoryPath)) {
+      // If the directory doesn't exist, create it
+      fs.mkdirSync(generatedOffersDirectoryPath, { recursive: true });
+    }
+
+    // Reading files from generatedOffers directory
     OffersfilesList = await getFilesInDirectory(generatedOffersDirectoryPath);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ result: "Internal Server Error" });
   }
   try {
-    // Reading files from updateRounds directory
+    // Reading files from roundUpdates directory
     updatesFromRoundsFiles = await getFilesInDirectory(
       updatesFromRoundsDirectoryPath
     );
@@ -89,7 +95,7 @@ router.get("/getRounds", isAuthenticated, async (req, res) => {
     console.log(error);
     return res.status(500).send({ result: "Internal Server Error" });
   }
-  // Based on the files in generatedOffersDirectory and updatesFromRoundsDirectory returning the round number
+  // Based on the files in generatedOffersDirectory and roundUpdatesDirectory returning the round number
   // Popping to ignore the .gitignore files
   if (OffersfilesList.includes(".gitignore")) {
     OffersfilesList.splice(OffersfilesList.indexOf(".gitignore"), 1);
@@ -144,7 +150,6 @@ router.get("/getRoundDetails/:roundId", isAuthenticated, async (req, res) => {
     ConsolidatedFile: false,
   };
 
-  console.log("Bhosar pappu 222222");
   try {
     // Reading files from generateoffers directory
     console.log(generatedOffersDirectoryPath);
@@ -209,6 +214,7 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
 
     // Check if the directory exists, if not, create it
     if (!fs.existsSync(generatedOffersDirectoryPath)) {
+      console.log("exist sync for geenerated offers mein aaya ki nahi??");
       fs.mkdirSync(generatedOffersDirectoryPath, { recursive: true });
     }
 

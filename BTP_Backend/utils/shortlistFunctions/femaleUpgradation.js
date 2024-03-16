@@ -14,19 +14,20 @@ async function updateFemaleCandidatesOfferedCategory(
   noOfFemaleSeats,
   branch
 ) {
-  const tableName = `${branch}_mtechappl`;
-  const tableName2 = `${branch}_applicationstatus`;
+  const tableName = `mtechappl`;
+  const tableName2 = `applicationstatus`;
   //query that is being made to database.
-  queryString = `select ${tableName}.COAP, Gender, Category, MaxGateScore,
+  queryString = `SELECT ${tableName}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
     OfferCat,
     OfferedRound
-    from ${tableName}
-    left join ${tableName2}
-    on ${tableName}.COAP = ${tableName2}.COAP 
-    where (Accepted='R' and OfferCat ='${category}_FandM' and Gender='Female') or (Accepted='Y' and  OfferCat ='${category}_FandM' and Gender='Female') 
-    order by MaxGateScore desc,EWS ASC,HSSCper desc,SSCper desc`;
+    FROM ${tableName}
+    LEFT JOIN ${tableName2}
+    ON ${tableName}.COAP = ${tableName2}.COAP 
+    WHERE (Accepted='R' AND OfferCat ='${category}_FandM' AND Gender='Female' AND ${tableName}.branch='${branch}') OR 
+    (Accepted='Y' AND OfferCat ='${category}_FandM' AND Gender='Female' AND ${tableName2}.branch='${branch}') 
+    ORDER BY MaxGateScore DESC, EWS ASC, HSSCper DESC, SSCper DESC`;
   //variable to store shortlisted candidates
   var shortlistedCandidates;
   //querying
@@ -51,8 +52,8 @@ async function updateFemaleCandidatesOfferedCategory(
     while (noOfFemaleSeats > 0) {
       for (const candidate of shortlistedCandidates) {
         const [updateResult] = await con.query(`UPDATE ${tableName2}
-                SET  OfferedRound=${round},OfferCat='${category}_Female'
-                WHERE COAP = '${candidate.COAP}';`);
+          SET OfferedRound=${round}, OfferCat='${category}_Female'
+          WHERE COAP = '${candidate.COAP}' AND branch = '${branch}';`);
       }
       noOfFemaleSeats--;
     }
