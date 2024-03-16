@@ -5,13 +5,13 @@ async function findAvailableSeats(con, category, round, branch) {
   try {
     [availableSeats] = await con.query(`SELECT SeatsAllocated,
         (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat='${category}') 
-        AS SeatsTaken FROM seatmatrix WHERE category='${category}' AND branch='${branch}';`);
+        AS SeatsTaken FROM seatMatrix WHERE category='${category}' AND branch='${branch}';`);
 
     [availablePWDSeats] = await con.query(`SELECT SeatsAllocated,
         (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R' OR OfferedRound='${round}') AND offercat='${
       category + "_PWD"
     }') 
-        AS SeatsTaken FROM seatmatrix WHERE category='${
+        AS SeatsTaken FROM seatMatrix WHERE category='${
           category + "_PWD"
         }' AND branch='${branch}';`);
   } catch (error) {
@@ -35,7 +35,7 @@ async function findAvailableSeatsPWD(con, category, round, branch) {
   try {
     [availableSeats] = await con.query(`SELECT SeatsAllocated,
         (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat='${category}') 
-        AS SeatsTaken FROM seatmatrix WHERE category='${category}' AND branch='${branch}';`);
+        AS SeatsTaken FROM seatMatrix WHERE category='${category}' AND branch='${branch}';`);
   } catch (error) {
     throw error;
   }
@@ -58,7 +58,7 @@ async function findAvailableSeatsCommonPWD(con, round, branch) {
   try {
     [availableSeats] = await con.query(`SELECT SeatsAllocated,
         (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat REGEXP 'PWD$')
-        AS SeatsTaken FROM seatmatrix WHERE category REGEXP 'COMMON_PWD' AND branch='${branch}';`);
+        AS SeatsTaken FROM seatMatrix WHERE category REGEXP 'COMMON_PWD' AND branch='${branch}';`);
   } catch (error) {
     throw error;
   }
@@ -81,14 +81,14 @@ async function findAvailableSeatsGeneral(con, category, round, branch) {
 
   try {
     [availableSeats] = await con.query(
-      `SELECT SeatsAllocated FROM seatmatrix WHERE category='${category}' AND branch='${branch}';`
+      `SELECT SeatsAllocated FROM seatMatrix WHERE category='${category}' AND branch='${branch}';`
     );
 
     [availablePWDSeats] = await con.query(`SELECT SeatsAllocated,
         (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R' OR OfferedRound='${round}') AND offercat='${
       category + "_PWD"
     }') 
-        AS SeatsTaken FROM seatmatrix WHERE category='${
+        AS SeatsTaken FROM seatMatrix WHERE category='${
           category + "_PWD"
         }' AND branch='${branch}';`);
   } catch (error) {

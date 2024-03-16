@@ -62,7 +62,7 @@ router.post("/login", (req, res) => {
   });
 });
 
-const fs = require("node:fs");
+//const fs = require("node:fs");
 
 // Route for user signout
 router.get("/signout", (req, res) => {

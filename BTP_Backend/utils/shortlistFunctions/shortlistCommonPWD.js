@@ -3,7 +3,7 @@ const { findAvailableSeats } = require("../findAvailableSeats");
 
 async function updateCandidateStatus(con, candidate, offerCat, round, branch) {
   try {
-    const applicationstatusTable = `applicationStatus`;
+    const applicationstatusTable = `applicationstatus`;
 
     let valuesToBeInserted = [
       [candidate.COAP, "Y", "", round, "", "", offerCat, "Y"],
@@ -28,7 +28,7 @@ async function updateCandidateStatus(con, candidate, offerCat, round, branch) {
 async function shortlistCommonPWDCandidates(con, limit, round, branch) {
   console.log("8 ke baad aukat dikha di branch ne", branch);
   const mtechapplTable = `mtechappl`;
-  const applicationstatusTable = `applicationStatus`;
+  const applicationstatusTable = `applicationstatus`;
 
   var checkedCandidatesCoapID = ["x"];
 

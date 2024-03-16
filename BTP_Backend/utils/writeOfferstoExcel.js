@@ -153,7 +153,7 @@ async function writeToExcelGeneralFemale(
   fileName,
   branch
 ) {
-  var columnNames = `applicationStatus.offered,applicationStatus.Accepted,`;
+  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
