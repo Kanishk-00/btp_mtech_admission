@@ -38,17 +38,19 @@ async function resetDatabase(branch) {
       `Entries deleted from applicationstatus where branch is ${branch} successfully.`
     );
 
+    // Delete entries from seatMatrix table where branch matches
+    await con.query(`DELETE FROM seatMatrix WHERE branch = ?;`, [branch]);
+    console.log(
+      `Entries deleted from seatMatrix where branch is ${branch} successfully.`
+    );
+
+
     // Delete entries from mtechappl table where branch matches
     await con.query(`DELETE FROM mtechappl WHERE branch = ?;`, [branch]);
     console.log(
       `Entries deleted from mtechappl where branch is ${branch} successfully.`
     );
 
-    // Delete entries from seatMatrix table where branch matches
-    await con.query(`DELETE FROM seatMatrix WHERE branch = ?;`, [branch]);
-    console.log(
-      `Entries deleted from seatMatrix where branch is ${branch} successfully.`
-    );
   } catch (error) {
     throw error;
   }
