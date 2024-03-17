@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
+import SearchIcon from "@material-ui/icons/Search";
 import {
   Container,
   Typography,
@@ -46,6 +47,7 @@ function AdminPanel() {
   const [branchFilter, setBranchFilter] = useState("All");
   const [programs, setPrograms] = useState([]);
   const [newProgram, setNewProgram] = useState("");
+  const [searchTerm, setSearchTerm] = useState(""); // Added state for search term
 
   const navigate = useNavigate();
 
@@ -96,7 +98,7 @@ function AdminPanel() {
       const response = await axios.get(
         "http://localhost:4444/api/branch/branches"
       );
-      const filteredData = response.data.filter(item => item !== 'admin');
+      const filteredData = response.data.filter((item) => item !== "admin");
       setPrograms(filteredData);
     } catch (error) {
       console.error("Error fetching branches:", error);
@@ -113,13 +115,15 @@ function AdminPanel() {
     }
   };
 
-  const filterUsersByBranch = () => {
-    if (branchFilter === "All") {
-      return users;
-    } else {
-      return users.filter((user) => user.branch === branchFilter);
-    }
+  const handleSearchTermChange = (event) => {
+    setSearchTerm(event.target.value);
   };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      (branchFilter === "All" || user.branch === branchFilter)
+  );
 
   const handleDeleteUser = (userId) => {
     fetch(`http://localhost:4444/admin/users/${userId}`, {
@@ -470,6 +474,27 @@ function AdminPanel() {
             <Typography variant="h6" gutterBottom align="center">
               Added Users
             </Typography>
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <TextField
+                label="Search By Username"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={handleSearchTermChange}
+                style={{ marginBottom: 10, width: "50%" }} // Set width to 50%
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                  style: {
+                    borderRadius: 25, // Adjust as needed
+                    backgroundColor: "white",
+                  },
+                }}
+              />
+            </div>
             <TableContainer>
               <Table>
                 <TableHead>
@@ -501,7 +526,7 @@ function AdminPanel() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {filterUsersByBranch().map((user) => (
+                  {filteredUsers.map((user) => (
                     <TableRow key={user.id}>
                       <TableCell>{user.username}</TableCell>
                       <TableCell align="center">{user.branch}</TableCell>
