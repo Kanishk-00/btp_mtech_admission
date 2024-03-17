@@ -7,6 +7,8 @@ import { Button } from "@mui/material";
 import Download from "@mui/icons-material/Download";
 import Loader from "../Loader";
 import fileDownload from "js-file-download";
+import { ToastContainer , toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function RoundDetails(props) {
 
@@ -38,7 +40,20 @@ function RoundDetails(props) {
       window.location.reload();
     } catch (error) {
       console.log(error);
-      alert(error.response.data.result);
+      // alert(error.response.data.result);
+      toast.error(error.response.data.result, {
+        position: "top-center",
+        autoClose: false, // Do not auto-close
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        onClose: () => {
+          // Handle closing event
+          console.log("User closed the notification");
+        }
+      });
       setIsLoading(false);
     }
   };
@@ -99,6 +114,7 @@ function RoundDetails(props) {
 
   return (
     <div className="w-full h-auto flex justify-center items-center">
+      <ToastContainer/>
       {isLoading && <Loader />}
       {!isLoading && (
         <div className="w-full flex flex-col justify-center items-center h-auto p-3">

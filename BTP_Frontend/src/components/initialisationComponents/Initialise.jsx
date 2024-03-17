@@ -4,6 +4,8 @@ import FileUploader from "./FileUploader";
 import MatchColumns from "./MatchColumns";
 import { serverLink } from "../../serverLink";
 import axios from "axios";
+import { ToastContainer , toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Initialise(props) {
   function getCookie(name) {
@@ -33,7 +35,19 @@ function Initialise(props) {
       window.location.reload();
     } catch (error) {
       console.log("Error:", error);
-      alert(error);
+      toast.error(error.response.data.result, {
+        position: "top-center",
+        autoClose: false, // Do not auto-close
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        onClose: () => {
+          // Handle closing event
+          console.log("User closed the notification");
+        }
+      });
     }
   };
 
@@ -41,6 +55,7 @@ function Initialise(props) {
 
   return (
     <div className="flex w-full justify-center flex-col items-center gap-6 p-8">
+      <ToastContainer/>
       <div className="flex  content-center justify-center w-full gap-6">
         <p className="text-3xl text-gray-400">Initialise The DataBase</p>
         <Button

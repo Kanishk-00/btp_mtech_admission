@@ -185,8 +185,14 @@ router.get("/getMatchedColumnNames", isAuthenticated, (req, res) => {
     var result = mapColumnNames(`${branchFolder}/uploadedFile.xlsx`);
     res.status(200).send({ result: result });
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: error.message });
+    if (error instanceof Error && error.code === 'ENOENT') {
+      // Handle the ENOENT error
+      console.error("File not found:", error.message);
+      res.status(400).send({ result: "You haven't uploaded the file" });
+    } else{
+      console.log(error);
+      res.status(500).send({ error: error.message });
+    }
   }
 });
 

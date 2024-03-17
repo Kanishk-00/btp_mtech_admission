@@ -10,6 +10,7 @@ router.get("/check-authentication", isAuthenticated, (req, res) => {
     isAuthenticated: true,
     username: req.user.username,
     isAdmin: req.user.isAdmin,
+    branch: req.user.branch
   });
 });
 
