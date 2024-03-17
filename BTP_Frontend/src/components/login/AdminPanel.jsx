@@ -300,7 +300,7 @@ function AdminPanel() {
   };
 
   return (
-    <Container maxWidth="md" style={{}}>
+    <Container maxWidth="md" className="pt-10" style={{}}>
       <Grid
         container
         spacing={2}
