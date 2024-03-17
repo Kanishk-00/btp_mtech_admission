@@ -206,15 +206,21 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
   try {
     let roundId = req.params.roundId;
     let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
+    let modifiedFilePath = path.join(branchDirectory, "modifiedFile.xlsx");
     let generatedOffersDirectoryPath = path.join(
       branchDirectory,
       "generatedOffers"
     );
     console.log(`Generating... round ${roundId} results`);
 
+    // Check if the modifiedFile.xlsx exists
+    if (!fs.existsSync(modifiedFilePath)) {
+      console.log("Database is not initialised.");
+      return res.status(400).send({ result: "You haven't initialised the Database" });
+    }
+    
     // Check if the directory exists, if not, create it
     if (!fs.existsSync(generatedOffersDirectoryPath)) {
-      console.log("exist sync for geenerated offers mein aaya ki nahi??");
       fs.mkdirSync(generatedOffersDirectoryPath, { recursive: true });
     }
 
