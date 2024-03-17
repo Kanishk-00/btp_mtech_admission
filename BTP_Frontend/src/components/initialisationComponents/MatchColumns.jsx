@@ -70,6 +70,9 @@ const MatchColumns = () => {
       setColumnNamesMatched(response.data.result);
       setIsLoading(false);
     } catch (error) {
+      if (error.response && error.response.data && error.response.data.result === "You haven't uploaded the file") {
+        alert("You haven't uploaded the file");
+      } 
       console.log(error);
       setIsLoading(false);
     }
@@ -109,11 +112,20 @@ const MatchColumns = () => {
       )
       .then((res) => {
         console.log(res);
+        console.log("yooooooooo");
         window.location.reload();
       })
       .catch((err) => {
+        
+        if (err.response && err.response.data && err.response.data.result === "You haven't uploaded the file") {
+          alert("You haven't uploaded the file");
+        }else{
+          alert(err.response.data.result);
+        }
+        
+        console.log("Got an error..........");
+        console.log(err);
         setIsLoading(false);
-        alert(err.response.data.result);
       });
   };
   const handleDownload = () => {
