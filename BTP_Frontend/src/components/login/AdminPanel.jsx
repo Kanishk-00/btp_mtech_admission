@@ -147,15 +147,19 @@ function AdminPanel() {
   };
 
   const handleSubmit = () => {
-    if (!username || !password || !branch) {
+    if (!username.trim() || !password || !branch) {
+      // Trim the username before checking if it's empty
       setError("Please fill in all fields.");
       return;
     }
 
-    if (username.toLowerCase() === "admin") {
+    if (username.toLowerCase().trim() === "admin") {
+      // Trim the username before comparing
       setError("You can't add a user with the username 'admin'.");
       return;
     }
+
+    const trimmedUsername = username.trim(); // Trim the username
 
     fetch("http://localhost:4444/admin/register", {
       method: "POST",
@@ -163,7 +167,7 @@ function AdminPanel() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username,
+        username: trimmedUsername, // Use trimmed username
         password,
         branch,
       }),
