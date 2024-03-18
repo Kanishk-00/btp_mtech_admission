@@ -21,7 +21,8 @@ import {
   VisibilityOff,
 } from "@material-ui/icons";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
@@ -96,7 +97,7 @@ function LoginForm() {
           "http://localhost:4444/api/branch/branches"
         );
 
-        const filteredData = response.data.filter(item => item !== 'admin');
+        const filteredData = response.data.filter((item) => item !== "admin");
         setBranches(filteredData);
       } catch (error) {
         console.error("Error fetching branches:", error);
@@ -107,8 +108,11 @@ function LoginForm() {
   }, []);
 
   const handleSubmit = async () => {
+    // Trim the username before submitting
+    const trimmedUsername = username.trim();
+
     // Validate inputs
-    if (!username || !password) {
+    if (!trimmedUsername || !password) {
       setError("Please fill in all fields.");
       return;
     }
@@ -118,7 +122,7 @@ function LoginForm() {
       const loginResponse = await axios.post(
         "http://localhost:4444/auth/login",
         {
-          username,
+          username: trimmedUsername,
           password,
           branch: isAdmin ? "admin" : branch,
         },
@@ -137,8 +141,7 @@ function LoginForm() {
 
       // Handle successful login
       console.log("Login successful. JWT token:", loginResponse.data.token);
-      // Show toast message
-      toast.success("You are logged in successfully."); // Redirect to home page
+      // Redirect to home page
       navigate("/home");
     } catch (error) {
       // Handle login error

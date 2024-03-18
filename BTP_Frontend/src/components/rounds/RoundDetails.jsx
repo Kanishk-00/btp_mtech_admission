@@ -7,17 +7,16 @@ import { Button } from "@mui/material";
 import Download from "@mui/icons-material/Download";
 import Loader from "../Loader";
 import fileDownload from "js-file-download";
-import { ToastContainer , toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function RoundDetails(props) {
-
   function getCookie(name) {
     const value = `; ${document.cookie}`;
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2) return parts.pop().split(";").shift();
   }
-  
+
   const [isLoading, setIsLoading] = useState(true);
   const [offersGenerated, setOffersGenerated] = useState(false);
   // const [updatedStatus,setUpdatedStatus]=useState(false);
@@ -52,7 +51,7 @@ function RoundDetails(props) {
         onClose: () => {
           // Handle closing event
           console.log("User closed the notification");
-        }
+        },
       });
       setIsLoading(false);
     }
@@ -73,7 +72,6 @@ function RoundDetails(props) {
         })
         .then((res) => {
           console.log(res.data.result);
-          console.log("bhosar pappu...");
           setOffersGenerated(res.data.result.offersGenerated);
           // setUpdatedStatus(res.data.result.updatedRound);
           setRoundstatus(res.data.result);
@@ -114,7 +112,7 @@ function RoundDetails(props) {
 
   return (
     <div className="w-full h-auto flex justify-center items-center">
-      <ToastContainer/>
+      <ToastContainer />
       {isLoading && <Loader />}
       {!isLoading && (
         <div className="w-full flex flex-col justify-center items-center h-auto p-3">

@@ -30,7 +30,7 @@ function RoundUpdateFiles(props) {
       return;
     }
     setFile(e.target.files[0]);
-
+    setColumnNames(null);
     // setFileExists(true);
     console.log(e.target.files[0]);
   };
@@ -56,7 +56,7 @@ function RoundUpdateFiles(props) {
           withCredentials: true,
         })
         .then((res) => {
-          console.log(res.data.result);
+          console.log("the names column", res.data.result);
           setColumnNames(res.data.result);
           setisLoading(false);
         })
@@ -71,13 +71,14 @@ function RoundUpdateFiles(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       const formData = new FormData();
+      console.log("Coap value:", coap); // Log coap value
+      console.log("Candidate Decision value:", candidateDecision); // Log candidateDecision value
       formData.append("name", file.name);
       formData.append("file", file);
       formData.append("coap", coap);
       formData.append("candidateDecision", candidateDecision);
-      console.log(file);
+      console.log("this is the file", file);
       console.log("inside upload");
-
       axios
         .post(
           `${serverLink}/api/rounds/putFile/${props.fileName}/${props.roundNumber}`,
@@ -92,6 +93,7 @@ function RoundUpdateFiles(props) {
           }
         )
         .then((res) => {
+          console.log("this is upload", res.result);
           window.location.reload();
           alert("File Upload success");
           setFileExists(true);
@@ -245,26 +247,30 @@ function RoundUpdateFiles(props) {
           </div>
         </div>
       )}
-      {!fileExists && file != null && columnNames == null && (
+      {file !== null && columnNames === null && (
         <Button
           variant="contained"
           startIcon={<GetAppIcon />}
           style={{ margin: "auto", marginBottom: "5px" }}
           onClick={getColumnNames}
         >
-          get Column Names
+          Get Column Names
         </Button>
-      )}
-      {coap !== "" && candidateDecision !== "" && !isLoading && (
-        <Button
-          variant="contained"
-          startIcon={<FileUploadIcon />}
-          style={{ margin: "auto", marginBottom: "5px" }}
-          onClick={uploadFile}
-        >
-          Update Decisions
-        </Button>
-      )}
+      )}{" "}
+      {coap !== "" &&
+        candidateDecision !== "" &&
+        file !== null &&
+        columnNames !== null &&
+        !isLoading && (
+          <Button
+            variant="contained"
+            startIcon={<FileUploadIcon />}
+            style={{ margin: "auto", marginBottom: "5px" }}
+            onClick={uploadFile}
+          >
+            Update Decisions
+          </Button>
+        )}
     </div>
   );
 }
