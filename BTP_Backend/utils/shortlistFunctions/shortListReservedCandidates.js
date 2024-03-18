@@ -69,10 +69,15 @@ async function shortListReservedCandidates(
     }
 
     if (valuesToBeInserted.length > 0) {
+      // Add branch to the values to be inserted
+      valuesToBeInserted.forEach((candidate) => {
+        candidate.push(branch);
+      });
+
       var x = await insertManyIntoTable(
         con,
         applicationstatusTable,
-        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat)",
+        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,branch)",
         valuesToBeInserted
       );
     }

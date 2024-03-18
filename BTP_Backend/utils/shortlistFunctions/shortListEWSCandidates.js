@@ -90,10 +90,14 @@ async function shortListEWSFemaleCandidates(con, limit, round, branch) {
       console.log(`Seat offered to ${candidate.COAP} in EWS_Female category`);
     }
     if (valuesToBeInserted.length > 0) {
+      valuesToBeInserted.forEach((candidate) => {
+        candidate.push(branch);
+      });
+
       var x = await insertManyIntoTable(
         con,
         applicationstatusTable,
-        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat)",
+        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat, branch)",
         valuesToBeInserted
       );
     }
