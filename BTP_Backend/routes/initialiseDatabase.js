@@ -166,7 +166,7 @@ router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
   } catch (error) {
     console.log(error);
     try {
-      let didReset = await resetDatabase();
+      let didReset = await resetDatabase(req.user.branch);
     } catch (error) {
       console.log(error);
     }
@@ -185,11 +185,11 @@ router.get("/getMatchedColumnNames", isAuthenticated, (req, res) => {
     var result = mapColumnNames(`${branchFolder}/uploadedFile.xlsx`);
     res.status(200).send({ result: result });
   } catch (error) {
-    if (error instanceof Error && error.code === 'ENOENT') {
+    if (error instanceof Error && error.code === "ENOENT") {
       // Handle the ENOENT error
       console.error("File not found:", error.message);
       res.status(400).send({ result: "You haven't uploaded the file" });
-    } else{
+    } else {
       console.log(error);
       res.status(500).send({ error: error.message });
     }

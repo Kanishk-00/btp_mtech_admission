@@ -62,7 +62,6 @@ function Rounds(props) {
       axios
         .get(`${serverLink}/api/rounds/reset/${selectedRoundIndex + 1}`, {
           headers: {
-            Authorization: `Bearer ${jwtToken}`,
             Accept: "application/json",
             "Content-Type": "application/json",
           },

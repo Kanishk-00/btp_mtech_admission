@@ -46,13 +46,30 @@ async function resetRound(inputRoundNumber, branch) {
 
   // Deleting all the offered candidates in that round and retain and accepted round as that of current number
   try {
+    const sqlQuery = `
+    DELETE FROM applicationstatus 
+    WHERE 
+      (
+        (Offered <> 'Y' AND OfferedRound <> '${roundNumber}')
+        OR RetainRound <> '${roundNumber}'
+        OR RejectOrAcceptRound <> '${roundNumber}'
+      )
+      AND branch = '${branch}'
+  `;
+    console.log("SQL query being executed:", sqlQuery); // Log the SQL query
+
     const result = await con.query(`
     DELETE FROM applicationstatus 
-    WHERE (Offered="Y" AND OfferedRound='${roundNumber}') 
-      OR (RetainRound='${roundNumber}')
-      OR (RejectOrAcceptRound='${roundNumber}')
+    WHERE 
+      (
+        (Offered <> 'Y' AND OfferedRound <> '${roundNumber}')
+        OR RetainRound <> '${roundNumber}'
+        OR RejectOrAcceptRound <> '${roundNumber}'
+      )
       AND branch = '${branch}'
   `);
+    console.log("the result of the branch is: ", branch);
+    console.log("the result of the deletion query is: ", result[0]);
   } catch (error) {
     throw error;
   }

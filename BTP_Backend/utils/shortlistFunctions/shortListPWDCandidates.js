@@ -53,10 +53,14 @@ async function shortListPWDCandidates(
     }
 
     if (valuesToBeInserted.length > 0) {
+      valuesToBeInserted.forEach((candidate) => {
+        candidate.push(branch);
+      });
+
       var x = await insertManyIntoTable(
         con,
         applicationstatusTable,
-        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd)",
+        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd, branch)",
         valuesToBeInserted
       );
     }

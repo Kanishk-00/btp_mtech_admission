@@ -8,7 +8,7 @@ async function resetDatabase(branch) {
   const branchFolder = path.join(userFilePath, branch);
   const modifiedFilePath = path.join(branchFolder, "modifiedFile.xlsx");
   const uploadedFilePath = path.join(branchFolder, "uploadedFile.xlsx");
-  
+
   // Deleting files
   if (fs.existsSync(modifiedFilePath)) {
     fs.unlinkSync(modifiedFilePath);
@@ -25,7 +25,7 @@ async function resetDatabase(branch) {
   const roundUpdatedPath = path.join(branchFolder, "roundUpdates");
 
   if (fs.existsSync(generatedOffersPath)) {
-    fs.readdirSync(generatedOffersPath).forEach(file => {
+    fs.readdirSync(generatedOffersPath).forEach((file) => {
       const filePath = path.join(generatedOffersPath, file);
       fs.unlinkSync(filePath);
       console.log(`${filePath} was deleted`);
@@ -33,7 +33,7 @@ async function resetDatabase(branch) {
   }
 
   if (fs.existsSync(roundUpdatedPath)) {
-    fs.readdirSync(roundUpdatedPath).forEach(file => {
+    fs.readdirSync(roundUpdatedPath).forEach((file) => {
       const filePath = path.join(roundUpdatedPath, file);
       fs.unlinkSync(filePath);
       console.log(`${filePath} was deleted`);
@@ -52,6 +52,10 @@ async function resetDatabase(branch) {
 
   // Dropping tables
   try {
+    // Disable foreign key checks
+    await con.query("SET FOREIGN_KEY_CHECKS = 0;");
+    // Delete entries from applicationstatus table where branch matches
+    console.log("the branch is: ", branch);
     await con.query(`DELETE FROM applicationstatus WHERE branch = ?;`, [
       branch,
     ]);
@@ -65,13 +69,14 @@ async function resetDatabase(branch) {
       `Entries deleted from seatMatrix where branch is ${branch} successfully.`
     );
 
-
     // Delete entries from mtechappl table where branch matches
     await con.query(`DELETE FROM mtechappl WHERE branch = ?;`, [branch]);
     console.log(
       `Entries deleted from mtechappl where branch is ${branch} successfully.`
     );
 
+    // Enable foreign key checks
+    await con.query("SET FOREIGN_KEY_CHECKS = 1;");
   } catch (error) {
     throw error;
   }

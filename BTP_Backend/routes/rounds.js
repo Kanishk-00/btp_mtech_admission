@@ -216,9 +216,11 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
     // Check if the modifiedFile.xlsx exists
     if (!fs.existsSync(modifiedFilePath)) {
       console.log("Database is not initialised.");
-      return res.status(400).send({ result: "You haven't initialised the Database" });
+      return res
+        .status(400)
+        .send({ result: "You haven't initialised the Database" });
     }
-    
+
     // Check if the directory exists, if not, create it
     if (!fs.existsSync(generatedOffersDirectoryPath)) {
       fs.mkdirSync(generatedOffersDirectoryPath, { recursive: true });
