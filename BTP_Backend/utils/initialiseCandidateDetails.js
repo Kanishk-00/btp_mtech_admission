@@ -12,7 +12,6 @@ var mysql = require("mysql2");
     Functionality :inserts all the candidate details into the mtechappl table.
 */
 async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
-  console.log("where the hell is branch: ", branch);
   //Creating a Connection
   var con = mysql
     .createPool({
@@ -40,13 +39,9 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
   /*
     Opening the workbook and converting each row into JSON object with column name as key
   */
-  console.log("1");
   var workbook = XLSX.readFile(filePath);
-  console.log("2");
   var applicantsDataSheet = workbook.Sheets[workbook.SheetNames[0]];
-  console.log("3");
   var applicantsData = XLSX.utils.sheet_to_json(applicantsDataSheet);
-  console.log("4");
   /*
     Creating the values array which will be used to query(insert in) the database
   */

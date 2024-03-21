@@ -46,7 +46,6 @@ function Rounds(props) {
         .catch((err) => {
           console.log(err);
           if (err.response && err.response.status === 401) {
-            console.log("aagaya hai ishar");
             navigate("/");
           }
         });

@@ -30,7 +30,6 @@ async function updateCandidateStatus(con, candidate, offerCat, round, branch) {
 }
 
 async function shortlistCommonPWDCandidates(con, limit, round, branch) {
-  console.log("8 ke baad aukat dikha di branch ne", branch);
   const mtechapplTable = `mtechappl`;
   const applicationstatusTable = `applicationstatus`;
 

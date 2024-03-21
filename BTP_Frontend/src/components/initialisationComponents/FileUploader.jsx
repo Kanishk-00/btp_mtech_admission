@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-
 function FileUploader(props) {
   const [file, setFile] = useState(null);
   const [fileExists, setFileExists] = useState(false);
@@ -44,12 +43,9 @@ function FileUploader(props) {
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log("2");
           console.log(err);
-          console.log("1");
           setIsLoading(false);
           if (err.response && err.response.status === 401) {
-            console.log("aaya kya iddhe?");
             navigate("/");
           }
         });
@@ -92,7 +88,7 @@ function FileUploader(props) {
         formData,
         { withCredentials: true }
       );
-     
+
       toast.success("File Upload success", {
         position: "top-center",
         autoClose: true, // Do not auto-close
@@ -106,7 +102,7 @@ function FileUploader(props) {
           console.log("File Uploaded....");
           // Reload the window
           window.location.reload();
-      },
+        },
       });
       // <Alert severity="success">File upload successful</Alert>;
       // <Alert severity="success" color="warning">
@@ -117,23 +113,24 @@ function FileUploader(props) {
       console.log("the error, ", error.response);
       console.log("the error, ", error.response.status);
       if (error.response && error.response.status === 401) {
-        toast.error("File upload failed. Please log in with correct credentials.", {
-          position: "top-center",
-          autoClose: true, // Do not auto-close
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          onClose: () => {
-            // Handle closing event
-            console.log("File Upload failed....");
-            // Reload the window
-        
-        },
-        });
+        toast.error(
+          "File upload failed. Please log in with correct credentials.",
+          {
+            position: "top-center",
+            autoClose: true, // Do not auto-close
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            onClose: () => {
+              // Handle closing event
+              console.log("File Upload failed....");
+              // Reload the window
+            },
+          }
+        );
       } else {
-        
         toast.error("File upload failed.", {
           position: "top-center",
           autoClose: true, // Do not auto-close
@@ -146,8 +143,7 @@ function FileUploader(props) {
             // Handle closing event
             console.log("File Upload failed....");
             // Reload the window
-        
-        },
+          },
         });
       }
     }

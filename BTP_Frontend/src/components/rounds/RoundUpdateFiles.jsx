@@ -37,7 +37,6 @@ function RoundUpdateFiles(props) {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        
       });
       return;
     }
@@ -82,8 +81,7 @@ function RoundUpdateFiles(props) {
             draggable: true,
             progress: undefined,
           });
-        }
-        );
+        });
     } catch (error) {
       console.error(error);
     }
@@ -116,8 +114,6 @@ function RoundUpdateFiles(props) {
           }
         )
         .then((res) => {
-          console.log("this is upload", res.result);
-          console.log("We are here.............successssssssssssssss.!!");
           window.location.reload();
           toast.success("File Upload success", {
             position: "top-center",
@@ -141,9 +137,7 @@ function RoundUpdateFiles(props) {
             draggable: true,
             progress: undefined,
           });
-        }
-        
-        );
+        });
     } catch (error) {
       console.error(error);
     }

@@ -11,7 +11,6 @@ async function createDataBase(connection, databaseName) {
     console.log("Database created with name " + databaseName);
     return result;
   });
-  //   console.log(res);
   return res;
 }
 /* 
@@ -20,7 +19,6 @@ async function createDataBase(connection, databaseName) {
     output: connection object
 */
 async function connectToDatabase(databaseName) {
-  // console.log("INside connection");
   var con = mysql.createConnection({
     host: process.env.MYSQL_HOSTNAME,
     user: "root",
@@ -63,7 +61,6 @@ async function insertManyIntoTable(
   try {
     var res = await connection.query(queryString, [toBeInsertedValues]);
   } catch (error) {
-    console.log("idhar aaya fatne\n");
     throw error;
   }
 

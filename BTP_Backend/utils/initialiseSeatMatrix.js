@@ -38,7 +38,6 @@ async function initialiseSeatMatrix(branch, seatAllotedData) {
     }
 
     // Inserting data into the seat matrix table
-    console.log("hi1");
     const insertedTableStatus = await insertManyIntoTable(
       con,
       tableName,

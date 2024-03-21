@@ -9,9 +9,8 @@ import Loader from "../Loader";
 import DownloadIcon from "@mui/icons-material/Download";
 import documentImage from "../../images/docmentimage.jpg";
 import fileDownload from "js-file-download";
-import { ToastContainer , toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MatchColumns = () => {
   function getCookie(name) {
@@ -73,7 +72,11 @@ const MatchColumns = () => {
       setColumnNamesMatched(response.data.result);
       setIsLoading(false);
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.result === "You haven't uploaded the file") {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.result === "You haven't uploaded the file"
+      ) {
         toast.error(error.response.data.result, {
           position: "top-center",
           autoClose: true, // Do not auto-close
@@ -85,9 +88,9 @@ const MatchColumns = () => {
           onClose: () => {
             // Handle closing event
             console.log("User closed the notification");
-          }
+          },
         });
-      } 
+      }
       console.log(error);
       setIsLoading(false);
     }
@@ -153,7 +156,6 @@ const MatchColumns = () => {
       )
       .then((res) => {
         console.log(res);
-        console.log("yooooooooo");
         window.location.reload();
       })
       .catch((err) => {
@@ -168,7 +170,7 @@ const MatchColumns = () => {
           onClose: () => {
             // Handle closing event
             console.log("User closed the notification");
-          }
+          },
         });
         console.log(err);
         setIsLoading(false);
@@ -201,12 +203,12 @@ const MatchColumns = () => {
             onClose: () => {
               // Handle closing event
               console.log("User closed the notification");
-            }
+            },
           });
         });
     } catch (error) {
       console.error("Error:", error);
-      
+
       toast.error("Failed to download file.", {
         position: "top-center",
         autoClose: true, // Do not auto-close
@@ -218,7 +220,7 @@ const MatchColumns = () => {
         onClose: () => {
           // Handle closing event
           console.log("User closed the notification");
-        }
+        },
       });
     }
   };

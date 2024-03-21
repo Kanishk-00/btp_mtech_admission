@@ -171,7 +171,6 @@ router.get("/getRoundDetails/:roundId", isAuthenticated, async (req, res) => {
   // Checking if offers are
 
   if (OffersfilesList.includes(`round${roundId}.xlsx`)) {
-    console.log("Teri maa ko salam....");
     response.offersGenerated = true;
   }
   // Checking for updates
