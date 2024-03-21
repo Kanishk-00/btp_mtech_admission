@@ -132,7 +132,7 @@ function RoundDetails(props) {
                 </Button>
               )}
               {offersGenerated && (
-                <Button variant="contained">Regenerate</Button>
+                <Button variant="contained" onClick={generateoffers}>Regenerate</Button>
               )}
               {offersGenerated && (
                 <Button
