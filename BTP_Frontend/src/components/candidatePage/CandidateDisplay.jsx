@@ -6,6 +6,9 @@ import Loader from "../Loader";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import { Button } from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function CandidateDisplay(props) {
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -42,7 +45,19 @@ function CandidateDisplay(props) {
         })
         .catch((err) => {
           console.log(err);
-          alert(err.message);
+          toast.error(err.message, {
+            position: "top-center",
+            autoClose: false, // Do not auto-close
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            onClose: () => {
+              // Handle closing event
+              console.log("User closed the notification");
+            },
+          });
           setIsLoading(false);
         });
     } catch (error) {
@@ -75,6 +90,7 @@ function CandidateDisplay(props) {
 
   return (
     <div className="w-full">
+      <ToastContainer />
       {!isLoading && (
         <div className="flex flex-col w-[90%] justify-center items-center mt-10 m-auto">
           <div className="w-full  bg-[#1B3058] text-white h-14 flex justify-center items-center text-2xl">

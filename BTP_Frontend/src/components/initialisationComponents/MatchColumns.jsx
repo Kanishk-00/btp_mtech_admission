@@ -76,7 +76,7 @@ const MatchColumns = () => {
       if (error.response && error.response.data && error.response.data.result === "You haven't uploaded the file") {
         toast.error(error.response.data.result, {
           position: "top-center",
-          autoClose: false, // Do not auto-close
+          autoClose: true, // Do not auto-close
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -103,11 +103,37 @@ const MatchColumns = () => {
       }
       // console.log(actualColumnName,count)
       if (count >= 2) {
-        alert(`${actualColumnName} is Selected Twice`);
+        const error_message = `${actualColumnName} is Selected Twice`;
+        toast.error(error_message, {
+          position: "top-center",
+          autoClose: true, // Do not auto-close
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          onClose: () => {
+            // Handle closing event
+            console.log("User closed the notification");
+          },
+        });
         return;
       }
       if (count === 0) {
-        alert(`${actualColumnName} is Not Selected `);
+        const error_message = `${actualColumnName} is Not Selected `;
+        toast.error(error_message, {
+          position: "top-center",
+          autoClose: true, // Do not auto-close
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          onClose: () => {
+            // Handle closing event
+            console.log("User closed the notification");
+          },
+        });
         return;
       }
     }
@@ -133,7 +159,7 @@ const MatchColumns = () => {
       .catch((err) => {
         toast.error(err.response.data.result, {
           position: "top-center",
-          autoClose: false, // Do not auto-close
+          autoClose: true, // Do not auto-close
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -166,7 +192,7 @@ const MatchColumns = () => {
         .catch((err) => {
           toast.error(err.response.data.result, {
             position: "top-center",
-            autoClose: false, // Do not auto-close
+            autoClose: true, // Do not auto-close
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -180,7 +206,20 @@ const MatchColumns = () => {
         });
     } catch (error) {
       console.error("Error:", error);
-      alert("Failed to download file.");
+      
+      toast.error("Failed to download file.", {
+        position: "top-center",
+        autoClose: true, // Do not auto-close
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        onClose: () => {
+          // Handle closing event
+          console.log("User closed the notification");
+        }
+      });
     }
   };
 

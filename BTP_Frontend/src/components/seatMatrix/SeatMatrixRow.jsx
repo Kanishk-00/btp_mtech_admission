@@ -5,6 +5,9 @@ import { Button, TextField } from "@mui/material";
 import { serverLink } from "../../serverLink";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function SeatMatrixRow(props) {
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -17,7 +20,17 @@ function SeatMatrixRow(props) {
   };
   const handleSave = async () => {
     if (seats < props.seatsBooked) {
-      alert("Seats booked are more than the seats allocated");
+      toast.error("Seats booked are more than the seats allocated", {
+        position: "top-center",
+        autoClose: true, // Do not auto-close
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        
+      });
+      
       return;
     }
 

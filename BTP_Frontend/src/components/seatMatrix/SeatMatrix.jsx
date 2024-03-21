@@ -11,6 +11,8 @@ import { serverLink } from "../../serverLink";
 import Loader from "../Loader";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function SeatMatrix(props) {
   const navigate = useNavigate();
@@ -45,7 +47,16 @@ function SeatMatrix(props) {
           if (err.response && err.response.status === 401) {
             navigate("/");
           } else {
-            alert(err.message);
+            toast.error(err.message, {
+              position: "top-center",
+              autoClose: true, // Do not auto-close
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              
+            });
           }
           setIsLoading(false);
         });
@@ -57,6 +68,7 @@ function SeatMatrix(props) {
 
   return (
     <div className="flex justify-center w-full flex-col items-center gap-10 mt-8 mb-8">
+      <ToastContainer />
       <div className="w-full flex justify-center">
         <p className="text-3xl text-gray-400">Seat Matrix</p>
       </div>

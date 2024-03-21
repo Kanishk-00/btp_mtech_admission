@@ -37,7 +37,7 @@ function Initialise(props) {
       console.log("Error:", error);
       toast.error(error.response.data.result, {
         position: "top-center",
-        autoClose: false, // Do not auto-close
+        autoClose: true, // Do not auto-close
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

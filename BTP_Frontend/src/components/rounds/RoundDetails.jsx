@@ -42,7 +42,7 @@ function RoundDetails(props) {
       // alert(error.response.data.result);
       toast.error(error.response.data.result, {
         position: "top-center",
-        autoClose: false, // Do not auto-close
+        autoClose: true, // Do not auto-close
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

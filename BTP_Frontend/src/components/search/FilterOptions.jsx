@@ -6,6 +6,9 @@ import { serverLink } from "../../serverLink";
 import Search from "@mui/icons-material/Search";
 import FilteredCandidatesTable from "./FilteredCandidatesTable";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function FilterOptions(props) {
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -49,10 +52,18 @@ function FilterOptions(props) {
         .catch((err) => {
           console.log(err);
           if (err.response && err.response.status === 401) {
-            console.log("aagaya hai idhar bhi search wala");
             navigate("/");
           } else {
-            alert(err.message);
+            toast.error(err.message, {
+              position: "top-center",
+              autoClose: true, // Do not auto-close
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              
+            });
           }
           setIsLoading(false);
         });
@@ -87,7 +98,16 @@ function FilterOptions(props) {
         })
         .catch((err) => {
           console.log(err);
-          alert(err.message);
+          toast.error(err.message, {
+            position: "top-center",
+            autoClose: true, // Do not auto-close
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            
+          });
           setIsLoading(false);
         });
     } catch (error) {
@@ -97,6 +117,7 @@ function FilterOptions(props) {
 
   return (
     <div className="flex flex-col w-full justify-start items-center  h-fit">
+      <ToastContainer />
       <div className="w-full flex justify-center">
         <p className="text-3xl text-gray-400">Search</p>
       </div>

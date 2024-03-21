@@ -10,6 +10,9 @@ import fileDownload from "js-file-download";
 import Cookies from "js-cookie";
 import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function FileUploader(props) {
   const [file, setFile] = useState(null);
@@ -59,7 +62,19 @@ function FileUploader(props) {
   const handleFileSubmit = (e) => {
     const file = e.target.files[0];
     if (file.name.split(".").pop() !== "xlsx") {
-      alert("Invalid file type, please upload an xlsx file");
+      toast.error("Invalid file type, please upload an xlsx file", {
+        position: "top-center",
+        autoClose: true, // Do not auto-close
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        onClose: () => {
+          // Handle closing event
+          console.log("Wrong file uploaded.");
+        },
+      });
       return;
     }
     setFile(file);
@@ -77,26 +92,63 @@ function FileUploader(props) {
         formData,
         { withCredentials: true }
       );
-      alert("File Upload success");
+     
+      toast.success("File Upload success", {
+        position: "top-center",
+        autoClose: true, // Do not auto-close
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        onClose: () => {
+          // Handle closing event
+          console.log("File Uploaded....");
+          // Reload the window
+          window.location.reload();
+      },
+      });
       // <Alert severity="success">File upload successful</Alert>;
       // <Alert severity="success" color="warning">
       //   This is a success Alert with warning colors.
       // </Alert>;
-      window.location.reload(); // Reload the page after successful upload
     } catch (error) {
       console.error("Upload error:", error);
       console.log("the error, ", error.response);
       console.log("the error, ", error.response.status);
       if (error.response && error.response.status === 401) {
-        // toast.error("Please log in to access the website");
-        // <Alert severity="error">Please log in to access the website.</Alert>;
-        alert("File upload failed. Please log in with correct credentials.");
+        toast.error("File upload failed. Please log in with correct credentials.", {
+          position: "top-center",
+          autoClose: true, // Do not auto-close
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          onClose: () => {
+            // Handle closing event
+            console.log("File Upload failed....");
+            // Reload the window
+        
+        },
+        });
       } else {
-        // toast.error("File upload failed. Please check console for details.");
-        // <Alert severity="error">
-        //   File upload failed. Please check console for details.
-        // </Alert>;
-        alert("File upload failed. Please log in with correct credentials.");
+        
+        toast.error("File upload failed.", {
+          position: "top-center",
+          autoClose: true, // Do not auto-close
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          onClose: () => {
+            // Handle closing event
+            console.log("File Upload failed....");
+            // Reload the window
+        
+        },
+        });
       }
     }
   };

@@ -10,6 +10,9 @@ import { TextField } from "@mui/material";
 import fileDownload from "js-file-download";
 import { Button } from "@mui/material";
 import Loader from "../Loader";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function RoundUpdateFiles(props) {
   function getCookie(name) {
     const value = `; ${document.cookie}`;
@@ -26,7 +29,16 @@ function RoundUpdateFiles(props) {
   const handleFileSubmit = (e) => {
     const file = e.target.files[0];
     if (file.name.split(".").pop() !== "xlsx") {
-      alert("Invalid file type, please upload an xlsx file");
+      toast.error("Invalid file type, please upload an xlsx file", {
+        position: "top-center",
+        autoClose: true, // Do not auto-close
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        
+      });
       return;
     }
     setFile(e.target.files[0]);
@@ -60,7 +72,18 @@ function RoundUpdateFiles(props) {
           setColumnNames(res.data.result);
           setisLoading(false);
         })
-        .catch((err) => alert(err));
+        .catch((err) => {
+          toast.error(err, {
+            position: "top-center",
+            autoClose: true, // Do not auto-close
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+        );
     } catch (error) {
       console.error(error);
     }
@@ -94,12 +117,33 @@ function RoundUpdateFiles(props) {
         )
         .then((res) => {
           console.log("this is upload", res.result);
+          console.log("We are here.............successssssssssssssss.!!");
           window.location.reload();
-          alert("File Upload success");
+          toast.success("File Upload success", {
+            position: "top-center",
+            autoClose: true, // Do not auto-close
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
           setFileExists(true);
           setisLoading(false);
         })
-        .catch((err) => alert(err));
+        .catch((err) => {
+          toast.error(err, {
+            position: "top-center",
+            autoClose: true, // Do not auto-close
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+        
+        );
     } catch (error) {
       console.error(error);
     }
@@ -133,6 +177,7 @@ function RoundUpdateFiles(props) {
   };
   return (
     <div className="flex flex-col max-w-[800px] min-w-[95%]  rounded-xl border-2">
+      <ToastContainer />
       <div className="flex justify-center items-center w-full h-11 bg-zinc-100 rounded-t-xl ">
         <p className="text-xl text-black">{props.displayFileName}</p>
       </div>
