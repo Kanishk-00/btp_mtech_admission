@@ -47,15 +47,14 @@ function SeatMatrix(props) {
           if (err.response && err.response.status === 401) {
             navigate("/");
           } else {
-            toast.error(err.message, {
+            console.log(err);
+            toast.error(err.response.data.error, {
               position: "top-center",
-              autoClose: true, // Do not auto-close
+              autoClose: true, 
               hideProgressBar: false,
               closeOnClick: true,
-              pauseOnHover: true,
               draggable: true,
               progress: undefined,
-              
             });
           }
           setIsLoading(false);

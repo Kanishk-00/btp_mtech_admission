@@ -28,8 +28,13 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
     const [resultSeatMatrix] = await con.query(query);
     res.status(200).send({ result: resultSeatMatrix });
   } catch (error) {
-    console.log("Error:", error);
-    res.status(500).send({ result: "Error retrieving seat matrix data" });
+    console.log("Error in seat Matrix:", error);
+    if (error && error.code === 'ER_NO_SUCH_TABLE') {
+      res.status(404).send({ error: "Error retrieving seat matrix data, Initialisation not done yet. " });
+    } else {
+      console.log("Error:", error);
+      res.status(500).send({ error: "Error retrieving seat matrix data" });
+    }
   }
 });
 /*
