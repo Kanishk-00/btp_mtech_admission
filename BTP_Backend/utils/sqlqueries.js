@@ -99,6 +99,19 @@ async function checkTableExists(connection, tableName) {
   }
 }
 
+async function createRound1Table(connection, table_name) {
+  var queryString = `CREATE TABLE ${table_name}(COAP VARCHAR(200) NOT NULL UNIQUE, Offered text, Accepted text, OfferCat text, IsOfferPwd text, OfferedRound text, RetainRound text, RejectOrAcceptRound text, ManualUpdate text, branch VARCHAR(255), FOREIGN KEY (COAP) REFERENCES mtechappl (COAP))`;
+  
+  try {
+    var res = await connection.query(queryString);
+  } catch (error) {
+    throw error;
+  }
+  console.log("Table with name ",table_name, " created");
+  return res;
+}
+
+
 module.exports = {
   createDataBase,
   connectToDatabase,
@@ -107,4 +120,5 @@ module.exports = {
   createTable,
   selectQuery,
   checkTableExists,
+  createRound1Table,
 };

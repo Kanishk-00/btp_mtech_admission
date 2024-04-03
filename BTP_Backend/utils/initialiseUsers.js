@@ -1,4 +1,4 @@
-var { createTable, insertManyIntoTable } = require("./sqlqueries.js");
+var { createTable, insertManyIntoTable, createRound1Table } = require("./sqlqueries.js");
 var { usersSchema } = require("../schemas/usersSchema.js"); // Assuming you have a file for the users schema
 var mysql = require("mysql2");
 
@@ -44,6 +44,21 @@ async function initializeUsersTable(databaseName, userData) {
       userData
     );
     console.log("Users table initialized successfully.");
+
+    const round1TableExists = await checkTableExists(con, "round1");
+    if (round1TableExists) {
+      console.log("Rounds tables already exists");
+      return;
+    }
+
+    await createRound1Table(con, "round1");
+    await createRound1Table(con, "round2");
+    await createRound1Table(con, "round3");
+    await createRound1Table(con, "round4");
+    await createRound1Table(con, "round5");
+    await createRound1Table(con, "round6");
+    
+    console.log("Rounds tables created successfully!!");
   } catch (error) {
     console.log(error);
   }

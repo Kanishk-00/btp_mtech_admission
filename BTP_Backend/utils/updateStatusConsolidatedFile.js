@@ -73,6 +73,21 @@ async function updateStatusConsolidatedFile(
       throw error;
     }
   }
+
+  // snap shot logic
+  try {
+    const sqlQuery2 = `DELETE FROM round${round} WHERE branch = '${branch}'`;
+    const res2 = await con.query(sqlQuery2);
+    console.log("Query 2");
+
+    const sqlQuery3 = `INSERT INTO round${round} SELECT * FROM applicationstatus WHERE branch = '${branch}'`;
+    const res3 = await con.query(sqlQuery3);
+    console.log("Query 3");
+    
+  } catch (error) {
+    throw error;
+  }
+  
 }
 
 module.exports = { updateStatusConsolidatedFile };
