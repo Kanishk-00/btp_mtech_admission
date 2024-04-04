@@ -99,8 +99,8 @@ async function checkTableExists(connection, tableName) {
   }
 }
 
-async function createRound1Table(connection, table_name) {
-  var queryString = `CREATE TABLE ${table_name}(COAP VARCHAR(200) NOT NULL UNIQUE, Offered text, Accepted text, OfferCat text, IsOfferPwd text, OfferedRound text, RetainRound text, RejectOrAcceptRound text, ManualUpdate text, branch VARCHAR(255), FOREIGN KEY (COAP) REFERENCES mtechappl (COAP))`;
+async function createRoundsTable(connection, table_name, table_schema) {
+  var queryString = `CREATE TABLE IF NOT EXISTS ${table_name} ${table_schema}`;
   
   try {
     var res = await connection.query(queryString);
@@ -120,5 +120,5 @@ module.exports = {
   createTable,
   selectQuery,
   checkTableExists,
-  createRound1Table,
+  createRoundsTable,
 };
