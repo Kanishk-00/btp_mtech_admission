@@ -1,7 +1,6 @@
 const XLSX = require("xlsx");
 const mysql = require("mysql2");
-const { selectQuery, createRoundsTable } = require("./sqlqueries");
-var { roundsSchema } = require("../schemas/roundsSchema.js"); 
+const { selectQuery } = require("./sqlqueries");
 
 async function updateDecision(
   con,
@@ -91,10 +90,6 @@ async function updateStatusConsolidatedFile(
       throw error;
     }
   }
-
-  // creating table with round number = round
-  const table_name = "round" + round;
-  await createRoundsTable(con, table_name, roundsSchema);
 
   // snap shot logic
   try {
