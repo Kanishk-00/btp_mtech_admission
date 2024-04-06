@@ -44,18 +44,7 @@ async function resetRound(inputRoundNumber, branch) {
       database: process.env.MYSQL_DATABASE,
     })
     .promise();
-  
-  try {
-    sqlQuery1 = `DELETE FROM applicationstatus WHERE branch = '${branch}'`;
-    const res1 = await con.query(sqlQuery1);
-    if (inputRoundNumber > 1) {
-      sqlQuery2 = `INSERT INTO applicationstatus SELECT * FROM round${inputRoundNumber - 1}`;
-      const res2 = await con.query(sqlQuery2);
-    }
-  } catch (error) {
-    throw error;
-  }
-  /*
+
   // Deleting all the offered candidates in that round and retain and accepted round as that of current number
   try {
     const sqlQuery = `DELETE FROM applicationStatus WHERE (Offered = 'Y' AND OfferedRound = '${roundNumber}' AND branch = '${branch}') OR (RetainRound = '${roundNumber}' AND branch = '${branch}') OR (RejectOrAcceptRound = '${roundNumber}' AND branch = '${branch}')`;
@@ -68,7 +57,7 @@ async function resetRound(inputRoundNumber, branch) {
     console.log("the result of the deletion query is: ", result[0]);
   } catch (error) {
     throw error;
-  }*/
+  }
 }
 
 module.exports = { resetRound };
