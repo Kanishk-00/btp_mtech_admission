@@ -25,6 +25,7 @@ async function resetRound(inputRoundNumber, branch) {
     path.join(generatedOffersDirectory, `round${roundNumber}.xlsx`),
   ];
 
+  console.log("file path have been identified");
   for (const filePath of filePaths) {
     if (fs.existsSync(filePath)) {
       fs.unlink(filePath, (err) => {
@@ -46,29 +47,13 @@ async function resetRound(inputRoundNumber, branch) {
 
   // Deleting all the offered candidates in that round and retain and accepted round as that of current number
   try {
-    const sqlQuery = `
-    DELETE FROM applicationstatus 
-    WHERE 
-      (
-        (Offered <> 'Y' AND OfferedRound <> '${roundNumber}')
-        OR RetainRound <> '${roundNumber}'
-        OR RejectOrAcceptRound <> '${roundNumber}'
-      )
-      AND branch = '${branch}'
-  `;
+    const sqlQuery = `DELETE FROM applicationStatus WHERE (Offered = 'Y' AND OfferedRound = '${roundNumber}' AND branch = '${branch}') OR (RetainRound = '${roundNumber}' AND branch = '${branch}') OR (RejectOrAcceptRound = '${roundNumber}' AND branch = '${branch}')`;
     console.log("SQL query being executed:", sqlQuery); // Log the SQL query
-
-    const result = await con.query(`
-    DELETE FROM applicationstatus 
-    WHERE 
-      (
-        (Offered <> 'Y' AND OfferedRound <> '${roundNumber}')
-        OR RetainRound <> '${roundNumber}'
-        OR RejectOrAcceptRound <> '${roundNumber}'
-      )
-      AND branch = '${branch}'
-  `);
     console.log("the result of the branch is: ", branch);
+
+    // Execute the query
+    const result = await con.query(sqlQuery);
+
     console.log("the result of the deletion query is: ", result[0]);
   } catch (error) {
     throw error;

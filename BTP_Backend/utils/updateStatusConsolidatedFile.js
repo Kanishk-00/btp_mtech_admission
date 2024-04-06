@@ -14,16 +14,19 @@ async function updateDecision(
   const currDecision = applicant[candidateDecisonColumnName];
   console.log(currCOAP, currDecision);
   try {
-    const [checkPreviousStatus] = await con.query(
-      `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM applicationstatus WHERE COAP = ? AND branch = ?;`,
-      [currCOAP, branch]
-    );
+    const query = `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM applicationstatus WHERE COAP = ? AND branch = ?;`;
+    console.log("Query:", query, "Parameters:", [currCOAP, branch]);
+    const [checkPreviousStatus] = await con.query(query, [currCOAP, branch]);
+    console.log("Query result:", checkPreviousStatus);
     if (checkPreviousStatus.length === 0) {
       try {
-        await con.query(
-          `INSERT INTO applicationstatus (COAP, Offered, Accepted, RejectOrAcceptRound, branch) VALUES (?, '', 'E', ?, ?)`,
-          [currCOAP, round, branch]
-        );
+        const insertQuery = `INSERT INTO applicationstatus (COAP, Offered, Accepted, RejectOrAcceptRound, branch) VALUES (?, '', 'E', ?, ?)`;
+        console.log("Insert Query:", insertQuery, "Parameters:", [
+          currCOAP,
+          round,
+          branch,
+        ]);
+        await con.query(insertQuery, [currCOAP, round, branch]);
       } catch (error) {
         throw error;
       }
@@ -55,10 +58,24 @@ async function updateStatusConsolidatedFile(
   const applicantsData = XLSX.utils.sheet_to_json(applicantsDataSheet);
   for (const applicant of applicantsData) {
     try {
-      const [isCS] = await con.query(
-        `SELECT COUNT(*) AS count FROM applicationstatus WHERE COAP = ? AND branch = ?;`,
-        [applicant[coapIdColumnName], branch]
-      );
+      // console.log("branch1kanishkkkk: ", branch);
+      // console.log("branch1kanishkkkk2: ", applicant[coapIdColumnName]);
+      const query = `SELECT COUNT(*) AS count FROM mtechappl WHERE COAP = ? AND branch = ?;`;
+      // console.log("Query:", query, "Parameters:", [
+      //   applicant[coapIdColumnName],
+      //   branch,
+      // ]);
+      const [isCS] = await con.query(query, [
+        applicant[coapIdColumnName],
+        branch,
+      ]);
+      // console.log("Query result:", isCS);
+      if (isCS[0].count !== 0) {
+        console.log("branch1kanishkkkk mahan: ", branch);
+        console.log("branch1kanishkkkk2 mahan: ", applicant[coapIdColumnName]);
+        console.log("Query result mahan:", isCS);
+      }
+
       if (isCS[0].count === 1) {
         await updateDecision(
           con,

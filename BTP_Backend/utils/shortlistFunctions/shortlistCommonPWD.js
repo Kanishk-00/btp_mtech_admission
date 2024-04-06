@@ -1,23 +1,26 @@
+var query = require("../sqlqueries").selectQuery;
 const { insertManyIntoTable } = require("../sqlqueries");
 const { findAvailableSeats } = require("../findAvailableSeats");
 
 async function updateCandidateStatus(con, candidate, offerCat, round, branch) {
+  //updating the shortlisted candidates status in the applicationstatus table.
   try {
-    const applicationstatusTable = `applicationstatus`;
-
     let valuesToBeInserted = [
-      [candidate.COAP, "Y", "", round, "", "", offerCat, "Y"],
+      [candidate.COAP, "Y", "", round, "", "", offerCat, "Y", branch],
     ];
-
+    /*
+            updating 
+            COAP with shortlisted candidate coap
+            offered with 'Y'
+            OfferedRound with current round number
+            offercat with PWD_FandM
+            IsOfferPwd with Y
+        */
     if (valuesToBeInserted.length > 0) {
-      valuesToBeInserted.forEach((candidate) => {
-        candidate.push(branch);
-      });
-
       await insertManyIntoTable(
         con,
-        applicationstatusTable,
-        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd,branch)",
+        "applicationstatus",
+        "(COAP, Offered, Accepted, OfferedRound, RetainRound, RejectOrAcceptRound, OfferCat, IsOfferPwd, branch)",
         valuesToBeInserted
       );
       console.log(
@@ -28,78 +31,242 @@ async function updateCandidateStatus(con, candidate, offerCat, round, branch) {
     throw error;
   }
 }
-
+/*
+    Name: shortlistCommonPWDCandidates
+    Input : connection object to the database,limit on how many members to shortlist,ongoing round
+    output: JSON object containing all the shortlisted candidates.
+    Functionality : shortlists limit no of EWS candidates based on their max gatescore. 
+*/
 async function shortlistCommonPWDCandidates(con, limit, round, branch) {
-  const mtechapplTable = `mtechappl`;
-  const applicationstatusTable = `applicationstatus`;
-
   var checkedCandidatesCoapID = ["x"];
-
   while (limit > 0) {
-    var checkedCOAPIDs = checkedCandidatesCoapID
-      .map((coap) => `'${coap}'`)
-      .join(",");
-
-    queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore, EWS, PWD,
+    var checkedCOAPIDs = "";
+    for (const element of checkedCandidatesCoapID) {
+      checkedCOAPIDs += `'${element}',`;
+    }
+    if (checkedCOAPIDs.length > 0) {
+      checkedCOAPIDs = checkedCOAPIDs.slice(0, -1);
+    }
+    queryString = `SELECT mtechappl.COAP, Gender, Category, MaxGateScore, EWS, PWD,
         Offered, 
         Accepted,
         OfferedRound
-        FROM ${mtechapplTable}
-        LEFT JOIN ${applicationstatusTable}
-        ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-        WHERE Offered IS NULL AND Pwd='Yes' AND ${mtechapplTable}.COAP NOT IN (${checkedCOAPIDs})
-        AND ${mtechapplTable}.branch = '${branch}'  /* Added condition */
+        FROM mtechappl
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE Offered IS NULL AND Pwd='Yes' AND mtechappl.COAP NOT IN (${checkedCOAPIDs})
+        AND mtechappl.branch = '${branch}'  /* Added condition for branch */
         ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
         LIMIT 1`;
-
     var shortlistedCandidates;
-
+    //querying
     try {
       var [shortlistedCandidates] = await con.query(queryString);
       shortlistedCandidates = shortlistedCandidates[0];
-
       if (!shortlistedCandidates) {
         break;
       }
-
       var cat = shortlistedCandidates["Category"];
-      const offerCatPrefix = `${cat}_FandM`;
-      const offerCatFemale = `${cat}_Female`;
-
-      var seats_male = await findAvailableSeats(
-        con,
-        offerCatPrefix,
-        round,
-        branch
-      );
-      var seats_female = await findAvailableSeats(
-        con,
-        offerCatFemale,
-        round,
-        branch
-      );
-
-      if (shortlistedCandidates.EWS === "Yes") {
-        const offerCat =
-          seats_female > 0 ? `${offerCatFemale}_PWD` : `${offerCatPrefix}_PWD`;
-        await updateCandidateStatus(
+      if (cat === "GEN" && shortlistedCandidates.EWS === "Yes") {
+        var seats_male = await findAvailableSeats(
           con,
-          shortlistedCandidates,
-          offerCat,
+          "EWS_FandM",
           round,
           branch
         );
-        limit -= 1;
-      } else {
-        const offerCat = seats_female > 0 ? offerCatFemale : offerCatPrefix;
-        await updateCandidateStatus(
+        var seats_female = await findAvailableSeats(
           con,
-          shortlistedCandidates,
-          offerCat,
+          "EWS_Female",
           round,
           branch
         );
-        limit -= 1;
+        if (shortlistedCandidates["Gender"] === "Female" && seats_female > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "EWS_Female_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        } else if (seats_male > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "EWS_FandM_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        }
+      } else if (cat === "GEN") {
+        var seats_male = await findAvailableSeats(
+          con,
+          "GEN_FandM",
+          round,
+          branch
+        );
+        var seats_female = await findAvailableSeats(
+          con,
+          "GEN_Female",
+          round,
+          branch
+        );
+        if (shortlistedCandidates["Gender"] === "Female" && seats_female > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "GEN_Female_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        } else if (seats_male > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "GEN_FandM_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        }
+      } else if (cat === "OBC") {
+        var seats_male = await findAvailableSeats(
+          con,
+          "OBC_FandM",
+          round,
+          branch
+        );
+        var seats_female = await findAvailableSeats(
+          con,
+          "OBC_Female",
+          round,
+          branch
+        );
+        if (shortlistedCandidates["Gender"] === "Female" && seats_female > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "OBC_Female_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        } else if (seats_male > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "OBC_FandM_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        }
+      } else if (cat === "SC") {
+        var seats_male = await findAvailableSeats(
+          con,
+          "SC_FandM",
+          round,
+          branch
+        );
+        var seats_female = await findAvailableSeats(
+          con,
+          "SC_Female",
+          round,
+          branch
+        );
+        if (shortlistedCandidates["Gender"] === "Female" && seats_female > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "SC_Female_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        } else if (seats_male > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "SC_FandM_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        }
+      } else if (cat === "ST") {
+        var seats_male = await findAvailableSeats(
+          con,
+          "ST_FandM",
+          round,
+          branch
+        );
+        var seats_female = await findAvailableSeats(
+          con,
+          "ST_Female",
+          round,
+          branch
+        );
+        if (shortlistedCandidates["Gender"] === "Female" && seats_female > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "ST_Female_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        } else if (seats_male > 0) {
+          try {
+            var res = await updateCandidateStatus(
+              con,
+              shortlistedCandidates,
+              "ST_FandM_PWD",
+              round,
+              branch
+            );
+          } catch (error) {
+            throw error;
+          }
+          limit -= 1;
+        }
       }
       checkedCandidatesCoapID.push(shortlistedCandidates["COAP"]);
     } catch (error) {

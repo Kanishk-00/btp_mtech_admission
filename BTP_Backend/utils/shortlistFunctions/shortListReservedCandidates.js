@@ -30,8 +30,8 @@ async function shortListReservedCandidates(
             ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
             WHERE Offered IS NULL AND Gender = "Female" AND Category="${category}" AND ${mtechapplTable}.branch = '${branch}'
             ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
-            LIMIT ${limit}`;
-    currCategory = `${currCategory}_Female`;
+            LIMIT ${limit}`
+    currCategory = currCategory + "_Female";
   } else {
     queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
             Offered, 
@@ -42,8 +42,8 @@ async function shortListReservedCandidates(
             ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
             WHERE Offered IS NULL AND Category="${category}" AND ${mtechapplTable}.branch = '${branch}'
             ORDER BY MaxGateScore DESC, HSSCper DESC, SSCper DESC
-            LIMIT ${limit}`;
-    currCategory = `${currCategory}_FandM`;
+            LIMIT ${limit}`
+    currCategory = currCategory + "_FandM";
   }
 
   var shortlistedCandidates;
@@ -64,16 +64,12 @@ async function shortListReservedCandidates(
         "",
         "",
         currCategory,
+        branch, // Include branch directly in the values
       ]);
       console.log(`Shortlisted ${candidate.COAP} in ${currCategory} category`);
     }
 
     if (valuesToBeInserted.length > 0) {
-      // Add branch to the values to be inserted
-      valuesToBeInserted.forEach((candidate) => {
-        candidate.push(branch);
-      });
-
       var x = await insertManyIntoTable(
         con,
         applicationstatusTable,

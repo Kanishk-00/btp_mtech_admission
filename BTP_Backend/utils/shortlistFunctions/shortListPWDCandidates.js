@@ -37,7 +37,7 @@ async function shortListPWDCandidates(
   }
 
   try {
-    let valuesToBeInserted = [];
+    const valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
       valuesToBeInserted.push([
         candidate.COAP,
@@ -48,19 +48,16 @@ async function shortListPWDCandidates(
         "",
         offerCat,
         "Y",
+        branch,
       ]);
-      console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category`);
+      console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category `);
     }
 
     if (valuesToBeInserted.length > 0) {
-      valuesToBeInserted.forEach((candidate) => {
-        candidate.push(branch);
-      });
-
-      var x = await insertManyIntoTable(
+      await insertManyIntoTable(
         con,
-        applicationstatusTable,
-        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd, branch)",
+        "applicationstatus",
+        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd,branch)",
         valuesToBeInserted
       );
     }
@@ -107,7 +104,7 @@ async function shortListEWSPWDCandidates(
   }
 
   try {
-    let valuesToBeInserted = [];
+    const valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
       valuesToBeInserted.push([
         candidate.COAP,
@@ -118,15 +115,16 @@ async function shortListEWSPWDCandidates(
         "",
         offerCat,
         "Y",
+        branch,
       ]);
-      console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category`);
+      console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category `);
     }
 
     if (valuesToBeInserted.length > 0) {
-      var x = await insertManyIntoTable(
+      await insertManyIntoTable(
         con,
-        applicationstatusTable,
-        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd)",
+        "applicationstatus",
+        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd,branch)",
         valuesToBeInserted
       );
     }
@@ -167,7 +165,7 @@ async function shortListPWDFemaleCandidates(con, limit, round, branch) {
   }
 
   try {
-    let valuesToBeInserted = [];
+    const valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
       valuesToBeInserted.push([
         candidate.COAP,
@@ -178,17 +176,15 @@ async function shortListPWDFemaleCandidates(con, limit, round, branch) {
         "",
         "PWD_Female",
         "Y",
+        branch,
       ]);
-      console.log(`Shortlisted ${candidate.COAP} in PWD_Female category`);
+      console.log(`Shortlisted ${candidate.COAP} in PWD_Female category `);
     }
 
     if (valuesToBeInserted.length > 0) {
-      valuesToBeInserted.forEach((candidate) => {
-        candidate.push(branch);
-      });
-      var x = await insertManyIntoTable(
+      await insertManyIntoTable(
         con,
-        applicationstatusTable,
+        "applicationstatus",
         "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,IsOfferPwd,branch)",
         valuesToBeInserted
       );
