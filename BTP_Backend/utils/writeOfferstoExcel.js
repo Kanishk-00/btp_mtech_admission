@@ -1,5 +1,5 @@
 const reader = require("xlsx");
-const mysql = require("mysql2");
+var mysql = require("mysql2");
 
 var applicantsSchemaColumnNames =
   require("../schemas/applicantsSchema").applicantsSchemaColumnNames;
@@ -13,17 +13,17 @@ async function writeToExcel(
   fileName,
   branch
 ) {
-  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
+  var columnNames = "applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
-    columnNames += `mtechappl.${columnName},`;
+    columnNames += `mtechappl.${columnName}` + ",";
   }
   columnNames = columnNames.slice(0, -1);
 
   try {
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl 
-  LEFT JOIN applicationstatus
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE mtechappl.Category='${category}' AND mtechappl.branch='${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE mtechappl.Category='${category}' AND mtechappl.branch = '${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -42,7 +42,7 @@ async function writeToExcelFemaleCandidates(
   fileName,
   branch
 ) {
-  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
+  var columnNames = "applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
@@ -50,9 +50,9 @@ async function writeToExcelFemaleCandidates(
 
   try {
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl 
-  LEFT JOIN applicationstatus
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE mtechappl.Category='${category}' AND mtechappl.Gender = "Female" AND mtechappl.branch='${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE mtechappl.Category='${category}' AND Gender = "Female" AND mtechappl.branch = '${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -71,7 +71,7 @@ async function writeToExcelEWS(
   fileName,
   branch
 ) {
-  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
+  var columnNames = "applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
@@ -79,9 +79,9 @@ async function writeToExcelEWS(
 
   try {
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl 
-  LEFT JOIN applicationstatus
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE mtechappl.EWS='Yes' AND mtechappl.branch='${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE EWS='Yes' AND mtechappl.branch = '${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -92,7 +92,8 @@ async function writeToExcelEWS(
 }
 
 async function writeToExcelAllOffers(con, sheetName, round, fileName, branch) {
-  var columnNames = `applicationstatus.offerCat, mtechappl.PWD as 'IsPWD', applicationstatus.offered, applicationstatus.Accepted,`;
+  var columnNames =
+    "applicationstatus.offerCat,mtechappl.PWD as 'IsPWD',applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
@@ -100,11 +101,9 @@ async function writeToExcelAllOffers(con, sheetName, round, fileName, branch) {
 
   try {
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl
-  LEFT JOIN applicationstatus
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE (OfferedRound='${round}' OR Accepted='R' OR Accepted='Y') AND mtechappl.branch='${branch}' ORDER BY applicationstatus.offerCat ASC, mtechappl.MaxGateScore DESC`);
-
-    console.log("Write to excel all offers ke andar hun.....\n\n\n");
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE (OfferedRound='${round}' OR Accepted='R' OR Accepted='Y') AND mtechappl.branch = '${branch}' ORDER BY applicationstatus.offerCat ASC,mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -124,17 +123,17 @@ async function writeToExcelGeneral(
   fileName,
   branch
 ) {
-  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
+  var columnNames = "applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
   columnNames = columnNames.slice(0, -1);
 
   try {
-    var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl
-  LEFT JOIN applicationstatus
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE mtechappl.branch='${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
+    var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl 
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE mtechappl.branch = '${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -153,7 +152,7 @@ async function writeToExcelGeneralFemale(
   fileName,
   branch
 ) {
-  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
+  var columnNames = "applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
@@ -161,9 +160,9 @@ async function writeToExcelGeneralFemale(
 
   try {
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl 
-  LEFT JOIN applicationstatus 
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE mtechappl.branch='${branch}' AND mtechappl.Gender="Female" ORDER BY mtechappl.MaxGateScore DESC`);
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE Gender="Female" AND mtechappl.branch = '${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -182,7 +181,7 @@ async function writeToExcelPWD(
   fileName,
   branch
 ) {
-  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
+  var columnNames = "applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
@@ -190,10 +189,9 @@ async function writeToExcelPWD(
 
   try {
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl 
-  LEFT JOIN applicationstatus 
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE mtechappl.branch='${branch}' AND  
-  mtechappl.Pwd='Yes' AND mtechappl.category REGEXP '${category}' ORDER BY mtechappl.MaxGateScore DESC`);
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE Pwd='Yes' AND category REGEXP '${category}' AND mtechappl.branch = '${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -212,7 +210,7 @@ async function writeToExcelEWSPWD(
   fileName,
   branch
 ) {
-  var columnNames = `applicationstatus.offered,applicationstatus.Accepted,`;
+  var columnNames = "applicationstatus.offered,applicationstatus.Accepted,";
   for (var columnName of applicantsSchemaColumnNames) {
     columnNames += `mtechappl.${columnName}` + ",";
   }
@@ -220,10 +218,9 @@ async function writeToExcelEWSPWD(
 
   try {
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl 
-  LEFT JOIN applicationstatus 
-  ON mtechappl.COAP = applicationstatus.COAP 
-  WHERE mtechappl.branch='${branch}' AND  
-  mtechappl.Pwd='Yes' AND mtechappl.EWS='Yes' AND mtechappl.category REGEXP '${category}' ORDER BY mtechappl.MaxGateScore DESC`);
+        LEFT JOIN applicationstatus
+        ON mtechappl.COAP = applicationstatus.COAP 
+        WHERE Pwd='Yes' AND EWS='Yes' AND category REGEXP '${category}' AND mtechappl.branch = '${branch}' ORDER BY mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
     const ws = reader.utils.json_to_sheet(result);
     reader.utils.book_append_sheet(file, ws, sheetName);
@@ -236,7 +233,6 @@ async function writeToExcelEWSPWD(
 const deleteWorksheet = async (filePath, workSheetName) => {
   const workBook = reader.readFile(filePath);
   const workSheetNames = Object.keys(workBook.Sheets);
-  console.log(workSheetNames);
   if (workSheetNames.includes(workSheetName)) {
     delete workBook.Sheets[workSheetName];
     delete workBook.SheetNames[workSheetName];

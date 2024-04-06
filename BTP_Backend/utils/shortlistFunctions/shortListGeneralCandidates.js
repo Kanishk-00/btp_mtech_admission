@@ -10,7 +10,7 @@ async function shortListGeneralCandidates(con, limit, round, branch) {
   const mtechapplTable = `mtechappl`;
   const applicationstatusTable = `applicationstatus`;
 
-  queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
+  let queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
     OfferCat,
@@ -18,7 +18,7 @@ async function shortListGeneralCandidates(con, limit, round, branch) {
     FROM ${mtechapplTable}
     LEFT JOIN ${applicationstatusTable}
     ON ${mtechapplTable}.COAP = ${applicationstatusTable}.COAP 
-    WHERE Offered IS NULL OR (Accepted='R' AND OfferCat != 'GEN_Female') OR (Accepted='Y' AND OfferCat != 'GEN_Female') AND ${mtechapplTable}.branch = '${branch}'
+    WHERE (Offered IS NULL OR (Accepted='R' AND OfferCat != 'GEN_Female') OR (Accepted='Y' AND OfferCat != 'GEN_Female')) AND ${mtechapplTable}.branch = '${branch}'
     ORDER BY MaxGateScore DESC, EWS ASC, HSSCper DESC, SSCper DESC
     LIMIT ${limit}`;
 
@@ -31,24 +31,24 @@ async function shortListGeneralCandidates(con, limit, round, branch) {
   }
 
   try {
-    let valuesToBeInserted = [];
+    const valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
       // Category upgrade
       if (
         candidate["Accepted"] &&
-        (candidate["Accepted"] == "R" || candidate["Accepted"] == "Y")
+        (candidate["Accepted"] === "R" || candidate["Accepted"] === "Y")
       ) {
         if (
-          candidate["OfferCat"] != "GEN_FandM" &&
-          candidate["OfferCat"] != "GEN_Female"
+          candidate["OfferCat"] !== "GEN_FandM" &&
+          candidate["OfferCat"] !== "GEN_Female"
         ) {
-          const [updateResult] =
-            await con.query(`UPDATE ${applicationstatusTable}
-                    SET OfferedRound = ${round}, OfferCat = "GEN_FandM"
-                    WHERE COAP = '${candidate.COAP}';`);
+          const [updateResult] = await con.query(`UPDATE applicationstatus
+                    SET  OfferedRound=${round}, OfferCat="GEN_FandM"
+                    WHERE COAP = '${candidate.COAP}' AND branch = '${branch}';`);
         }
-      } else {
-        // Normal allocation
+      }
+      // Normal allocation
+      else {
         valuesToBeInserted.push([
           candidate.COAP,
           "Y",
@@ -57,19 +57,17 @@ async function shortListGeneralCandidates(con, limit, round, branch) {
           "",
           "",
           "GEN_FandM",
+          branch,
         ]);
         console.log(`Shortlisted ${candidate.COAP} in GEN_FandM category`);
       }
     }
 
+    // Insert values into the table
     if (valuesToBeInserted.length > 0) {
-      valuesToBeInserted.forEach((candidate) => {
-        candidate.push(branch);
-      });
-
-      var x = await insertManyIntoTable(
+      await insertManyIntoTable(
         con,
-        applicationstatusTable,
+        "applicationstatus",
         "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,branch)",
         valuesToBeInserted
       );
@@ -90,7 +88,7 @@ async function shortListGeneralFemaleCandidates(con, limit, round, branch) {
   const mtechapplTable = `mtechappl`;
   const applicationstatusTable = `applicationstatus`;
 
-  queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
+  let queryString = `SELECT ${mtechapplTable}.COAP, Gender, Category, MaxGateScore,
     Offered, 
     Accepted,
     OfferCat,
@@ -111,21 +109,21 @@ async function shortListGeneralFemaleCandidates(con, limit, round, branch) {
   }
 
   try {
-    let valuesToBeInserted = [];
+    const valuesToBeInserted = [];
     for (const candidate of shortlistedCandidates) {
       // Category upgrade
       if (
         candidate["Accepted"] &&
-        (candidate["Accepted"] == "R" || candidate["Accepted"] == "Y")
+        (candidate["Accepted"] === "R" || candidate["Accepted"] === "Y")
       ) {
-        if (candidate["OfferCat"] != "GEN_Female") {
-          const [updateResult] =
-            await con.query(`UPDATE ${applicationstatusTable}
-                    SET OfferedRound = ${round}, OfferCat = "GEN_Female"
-                    WHERE COAP = '${candidate.COAP}';`);
+        if (candidate["OfferCat"] !== "GEN_Female") {
+          const [updateResult] = await con.query(`UPDATE applicationstatus
+                    SET  OfferedRound=${round}, OfferCat="GEN_Female"
+                    WHERE COAP = '${candidate.COAP}' AND branch = '${branch}';`);
         }
-      } else {
-        // Normal allocation
+      }
+      // Normal allocation
+      else {
         valuesToBeInserted.push([
           candidate.COAP,
           "Y",
@@ -134,16 +132,18 @@ async function shortListGeneralFemaleCandidates(con, limit, round, branch) {
           "",
           "",
           "GEN_Female",
+          branch,
         ]);
         console.log(`Shortlisted ${candidate.COAP} in GEN_Female category`);
       }
     }
 
+    // Insert values into the table
     if (valuesToBeInserted.length > 0) {
-      var x = await insertManyIntoTable(
+      await insertManyIntoTable(
         con,
-        applicationstatusTable,
-        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat)",
+        "applicationstatus",
+        "(COAP,Offered,Accepted,OfferedRound,RetainRound,RejectOrAcceptRound,OfferCat,branch)",
         valuesToBeInserted
       );
     }
