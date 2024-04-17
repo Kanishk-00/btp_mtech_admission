@@ -62,7 +62,6 @@ function FilterOptions(props) {
               pauseOnHover: true,
               draggable: true,
               progress: undefined,
-              
             });
           }
           setIsLoading(false);
@@ -106,7 +105,6 @@ function FilterOptions(props) {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            
           });
           setIsLoading(false);
         });

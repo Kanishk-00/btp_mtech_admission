@@ -21,10 +21,13 @@ async function checkTableExists(connection, tableName) {
 async function initializeUsersTable(databaseName, userData) {
   var con = mysql
     .createPool({
-      host: process.env.MYSQL_HOSTNAME,
+      // host: process.env.MYSQL_HOSTNAME,
+      host: process.env.MYSQL_HOST_IP || "127.0.0.1",
       user: "root",
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
+      debug: true,
+      insecureAuth: true,
     })
     .promise();
   console.log(usersSchema);
@@ -44,6 +47,9 @@ async function initializeUsersTable(databaseName, userData) {
       userData
     );
     console.log("Users table initialized successfully.");
+    // Fetch data from the "users" table
+    const [rows] = await con.query("SELECT * FROM users");
+    console.log("Data in the 'users' table:", rows);
   } catch (error) {
     console.log(error);
   }

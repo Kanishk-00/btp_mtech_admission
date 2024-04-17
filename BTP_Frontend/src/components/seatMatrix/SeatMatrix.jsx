@@ -50,7 +50,7 @@ function SeatMatrix(props) {
             console.log(err);
             toast.error(err.response.data.error, {
               position: "top-center",
-              autoClose: true, 
+              autoClose: true,
               hideProgressBar: false,
               closeOnClick: true,
               draggable: true,

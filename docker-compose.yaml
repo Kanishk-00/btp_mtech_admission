@@ -6,12 +6,17 @@ services:
     restart: always
     command: --default-authentication-plugin=mysql_native_password --lower_case_table_names=1
     environment:
-      - MYSQL_DATABASE=Applicants2023
-      - MYSQL_PASSWORD=new_password
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_HOSTNAME=mysqldb
+      - MYSQL_DATABASE=applicants2023
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password  
+      - MYSQL_HOSTNAME=127.0.0.1
+      - JWT_SECRET=mySecretKey123
+      - COOKIE_SECRET=mysecretcookiekey
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin@123
+      - userFilePath=files
     ports:
-      - 5545:3306
+      - 3306:3306
     volumes: 
       - db-config:/etc/mysql
       - db-data:/var/lib/mysql
@@ -20,32 +25,33 @@ services:
     build: ./BTP_Backend
     image: btp-backend-compose
     environment:
-      - MYSQL_DATABASE=Applicants2023
-      # Note that the MYSQL_PASSWORD should be same as MYSQL_ROOT_PASSWORD here
-      - MYSQL_PASSWORD=Your_MySql_Root_Password
-      - MYSQL_ROOT_PASSWORD=Your_MySql_Root_Password
-      - MYSQL_HOSTNAME=mysqldb
+      - MYSQL_DATABASE=applicants2023
+      - MYSQL_PASSWORD=password
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_HOSTNAME=127.0.0.1
+      - MYSQL_HOST_IP=mysqldb
+      - JWT_SECRET=mySecretKey123
+      - COOKIE_SECRET=mysecretcookiekey
+      - ADMIN_USER=admin
+      - ADMIN_PASSWORD=admin@123
+      - userFilePath=files
     depends_on:
       - mysqldb
     ports:
       - 4444:4444
     volumes: 
       - ./backend-files:/usr/src/app/files
-      - ./backend-files/generatedOffers:/usr/src/app/files/generatedOffers
-      - ./backend-files/roundUpdates:/usr/src/app/files/roundUpdates
-
     stdin_open: true
     tty: true
     restart: on-failure
+
   frontend:
     build: ./BTP_Frontend
     image: btp-frontend-compose
     ports:
-      - 3000:8004
+      - 8004:8004
     stdin_open: true
 
 volumes: 
   db-config:
   db-data:
-
-

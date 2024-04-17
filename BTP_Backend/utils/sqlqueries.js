@@ -25,6 +25,9 @@ async function connectToDatabase(databaseName) {
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_DATABASE,
   });
+  console.log("pass: ", process.env.MYSQL_PASSWORD);
+  console.log("host: ", process.env.MYSQL_HOSTNAME);
+  console.log("database: ", process.env.MYSQL_DATABASE);
   con.connect(function (err) {
     if (err) throw err;
     console.log("Connected!");

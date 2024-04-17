@@ -10,12 +10,15 @@ var mysql = require("mysql2");
 
 router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
   try {
-    const con = mysql
+    var con = mysql
       .createPool({
-        host: process.env.MYSQL_HOSTNAME,
+        // host: process.env.MYSQL_HOSTNAME,
+        host: process.env.MYSQL_HOST_IP || "127.0.0.1",
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
+        debug: true,
+        insecureAuth: true,
       })
       .promise();
 
@@ -29,8 +32,11 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
     res.status(200).send({ result: resultSeatMatrix });
   } catch (error) {
     console.log("Error in seat Matrix:", error);
-    if (error && error.code === 'ER_NO_SUCH_TABLE') {
-      res.status(404).send({ error: "Error retrieving seat matrix data, Initialisation not done yet. " });
+    if (error && error.code === "ER_NO_SUCH_TABLE") {
+      res.status(404).send({
+        error:
+          "Error retrieving seat matrix data, Initialisation not done yet. ",
+      });
     } else {
       console.log("Error:", error);
       res.status(500).send({ error: "Error retrieving seat matrix data" });
@@ -45,12 +51,15 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
 */
 router.post("/updateSeats", isAuthenticated, async (req, res) => {
   try {
-    const con = mysql
+    var con = mysql
       .createPool({
-        host: process.env.MYSQL_HOSTNAME,
+        // host: process.env.MYSQL_HOSTNAME,
+        host: process.env.MYSQL_HOST_IP || "127.0.0.1",
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
+        debug: true,
+        insecureAuth: true,
       })
       .promise();
 

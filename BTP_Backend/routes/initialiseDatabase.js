@@ -22,10 +22,6 @@ const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const isAuthenticated = require("../middleware/authMiddleware.js");
 const express = require("express");
-const cors = require("cors");
-const app = express();
-// Enable CORS for all routes
-app.use(cors());
 
 /*
     Route:/api/initialise/getFile

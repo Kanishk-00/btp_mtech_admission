@@ -8,12 +8,15 @@ router.get("/getCoapIds", isAuthenticated, async (req, res) => {
   const branch = req.user.branch;
 
   try {
-    const con = mysql
+    var con = mysql
       .createPool({
-        host: process.env.MYSQL_HOSTNAME,
+        // host: process.env.MYSQL_HOSTNAME,
+        host: process.env.MYSQL_HOST_IP || "127.0.0.1",
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
+        debug: true,
+        insecureAuth: true,
       })
       .promise();
     const [coapIdsList] = await con.query(
@@ -30,12 +33,15 @@ router.get("/getCoapIds", isAuthenticated, async (req, res) => {
 router.post("/getinfo", isAuthenticated, async (req, res) => {
   console.log("req.user.branch is :", req.user.branch);
   try {
-    const con = mysql
+    var con = mysql
       .createPool({
-        host: process.env.MYSQL_HOSTNAME,
+        // host: process.env.MYSQL_HOSTNAME,
+        host: process.env.MYSQL_HOST_IP || "127.0.0.1",
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
+        debug: true,
+        insecureAuth: true,
       })
       .promise();
     const { category, gender, coapId } = req.body;
@@ -65,12 +71,15 @@ router.post("/getinfo", isAuthenticated, async (req, res) => {
 
 router.get("/getinfo/:coapid", isAuthenticated, async (req, res) => {
   try {
-    const con = mysql
+    var con = mysql
       .createPool({
-        host: process.env.MYSQL_HOSTNAME,
+        // host: process.env.MYSQL_HOSTNAME,
+        host: process.env.MYSQL_HOST_IP || "127.0.0.1",
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
+        debug: true,
+        insecureAuth: true,
       })
       .promise();
     const coapid = req.params.coapid;

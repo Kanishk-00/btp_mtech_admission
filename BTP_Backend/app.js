@@ -11,9 +11,9 @@ const manualUpdate = require("./routes/manualUpdate");
 const adminRoutes = require("./routes/adminRoutes");
 const authRoutes = require("./routes/authRoutes");
 const { initializeUsersTable } = require("./utils/initialiseUsers"); // Import the function
-const {initializeBranchTable} = require("./utils/initialiseBranch");
+const { initializeBranchTable } = require("./utils/initialiseBranch");
 const bcrypt = require("bcrypt");
-const adminCheckRoutes = require("../BTP_Backend/routes/adminCheckRoutes");
+const adminCheckRoutes = require("./routes/adminCheckRoutes");
 const authenticationRouter = require("./routes/authenticationRouter");
 const addBranchRoute = require("./routes/addBranchRoute");
 const deleteBranchRoute = require("./routes/deleteBranchRoute");
@@ -25,27 +25,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      return callback(null, true);
-    },
-    optionsSuccessStatus: 200,
-    credentials: true,
-  })
-);
-
-// app.use(
-//   cors({
-//     origin: "*", // Set the allowed origin
-//     credentials: true, // Allow cookies with requests
-//     // "Access-Control-Allow-Origin": "http://10.196.41.66:3000",
-//     // "Access-Control-Allow-Origin": "http://10.196.41.66:3000",
-//     optionSuccessStatus: 200,
-//   })
-// );
-
-app.use(
-  cors({
-    origin: "http://localhost:3000",
+    origin: [process.env.NODE_ENV !== "production" && "http://localhost:8004"],
     credentials: true,
   })
 );
@@ -56,9 +36,7 @@ app.use(
     const plainPassword = process.env.ADMIN_PASSWORD;
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(plainPassword, salt);
-    await initializeBranchTable(process.env.MYSQL_DATABASE, [
-      ["admin"]
-    ]);
+    await initializeBranchTable(process.env.MYSQL_DATABASE, [["admin"]]);
     await initializeUsersTable(process.env.MYSQL_DATABASE, [
       [1, user, hashedPassword, "admin", true],
     ]);
