@@ -12,6 +12,7 @@ const prevYear = currYear - 1;
 const prevprevYear = currYear - 2;
 
 
+
 /*
     Name: enterCandidateDetailsToDatabase
     Input : modified columnnames file path,databasename
@@ -176,4 +177,4 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
   return;
 }
 
-module.exports = { enterCandidateDetailsToDatabase };
+module.exports = { enterCandidateDetailsToDatabase };
