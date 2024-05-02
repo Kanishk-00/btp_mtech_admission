@@ -41,7 +41,7 @@ export const applicantsSchemaColumnNames = [
   "DegreeCGPA7thSem",
   "DegreeCGPA8thSem",
   "DegreePer7thSem",
-  "DegreePer8thSem",
+  "DegreePer8thSem"
 ];
 export const applicantsSchemaColumnNamesJson = {
   COAP: [],
@@ -81,7 +81,7 @@ export const applicantsSchemaColumnNamesJson = {
   DegreeCGPA7thSem: [],
   DegreeCGPA8thSem: [],
   DegreePer7thSem: [],
-  DegreePer8thSem: [],
+  DegreePer8thSem: []
 };
 
 

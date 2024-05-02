@@ -15,7 +15,7 @@ router.get("/getCoapIds", isAuthenticated, async (req, res) => {
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
-        debug: true,
+        debug: false,
         insecureAuth: true,
       })
       .promise();
@@ -40,7 +40,7 @@ router.post("/getinfo", isAuthenticated, async (req, res) => {
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
-        debug: true,
+        debug: false,
         insecureAuth: true,
       })
       .promise();
@@ -78,7 +78,7 @@ router.get("/getinfo/:coapid", isAuthenticated, async (req, res) => {
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
-        debug: true,
+        debug: false,
         insecureAuth: true,
       })
       .promise();

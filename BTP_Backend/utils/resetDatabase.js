@@ -48,7 +48,7 @@ async function resetDatabase(branch) {
       user: "root",
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
-      debug: true,
+      debug: false,
       insecureAuth: true,
     })
     .promise();

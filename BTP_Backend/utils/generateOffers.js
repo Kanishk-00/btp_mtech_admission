@@ -26,6 +26,7 @@ const {
   writeToExcelFemaleCandidates,
   writeToExcelPWD,
   writeToExcelEWSPWD,
+  writeToExcel2024
 } = require("./writeOfferstoExcel");
 const path = require("path");
 const reader = require("xlsx");
@@ -49,7 +50,7 @@ async function generateOffers(databaseName, round, filePath, branch) {
       user: "root",
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
-      debug: true,
+      debug: false,
       insecureAuth: true,
     })
     .promise();
@@ -258,8 +259,11 @@ async function generateOffers(databaseName, round, filePath, branch) {
     console.log("generated offers 23: ", branch);
 
     await writeToExcelAllOffers(con, "Offers-List", round, filePath, branch);
-
+    
     console.log("generated offers 2444: ", branch);
+
+    await writeToExcel2024(con, "Offer-24-format", round, filePath, branch)
+
     await writeToExcelPWD(
       con,
       generalPWDCandidates,
@@ -371,6 +375,8 @@ async function generateOffers(databaseName, round, filePath, branch) {
       filePath,
       branch
     );
+
+
 
     console.log("generated offers YEHHHHHHH HO gaya bro: ", branch);
   } catch (error) {

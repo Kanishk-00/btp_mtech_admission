@@ -30,6 +30,15 @@ app.use(
   })
 );
 
+
+// app.use(
+//   cors({
+//     origin: [process.env.NODE_ENV !== "production" && "http://localhost:3000"],
+//     credentials: true,
+//   })
+// );
+
+
 (async () => {
   try {
     const user = process.env.ADMIN_USER;

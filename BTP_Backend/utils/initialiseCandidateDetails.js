@@ -5,6 +5,13 @@ var applicantsSchemaColumnNames =
   require("../schemas/applicantsSchema").applicantsSchemaColumnNames;
 var mysql = require("mysql2");
 
+const tempDate = new Date();
+let tempYear = tempDate.getFullYear();
+const currYear = tempYear - 2000;
+const prevYear = currYear - 1;
+const prevprevYear = currYear - 2;
+
+
 /*
     Name: enterCandidateDetailsToDatabase
     Input : modified columnnames file path,databasename
@@ -20,7 +27,7 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
       user: "root",
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
-      debug: true,
+      debug: false,
       insecureAuth: true,
     })
     .promise();
@@ -57,18 +64,33 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
         var currYearScore = -1;
         var prevYearScore = -1;
         var prevPrevYearScore = -1;
-        if (applicant["GATE22Score"] != null)
-          currYearScore = applicant["GATE22Score"];
-        if (applicant["GATE21Score"] != null)
-          prevYearScore = applicant["GATE21Score"];
-        if (applicant["GATE23Score"] != null)
-          prevPrevYearScore = applicant["GATE23Score"];
+        if (applicant["GATE" + currYear + "Score"] != null)
+          currYearScore = applicant["GATE"+currYear+"Score"];
+        if (applicant["GATE"+prevYear+"Score"] != null)
+          prevYearScore = applicant["GATE"+prevYear+"Score"];
+        if (applicant["GATE"+prevprevYear+"Score"] != null)
+          prevPrevYearScore = applicant["GATE"+prevprevYear+"Score"];
         var maxScore = Math.max(
           currYearScore,
           Math.max(prevPrevYearScore, prevYearScore)
         );
         applicantAttributes.push(maxScore);
-      } else if (columnName == "branch") {
+
+      } else if (columnName === 'GateRegNum') {
+        var gateRegNum = "";
+        if (currYearScore > prevYearScore && currYearScore > prevPrevYearScore) {
+          gateRegNum = applicant["GATE" + currYear + "RollNo"];
+        }
+        else if (prevYearScore > prevPrevYearScore) {
+          gateRegNum = applicant["GATE" + prevYear + "RollNo"];
+        }
+        else {
+          gateRegNum = applicant["GATE" + prevprevYear + "RollNo"];
+        }
+        applicantAttributes.push(gateRegNum);
+
+      }
+      else if (columnName == "branch") {
         applicantAttributes.push(branch);
       }
       //calculating virtual cgpa
@@ -79,15 +101,46 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
           }
         }
         applicantAttributes.push(applicant[columnName]);
-      } else {
+      } else if(columnName === "currYearRollNo") {
+        applicantAttributes.push(applicant["GATE" + currYear + "RollNo"]);   
+      } else if(columnName === "currYearRank") {
+        applicantAttributes.push(applicant["GATE" + currYear + "Rank"]);   
+      } else if(columnName === "currYearScore") {
+        applicantAttributes.push(applicant["GATE" + currYear + "Score"]);   
+      } else if(columnName === "currYearDisc") {
+        applicantAttributes.push(applicant["GATE" + currYear + "Disc"]);  
+      } 
+
+      else if(columnName === "prevYearRollNo") {
+        applicantAttributes.push(applicant["GATE" + prevYear + "RollNo"]);   
+      } else if(columnName === "prevYearRank") {
+        applicantAttributes.push(applicant["GATE" + prevYear + "Rank"]);   
+      } else if(columnName === "prevYearScore") {
+        applicantAttributes.push(applicant["GATE" + prevYear + "Score"]);   
+      } else if(columnName === "prevYearDisc") {
+        applicantAttributes.push(applicant["GATE" + prevYear + "Disc"]);  
+      } 
+      else if(columnName === "prevprevYearRollNo") {
+        applicantAttributes.push(applicant["GATE" + prevprevYear + "RollNo"]);   
+      } else if(columnName === "prevprevYearRank") {
+        applicantAttributes.push(applicant["GATE" + prevprevYear + "Rank"]);   
+      } else if(columnName === "prevprevYearScore") {
+        applicantAttributes.push(applicant["GATE" + prevprevYear + "Score"]);   
+      } else if(columnName === "prevprevYearDisc") {
+        applicantAttributes.push(applicant["GATE" + prevprevYear + "Disc"]);  
+      } 
+      
+      else {
         if (applicant[columnName] !== undefined) {
           applicantAttributes.push(applicant[columnName]);
+          //console.log(columnName, applicant[columnName]);
         } else {
           applicantAttributes.push(null); // Push null if column value is not present
         }
       }
     }
     valuesToBeInserted.push(applicantAttributes);
+    //console.log(valuesToBeInserted);
   }
 
   /*

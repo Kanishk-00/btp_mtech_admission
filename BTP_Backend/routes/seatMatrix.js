@@ -17,7 +17,7 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
-        debug: true,
+        debug: false,
         insecureAuth: true,
       })
       .promise();
@@ -58,7 +58,7 @@ router.post("/updateSeats", isAuthenticated, async (req, res) => {
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
-        debug: true,
+        debug: false,
         insecureAuth: true,
       })
       .promise();

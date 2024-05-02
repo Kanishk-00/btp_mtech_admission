@@ -41,7 +41,8 @@ var applicantsSchema = `(
     DegreeCGPA8thSem float(24), 
     DegreePer7thSem float(24),
     DegreePer8thSem float(24),
-    branch VARCHAR(50)
+    branch VARCHAR(50),
+    GateRegNum text
 )
 `;
 applicantsSchemaColumnNames = [
@@ -83,6 +84,7 @@ applicantsSchemaColumnNames = [
   "DegreePer7thSem",
   "DegreePer8thSem",
   "branch",
+  "GateRegNum"
 ];
 module.exports = { applicantsSchema, applicantsSchemaColumnNames };
 

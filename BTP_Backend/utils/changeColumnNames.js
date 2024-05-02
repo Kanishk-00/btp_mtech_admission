@@ -52,7 +52,7 @@ var applicantsSchemaColumnNames=
     "DegreeCGPA7thSem" ,
     "DegreeCGPA8thSem" , 
     "DegreePer7thSem" ,
-    "DegreePer8thSem" 
+    "DegreePer8thSem",
 ]
 
 function mapColumnNames(filePath) {
@@ -91,6 +91,9 @@ function mapColumnNames(filePath) {
             ... for each column
         }
     */
+   //console.log("columnNames: ",columnNames);
+   //console.log("matchedcolumnNames: ", matchedColumnNames);
+   
     return matchedColumnNames
 }
 // mapColumnNames(`C:\\Users\\Desktop\\BTP_Backend\\ApplicantData_withCOAPcorr_maxGateRoll.xlsx`)
