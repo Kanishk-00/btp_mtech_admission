@@ -5,6 +5,14 @@ var applicantsSchemaColumnNames =
   require("../schemas/applicantsSchema").applicantsSchemaColumnNames;
 var mysql = require("mysql2");
 
+const tempDate = new Date();
+let tempYear = tempDate.getFullYear();
+const currYear = tempYear - 2000;
+const prevYear = currYear - 1;
+const prevprevYear = currYear - 2;
+
+
+
 /*
     Name: enterCandidateDetailsToDatabase
     Input : modified columnnames file path,databasename
@@ -14,16 +22,16 @@ var mysql = require("mysql2");
 async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
   //Creating a Connection
   var con = mysql
-    .createPool({
-      // host: process.env.MYSQL_HOSTNAME,
-      host: process.env.MYSQL_HOST_IP || "127.0.0.1",
-      user: "root",
-      password: process.env.MYSQL_PASSWORD,
-      database: process.env.MYSQL_DATABASE,
-      debug: true,
-      insecureAuth: true,
-    })
-    .promise();
+  .createPool({
+    // host: process.env.MYSQL_HOSTNAME,
+    host: process.env.MYSQL_HOST_IP || "127.0.0.1",
+    user: "root",
+    password: process.env.MYSQL_PASSWORD,
+    database: process.env.MYSQL_DATABASE,
+    debug: true,
+    insecureAuth: true,
+  })
+  .promise();
 
   // Check if the table exists
   var tableExists = await sqlQueries.checkTableExists(con, "mtechappl");
@@ -57,12 +65,12 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
         var currYearScore = -1;
         var prevYearScore = -1;
         var prevPrevYearScore = -1;
-        if (applicant["GATE22Score"] != null)
-          currYearScore = applicant["GATE22Score"];
-        if (applicant["GATE21Score"] != null)
-          prevYearScore = applicant["GATE21Score"];
-        if (applicant["GATE23Score"] != null)
-          prevPrevYearScore = applicant["GATE23Score"];
+        if (applicant["GATE" + currYear + "Score"] != null)
+          currYearScore = applicant["GATE"+currYear+"Score"];
+        if (applicant["GATE"+prevYear+"Score"] != null)
+          prevYearScore = applicant["GATE"+prevYear+"Score"];
+        if (applicant["GATE"+prevprevYear+"Score"] != null)
+          prevPrevYearScore = applicant["GATE"+prevprevYear+"Score"];
         var maxScore = Math.max(
           currYearScore,
           Math.max(prevPrevYearScore, prevYearScore)
@@ -123,4 +131,4 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
   return;
 }
 
-module.exports = { enterCandidateDetailsToDatabase };
+module.exports = { enterCandidateDetailsToDatabase };
