@@ -13,6 +13,8 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 # Copy project files to /usr/src/app/
 COPY . .
 
+RUN npm install npm@10.7.0 --legacy-peer-deps
+
 # Install dependencies
 RUN npm install --legacy-peer-deps
 

@@ -7,6 +7,8 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json to the working directory
 COPY ./package*.json ./
 
+RUN npm install npm@10.7.0 --legacy-peer-deps
+
 # If you are building your code for production
 RUN npm ci --only=production
 
