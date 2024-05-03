@@ -131,6 +131,7 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
         applicantAttributes.push(applicant["GATE" + prevprevYear + "Disc"]);  
       } 
       
+      
       else {
         if (applicant[columnName] !== undefined) {
           applicantAttributes.push(applicant[columnName]);
@@ -177,4 +178,4 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
   return;
 }
 
-module.exports = { enterCandidateDetailsToDatabase };
+module.exports = { enterCandidateDetailsToDatabase };

@@ -38,29 +38,84 @@ async function writeToExcel(
 
 async function writeToExcel2024(con, sheetName, round, fileName, branch) {
   var columnNames =
-    "applicationstatus.offerCat,applicationstatus.Accepted as 'AppStatus',applicationstatus.OfferedRound as 'RoundNumber',mtechappl.branch as 'Offered Program Code',mtechappl.AppNo as 'Mtech Application Number',mtechappl.GateRegNum,";
-  for (var columnName of excel2024ColumnNames) {
-    columnNames += `mtechappl.${columnName}` + ",";
-  }
-  columnNames = columnNames.slice(0, -1);
+    "applicationstatus.offerCat as 'Offered Category',applicationstatus.Accepted as 'AppStatus',applicationstatus.OfferedRound as 'Round Number',mtechappl.branch as 'Offered Program Code',mtechappl.AppNo as 'Mtech Application Number',mtechappl.GateRegNum as 'GATE Reg No (without papercode)',mtechappl.MaxGateScore as 'GATE Score',mtechappl.FullName as 'Candidate Name',";
+  
+    columnNames = columnNames.slice(0, -1); //if error
 
   try {
+    var newResult = [];
+    //console.log(newResult);
+
     var [result] = await con.query(`SELECT ${columnNames} FROM mtechappl
         LEFT JOIN applicationstatus
         ON mtechappl.COAP = applicationstatus.COAP 
         WHERE (OfferedRound='${round}' OR Accepted='R' OR Accepted='Y') AND mtechappl.branch = '${branch}' ORDER BY applicationstatus.offerCat ASC,mtechappl.MaxGateScore DESC`);
     const file = reader.readFile(fileName);
-    console.log(result);
+    //console.log(result);
     for (var row of result) {
-      row['GateRegNum'] = row['GateRegNum'].slice(2, 14);
-      row['Institute Type'] = 'IIT';
+      row['Application Seq No'] = "";
+      row['AppStatus'] = row['AppStatus'];
+      row['Remarks'] = "";
+
       let date = new Date().toJSON().slice(0, 10);
       row['App Date'] = date;
+      row['GATE Reg No (without papercode)'] = row['GATE Reg No (without papercode)'].slice(2, 14);
+      row['Mtech Application Number'] = row['Mtech Application Number'];
+      row['GATE Score'] = row['GATE Score'];
+      row['Candidate Name'] = row['Candidate Name'];
+
       if(row['Offered Program Code'].toLowerCase() === 'cse') row['Offered Program'] = 'Computer Science And Engineering';
       if(row['Offered Program Code'].toLowerCase() === 'ee') row['Offered Program'] = 'Electrical Engineering';
       if(row['Offered Program Code'].toLowerCase() === 'me') row['Offered Program'] = 'Mechanical Engineering';
+      
+      row['Offered Program Code'] = row['Offered Program Code'];
+
+      if (row['Offered Category'][0] === 'G' || row['Offered Category'][0] === 'E') {
+        row['Offered Category'] = "General";
+      }
+      else if (row['Offered Category'][0] === 'O') {
+        row['Offered Category'] = "OBC";
+      }
+      
+      else if (row['Offered Category'][0] === 'S') {
+        if (row['Offered Category'][1] === 'C') {
+          row['Offered Category'] = "SC";
+        }
+        else {
+          row['Offered Category'] = "ST";
+        }
+      }
+
+      row['Round Number'] = row['Round Number'];
+      row['Institute Name'] = 'IIT Goa';
+      row['Institute ID'] = '22';
+
+      row['Institute Type'] = 'IIT';
+      
+      row['Form status'] = "";
+
+      newRow = {};
+      newRow['Application Seq No'] = row['Application Seq No'];
+      newRow['AppStatus'] = row['AppStatus'];
+      newRow['Remarks'] = row['Remarks'];
+      newRow['App Date'] = row['App Date'];
+      newRow['GATE Reg No (without papercode)'] = row['GATE Reg No (without papercode)'];
+      newRow['Mtech Application Number'] = row['Mtech Application Number'];
+      newRow['GATE Score'] = row['GATE Score'];
+      newRow['Candidate Name'] = row['Candidate Name'];
+      newRow['Offered Program'] = row['Offered Program'];
+      newRow['Offered Program Code'] = row['Offered Program Code'];
+      newRow['Offered Category'] = row['Offered Category'];
+      newRow['Round Number'] = row['Round Number'];
+      newRow['Institute Name'] = row['Institute Name'];
+      newRow['Institute ID'] = row['Institute ID'];
+      newRow['Institute Type'] = row['Institute Type'];
+      newRow['Form status'] = row['Form status'];
+
+      newResult.push(newRow);
+      //console.log(newResult);
     }
-    const ws = reader.utils.json_to_sheet(result);
+    const ws = reader.utils.json_to_sheet(newResult);
     reader.utils.book_append_sheet(file, ws, sheetName);
     reader.writeFile(file, fileName);
   } catch (error) {
