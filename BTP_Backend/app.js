@@ -22,6 +22,12 @@ require("dotenv").config();
 // app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+// app.use(
+//   cors({
+//     origin: [process.env.NODE_ENV !== "production" && "http://localhost:8004"],
+//     credentials: true,
+//   })
+// );
 
 app.use(
   cors({
