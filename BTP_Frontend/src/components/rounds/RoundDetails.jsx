@@ -26,7 +26,7 @@ function RoundDetails(props) {
       setIsLoading(true);
       const jwtToken = getCookie("jwtToken");
       let res = await axios.get(
-        `${serverLink}/api/rounds/generateOffers/${props.roundNumber}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/rounds/generateOffers/${props.roundNumber}`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -36,6 +36,7 @@ function RoundDetails(props) {
           withCredentials: true,
         }
       );
+
       window.location.reload();
     } catch (error) {
       console.log(error);
@@ -62,14 +63,18 @@ function RoundDetails(props) {
       setIsLoading(true);
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`${serverLink}/api/rounds/getRoundDetails/${props.roundNumber}`, {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        })
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/rounds/getRoundDetails/${props.roundNumber}`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        )
+
         .then((res) => {
           console.log(res.data.result);
           setOffersGenerated(res.data.result.offersGenerated);
@@ -89,15 +94,19 @@ function RoundDetails(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`${serverLink}/api/rounds/getFile/${props.roundNumber}`, {
-          responseType: "blob",
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        })
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/rounds/getFile/${props.roundNumber}`,
+          {
+            responseType: "blob",
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        )
+
         .then((res) => {
           console.log(res);
           fileDownload(res.data, `round${props.roundNumber}.xlsx`);
@@ -132,7 +141,9 @@ function RoundDetails(props) {
                 </Button>
               )}
               {offersGenerated && (
-                <Button variant="contained" onClick={generateoffers}>Regenerate</Button>
+                <Button variant="contained" onClick={generateoffers}>
+                  Regenerate
+                </Button>
               )}
               {offersGenerated && (
                 <Button

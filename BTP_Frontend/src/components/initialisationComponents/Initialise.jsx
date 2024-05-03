@@ -4,8 +4,8 @@ import FileUploader from "./FileUploader";
 import MatchColumns from "./MatchColumns";
 import { serverLink } from "../../serverLink";
 import axios from "axios";
-import { ToastContainer , toast} from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Initialise(props) {
   function getCookie(name) {
@@ -21,7 +21,7 @@ function Initialise(props) {
 
       // Proceed with resetting database
       const response = await axios.get(
-        "http://localhost:4444/api/initialise/reset",
+        `${process.env.REACT_APP_BACKEND_URL}/api/initialise/reset`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -46,16 +46,14 @@ function Initialise(props) {
         onClose: () => {
           // Handle closing event
           console.log("User closed the notification");
-        }
+        },
       });
     }
   };
 
-
-
   return (
     <div className="flex w-full justify-center flex-col items-center gap-6 p-8">
-      <ToastContainer/>
+      <ToastContainer />
       <div className="flex  content-center justify-center w-full gap-6">
         <p className="text-3xl text-gray-400">Initialise The DataBase</p>
         <Button

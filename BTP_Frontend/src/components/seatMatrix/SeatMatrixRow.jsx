@@ -28,16 +28,15 @@ function SeatMatrixRow(props) {
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
-        
       });
-      
+
       return;
     }
 
     try {
       const jwtToken = getCookie("jwtToken");
       const response = await axios.post(
-        `${serverLink}/api/seatMatrix/updateSeats`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/seatMatrix/updateSeats`,
         { category: props.category, seats: seats },
         {
           headers: {

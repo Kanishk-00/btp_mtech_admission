@@ -68,7 +68,7 @@ function LoginForm() {
       const jwtToken = getCookie("jwtToken");
       try {
         const response = await axios.get(
-          `http://localhost:4444/api/check-authentication/`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/check-authentication/`,
           {
             headers: {
               Authorization: `Bearer ${jwtToken}`,
@@ -94,7 +94,7 @@ function LoginForm() {
     const fetchBranches = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:4444/api/branch/branches"
+          `${process.env.REACT_APP_BACKEND_URL}/api/branch/branches`
         );
 
         const filteredData = response.data.filter((item) => item !== "admin");
@@ -120,7 +120,7 @@ function LoginForm() {
     try {
       // Make API call to login
       const loginResponse = await axios.post(
-        "http://localhost:4444/auth/login",
+        `${process.env.REACT_APP_BACKEND_URL}/auth/login`,
         {
           username: trimmedUsername,
           password,

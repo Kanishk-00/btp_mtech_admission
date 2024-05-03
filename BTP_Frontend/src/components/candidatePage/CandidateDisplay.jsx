@@ -29,15 +29,18 @@ function CandidateDisplay(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`${serverLink}/api/search/getinfo/${coapid}`, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Credentials": true,
-            Authorization: `Bearer ${jwtToken}`, // Include JWT token in Authorization header
-          },
-          withCredentials: true,
-        })
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/search/getinfo/${coapid}`,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Credentials": true,
+              Authorization: `Bearer ${jwtToken}`, // Include JWT token in Authorization header
+            },
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setData(res.data.result);
           console.log(res.data.result);
@@ -70,7 +73,7 @@ function CandidateDisplay(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       let res = await axios.post(
-        `${serverLink}/api/candidate/manualUpdate`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/candidate/manualUpdate`,
         { coap: coapid },
         {
           headers: {

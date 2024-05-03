@@ -58,14 +58,18 @@ function RoundUpdateFiles(props) {
       formData.append("name", file.name);
       formData.append("file", file);
       axios
-        .post(`${serverLink}/api/rounds/getColumnNames`, formData, {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-            Accept: "application/json",
-            "Content-Type": "multipart/form-data",
-          },
-          withCredentials: true,
-        })
+        .post(
+          `${process.env.REACT_APP_BACKEND_URL}/api/rounds/getColumnNames`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              Accept: "application/json",
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           console.log("the names column", res.data.result);
           setColumnNames(res.data.result);
@@ -102,7 +106,7 @@ function RoundUpdateFiles(props) {
       console.log("inside upload");
       axios
         .post(
-          `${serverLink}/api/rounds/putFile/${props.fileName}/${props.roundNumber}`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/rounds/putFile/${props.fileName}/${props.roundNumber}`,
           formData,
           {
             headers: {
@@ -146,7 +150,7 @@ function RoundUpdateFiles(props) {
   const handleDownload = () => {
     axios
       .get(
-        `${serverLink}/api/rounds/getFile/${props.fileName}/${props.roundNumber}`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/rounds/getFile/${props.fileName}/${props.roundNumber}`,
         {
           responseType: "blob",
         },

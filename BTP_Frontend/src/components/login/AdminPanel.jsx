@@ -53,7 +53,7 @@ function AdminPanel() {
 
   useEffect(() => {
     // Fetch users on component mount
-    fetch("http://localhost:4444/admin/users")
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/users`)
       .then((response) => response.json())
       .then((data) => setUsers(data))
       .catch((error) => console.error("Error fetching users:", error));
@@ -61,7 +61,7 @@ function AdminPanel() {
       const jwtToken = getCookie("jwtToken");
       try {
         const response = await axios.get(
-          `http://localhost:4444/api/check-authentication/`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/check-authentication/`,
           {
             headers: {
               Authorization: `Bearer ${jwtToken}`,
@@ -96,7 +96,7 @@ function AdminPanel() {
   const fetchBranches = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:4444/api/branch/branches"
+        `${process.env.REACT_APP_BACKEND_URL}/api/branch/branches`
       );
       const filteredData = response.data.filter((item) => item !== "admin");
       setPrograms(filteredData);
@@ -107,7 +107,9 @@ function AdminPanel() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("http://localhost:4444/admin/users");
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/users`
+      );
       const data = await response.json();
       setUsers(data);
     } catch (error) {
@@ -126,7 +128,7 @@ function AdminPanel() {
   );
 
   const handleDeleteUser = (userId) => {
-    fetch(`http://localhost:4444/admin/users/${userId}`, {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/users/${userId}`, {
       method: "DELETE",
     })
       .then((response) => {
@@ -161,7 +163,7 @@ function AdminPanel() {
 
     const trimmedUsername = username.trim(); // Trim the username
 
-    fetch("http://localhost:4444/admin/register", {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/admin/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -210,15 +212,18 @@ function AdminPanel() {
       return;
     }
 
-    fetch(`http://localhost:4444/admin/users/${userId}/password`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        newPassword,
-      }),
-    })
+    fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/admin/users/${userId}/password`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          newPassword,
+        }),
+      }
+    )
       .then((response) => {
         if (response.ok) {
           setNewPasswordMap((prevMap) => ({
@@ -251,7 +256,7 @@ function AdminPanel() {
     const trimmedBranch = newProgram.trim().toUpperCase(); // Convert to uppercase and trim
     setNewProgram(trimmedBranch); // Update the input field with the trimmed and uppercase branch
 
-    fetch("http://localhost:4444/api/branch/addBranch", {
+    fetch(`${process.env.REACT_APP_BACKEND_URL}/api/branch/addBranch`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -288,9 +293,12 @@ function AdminPanel() {
     );
 
     if (isConfirmed) {
-      fetch(`http://localhost:4444/admin/deleteBranch/${branchName}`, {
-        method: "DELETE",
-      })
+      fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/admin/deleteBranch/${branchName}`,
+        {
+          method: "DELETE",
+        }
+      )
         .then((response) => {
           if (response.ok) {
             setPrograms(programs.filter((program) => program !== branchName));

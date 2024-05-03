@@ -25,7 +25,7 @@ function Rounds(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`${serverLink}/api/rounds/getRounds`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/api/rounds/getRounds`, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
             Accept: "application/json",
@@ -59,13 +59,19 @@ function Rounds(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`${serverLink}/api/rounds/reset/${selectedRoundIndex + 1}`, {
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        })
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/rounds/reset/${
+            selectedRoundIndex + 1
+          }`,
+          {
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        )
+
         .then((res) => {
           console.log(res.data.result);
           window.location.reload();

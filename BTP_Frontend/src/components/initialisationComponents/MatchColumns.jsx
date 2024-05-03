@@ -25,14 +25,17 @@ const MatchColumns = () => {
   useEffect(() => {
     setIsLoading(true);
     axios
-      .get(`http://localhost:4444/api/initialise/getMasterFileModifiedStatus`, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Credentials": true,
-        },
-        withCredentials: true,
-      })
+      .get(
+        `${process.env.REACT_APP_BACKEND_URL}/api/initialise/getMasterFileModifiedStatus`,
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Credentials": true,
+          },
+          withCredentials: true,
+        }
+      )
       .then((res) => {
         setFileExists(res.data.result);
         setIsLoading(false);
@@ -59,7 +62,7 @@ const MatchColumns = () => {
     try {
       const jwtToken = getCookie("jwtToken");
       const response = await axios.get(
-        `http://localhost:4444/api/initialise/getMatchedColumnNames`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/initialise/getMatchedColumnNames`,
         {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
@@ -143,7 +146,7 @@ const MatchColumns = () => {
     setIsLoading(true);
     axios
       .post(
-        `http://localhost:4444/api/initialise/saveToDataBase`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/initialise/saveToDataBase`,
         { result: columnNamesMatched },
         {
           headers: {
@@ -180,13 +183,16 @@ const MatchColumns = () => {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`http://localhost:4444/api/initialise/modifiedFile`, {
-          responseType: "blob",
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-          },
-          withCredentials: true,
-        })
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/initialise/modifiedFile`,
+          {
+            responseType: "blob",
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+            },
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           console.log(res);
           fileDownload(res.data, "modifiedFile.xlsx");

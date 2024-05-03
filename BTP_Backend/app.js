@@ -23,21 +23,21 @@ require("dotenv").config();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: [process.env.NODE_ENV !== "production" && "http://localhost:8004"],
-    credentials: true,
-  })
-);
-
-
 // app.use(
 //   cors({
-//     origin: [process.env.NODE_ENV !== "production" && "http://localhost:3000"],
+//     origin: [process.env.NODE_ENV !== "production" && "http://localhost:8004"],
 //     credentials: true,
 //   })
 // );
 
+app.use(
+  cors({
+    origin: [
+      process.env.NODE_ENV !== "production" && "http://10.196.34.253:8004",
+    ],
+    credentials: true,
+  })
+);
 
 (async () => {
   try {

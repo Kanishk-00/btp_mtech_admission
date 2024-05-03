@@ -21,7 +21,7 @@ function Home(props) {
       const jwtToken = getCookie("jwtToken");
       try {
         const response = await axios.get(
-          `http://localhost:4444/api/check-authentication/`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/check-authentication/`,
           {
             headers: {
               Authorization: `Bearer ${jwtToken}`,

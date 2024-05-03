@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import axios from 'axios';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from '@material-ui/core/Typography';
-import { Fab } from '@material-ui/core';
-
+import React, { useState, useEffect } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Typography from "@material-ui/core/Typography";
+import { Fab } from "@material-ui/core";
 
 const ProtectedRoutesLogin = () => {
   const [auth, setAuth] = useState({ token: false });
@@ -18,12 +17,11 @@ const ProtectedRoutesLogin = () => {
   }
 
   useEffect(() => {
-
     const checkAuthentication = async () => {
       const jwtToken = getCookie("jwtToken");
       try {
         const response = await axios.get(
-          `http://localhost:4444/api/check-authentication/`,
+          `${process.env.REACT_APP_BACKEND_URL}/api/check-authentication/`,
           {
             headers: {
               Authorization: `Bearer ${jwtToken}`,
@@ -35,10 +33,9 @@ const ProtectedRoutesLogin = () => {
         );
         console.log("the response is: ", response.data);
 
-        if(response.data.isAdmin){
+        if (response.data.isAdmin) {
           setAdmin(true);
-        }
-        else{
+        } else {
           setAdmin(false);
         }
         setAuth({ token: true });
@@ -62,15 +59,28 @@ const ProtectedRoutesLogin = () => {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <CircularProgress />
-        <Typography variant="body1" style={{ marginLeft: '10px' }}>Loading...</Typography>
+        <Typography variant="body1" style={{ marginLeft: "10px" }}>
+          Loading...
+        </Typography>
       </div>
     );
   }
-  
-  return (
-    (!auth.token )? <Outlet/> : (isAdmin ? <Navigate to='/admin'/> : <Navigate to='/home'/>)
+
+  return !auth.token ? (
+    <Outlet />
+  ) : isAdmin ? (
+    <Navigate to="/admin" />
+  ) : (
+    <Navigate to="/home" />
   );
 };
 

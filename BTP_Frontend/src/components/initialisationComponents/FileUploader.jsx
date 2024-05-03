@@ -30,14 +30,17 @@ function FileUploader(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`http://localhost:4444/api/initialise/getMasterFileUploadStatus`, {
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          withCredentials: true,
-        })
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/initialise/getMasterFileUploadStatus`,
+          {
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            withCredentials: true,
+          }
+        )
         .then((res) => {
           setFileExists(res.data.result);
           setIsLoading(false);
@@ -84,7 +87,7 @@ function FileUploader(props) {
 
     try {
       const response = await axios.post(
-        "http://localhost:4444/api/initialise/getFile",
+        `${process.env.REACT_APP_BACKEND_URL}/api/initialise/getFile`,
         formData,
         { withCredentials: true }
       );
@@ -153,7 +156,7 @@ function FileUploader(props) {
     try {
       const token = getCookie("jwtToken"); // Get the JWT token from wherever it's stored (cookies, local storage, etc.)
       const response = await axios.get(
-        `http://localhost:4444/api/initialise/uploadedFile`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/initialise/uploadedFile`,
         {
           responseType: "blob",
           headers: {

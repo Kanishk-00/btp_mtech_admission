@@ -35,7 +35,7 @@ function FilterOptions(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`${serverLink}/api/search/getCoapIds`, {
+        .get(`${process.env.REACT_APP_BACKEND_URL}/api/search/getCoapIds`, {
           headers: {
             Authorization: `Bearer ${jwtToken}`,
             Accept: "application/json",
@@ -78,8 +78,8 @@ function FilterOptions(props) {
       const jwtToken = getCookie("jwtToken");
       axios
         .post(
-          `${serverLink}/api/search/getinfo`,
-          { category: category, gender, gender, coapId: coapId },
+          `${process.env.REACT_APP_BACKEND_URL}/api/search/getinfo`,
+          { category: category, gender: gender, coapId: coapId },
           {
             headers: {
               Authorization: `Bearer ${jwtToken}`,

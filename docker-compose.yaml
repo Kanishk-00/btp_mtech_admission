@@ -20,6 +20,8 @@ services:
     volumes: 
       - db-config:/etc/mysql
       - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root --password=password"]
 
   backend:
     build: ./BTP_Backend
@@ -36,7 +38,8 @@ services:
       - ADMIN_PASSWORD=admin@123
       - userFilePath=files
     depends_on:
-      - mysqldb
+      mysqldb:
+        condition: service_healthy
     ports:
       - 4444:4444
     volumes: 
@@ -44,6 +47,11 @@ services:
     stdin_open: true
     tty: true
     restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4444/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   frontend:
     build: ./BTP_Frontend

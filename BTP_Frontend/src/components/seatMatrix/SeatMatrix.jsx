@@ -29,14 +29,17 @@ function SeatMatrix(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       axios
-        .get(`${serverLink}/api/seatMatrix/seatMatrixData`, {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${jwtToken}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        })
+        .get(
+          `${process.env.REACT_APP_BACKEND_URL}/api/seatMatrix/seatMatrixData`,
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${jwtToken}`,
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        )
         .then((res) => {
           setData(res.data.result);
           console.log(res.data.result);
