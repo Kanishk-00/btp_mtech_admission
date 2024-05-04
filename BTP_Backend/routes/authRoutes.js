@@ -51,9 +51,10 @@ router.post("/login", (req, res) => {
       res.cookie("jwtToken", token, {
         httpOnly: true,
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day in milliseconds
-        secure: true, // For HTTPS only, remove this in development if not using HTTPS
-        sameSite: "none", // For cross-site cookies, requires secure:true
+        secure: false, // For HTTPS only, remove this in development if not using HTTPS
+        sameSite: "lax", // For cross-site cookies, requires secure:true
         path: "/", // Cookie path
+        domain: "10.250.1.61",
       });
 
       // Send JWT token in response

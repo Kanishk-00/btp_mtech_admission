@@ -57,7 +57,7 @@ services:
     build: ./BTP_Frontend
     image: btp-frontend-compose
     ports:
-      - 8004:8004
+      - 80:8004
     stdin_open: true
 
 volumes: 

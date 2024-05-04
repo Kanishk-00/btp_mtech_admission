@@ -20,6 +20,14 @@ const deleteBranchRoute = require("./routes/deleteBranchRoute");
 
 require("dotenv").config();
 // app.use(cors());
+
+app.use(
+  cors({
+    origin: [process.env.NODE_ENV !== "production" && "http://10.250.1.61"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(cookieParser());
 // app.use(
@@ -28,15 +36,6 @@ app.use(cookieParser());
 //     credentials: true,
 //   })
 // );
-
-app.use(
-  cors({
-    origin: [
-      process.env.NODE_ENV !== "production" && "http://10.250.1.61:8004",
-    ],
-    credentials: true,
-  })
-);
 
 (async () => {
   try {
