@@ -23,7 +23,7 @@ require("dotenv").config();
 
 app.use(
   cors({
-    origin: [process.env.NODE_ENV !== "production" && "http://10.250.1.61"],
+    origin: [process.env.NODE_ENV !== "production" && process.env.BACKEND_URL],
     credentials: true,
   })
 );

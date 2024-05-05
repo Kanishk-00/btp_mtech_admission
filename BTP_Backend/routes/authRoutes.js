@@ -51,12 +51,11 @@ router.post("/login", (req, res) => {
       res.cookie("jwtToken", token, {
         httpOnly: true,
         expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // 1 day in milliseconds
-        secure: false, // For HTTPS only, remove this in development if not using HTTPS
-        sameSite: "lax", // For cross-site cookies, requires secure:true
-        path: "/", // Cookie path
-        domain: "10.250.1.61",
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+        // domain: "localhost",
       });
-
       // Send JWT token in response
       res.status(200).json({ user, message: "Login successful", token });
     });

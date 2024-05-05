@@ -13,7 +13,7 @@ router.get("/seatMatrixData", isAuthenticated, async (req, res) => {
     var con = mysql
       .createPool({
         // host: process.env.MYSQL_HOSTNAME,
-        host: process.env.MYSQL_HOST_IP || "10.250.1.61",
+        host: process.env.MYSQL_HOST_IP || "127.0.0.1",
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
@@ -53,8 +53,7 @@ router.post("/updateSeats", isAuthenticated, async (req, res) => {
   try {
     var con = mysql
       .createPool({
-        // host: process.env.MYSQL_HOSTNAME,
-        host: process.env.MYSQL_HOST_IP || "10.250.1.61",
+        host: process.env.MYSQL_HOST_IP || "127.0.0.1",
         user: "root",
         password: process.env.MYSQL_PASSWORD,
         database: process.env.MYSQL_DATABASE,
