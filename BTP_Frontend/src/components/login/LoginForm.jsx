@@ -78,11 +78,11 @@ function LoginForm() {
             withCredentials: true,
           }
         );
-        console.log("the response is: ", response.data);
+        // console.log("the response is: ", response.data);
         navigate("/home");
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          console.log("User is not authenticated. Navigating to '/'...");
+          // console.log("User is not authenticated. Navigating to '/'...");
           navigate("/");
         } else {
           console.error("Error checking authentication:", error);
@@ -140,7 +140,7 @@ function LoginForm() {
       }
 
       // Handle successful login
-      console.log("Login successful. JWT token:", loginResponse.data.token);
+      // console.log("Login successful. JWT token:", loginResponse.data.token);
       // Redirect to home page
       navigate("/home");
     } catch (error) {

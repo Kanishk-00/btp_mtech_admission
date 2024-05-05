@@ -12,20 +12,20 @@ async function updateDecision(
 ) {
   const currCOAP = applicant[coapIdColumnName];
   const currDecision = applicant[candidateDecisonColumnName];
-  console.log(currCOAP, currDecision);
+  // console.log(currCOAP, currDecision);
   try {
     const query = `SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM applicationstatus WHERE COAP = ? AND branch = ?;`;
-    console.log("Query:", query, "Parameters:", [currCOAP, branch]);
+    // console.log("Query:", query, "Parameters:", [currCOAP, branch]);
     const [checkPreviousStatus] = await con.query(query, [currCOAP, branch]);
-    console.log("Query result:", checkPreviousStatus);
+    // console.log("Query result:", checkPreviousStatus);
     if (checkPreviousStatus.length === 0) {
       try {
         const insertQuery = `INSERT INTO applicationstatus (COAP, Offered, Accepted, RejectOrAcceptRound, branch) VALUES (?, '', 'E', ?, ?)`;
-        console.log("Insert Query:", insertQuery, "Parameters:", [
-          currCOAP,
-          round,
-          branch,
-        ]);
+        // console.log("Insert Query:", insertQuery, "Parameters:", [
+        //   currCOAP,
+        //   round,
+        //   branch,
+        // ]);
         await con.query(insertQuery, [currCOAP, round, branch]);
       } catch (error) {
         throw error;
@@ -34,7 +34,7 @@ async function updateDecision(
   } catch (error) {
     throw error;
   }
-  console.log(`Updated candidate decision ${currCOAP}`);
+  // console.log(`Updated candidate decision ${currCOAP}`);
 }
 
 async function updateStatusConsolidatedFile(
@@ -74,9 +74,7 @@ async function updateStatusConsolidatedFile(
       ]);
       // console.log("Query result:", isCS);
       if (isCS[0].count !== 0) {
-        console.log("branch1kanishkkkk mahan: ", branch);
-        console.log("branch1kanishkkkk2 mahan: ", applicant[coapIdColumnName]);
-        console.log("Query result mahan:", isCS);
+        // console.log("Query result mahan:", isCS);
       }
 
       if (isCS[0].count === 1) {

@@ -12,9 +12,9 @@ async function updateDecision(
 ) {
   currCOAP = applicant[coapIdColumnName];
   currDecision = applicant[candidateDecisonColumnName];
-  console.log("Current Decision:", currDecision);
-  console.log("Current COAP:", currCOAP);
-  console.log(currCOAP, currDecision);
+  // console.log("Current Decision:", currDecision);
+  // console.log("Current COAP:", currCOAP);
+  // console.log(currCOAP, currDecision);
   try {
     // Check previous status
     var [checkPreviousStatus] = await con.query(
@@ -22,7 +22,7 @@ async function updateDecision(
         COAP = ? AND branch = ?;`,
       [currCOAP, branch]
     );
-    console.log("Previous status:", checkPreviousStatus);
+    // console.log("Previous status:", checkPreviousStatus);
     bool_previousRetain = checkPreviousStatus[0].RetainRound != ""; // Check if previously retained
     bool_previousRejectOrAccept =
       checkPreviousStatus[0].RejectOrAcceptRound != ""; // Check if previously rejected or accepted
@@ -72,7 +72,7 @@ async function updateDecision(
   } catch (error) {
     throw error;
   }
-  console.log(`Updated candidate Decision ${currCOAP}`);
+  // console.log(`Updated candidate Decision ${currCOAP}`);
 }
 
 async function updateStatusIITGList(
@@ -99,14 +99,14 @@ async function updateStatusIITGList(
   var applicantsData = XLSX.utils.sheet_to_json(applicantsDataSheet);
   for (const applicant of applicantsData) {
     try {
-      console.log(
-        "par jab mein idhar aagaya hun upload karne toh, branch to esa hai na: ",
-        branch
-      );
-      console.log(
-        "aur ye bhi dekhlo applicant[coapIdColumnName]: ",
-        applicant[coapIdColumnName]
-      );
+      // console.log(
+      //   "par jab mein idhar aagaya hun upload karne toh, branch to esa hai na: ",
+      //   branch
+      // );
+      // console.log(
+      //   "aur ye bhi dekhlo applicant[coapIdColumnName]: ",
+      //   applicant[coapIdColumnName]
+      // );
       var [isCS] = await con.query(
         `SELECT COUNT(*) AS count FROM applicationstatus WHERE 
             COAP = ? AND branch = ?;`,

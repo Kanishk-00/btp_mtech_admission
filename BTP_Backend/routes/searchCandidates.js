@@ -3,8 +3,8 @@ const mysql = require("mysql2");
 const isAuthenticated = require("../middleware/authMiddleware");
 
 router.get("/getCoapIds", isAuthenticated, async (req, res) => {
-  console.log("csearch wala request", req.user);
-  console.log("csearch wala request branch", req.user.branch);
+  // console.log("csearch wala request", req.user);
+  // console.log("csearch wala request branch", req.user.branch);
   const branch = req.user.branch;
 
   try {
@@ -31,7 +31,7 @@ router.get("/getCoapIds", isAuthenticated, async (req, res) => {
 });
 
 router.post("/getinfo", isAuthenticated, async (req, res) => {
-  console.log("req.user.branch is :", req.user.branch);
+  // console.log("req.user.branch is :", req.user.branch);
   try {
     var con = mysql
       .createPool({

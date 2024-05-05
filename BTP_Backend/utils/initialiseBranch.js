@@ -20,9 +20,9 @@ async function checkTableExists(connection, tableName) {
 }
 
 async function initializeBranchTable(databaseName, branchData) {
-  console.log("pass: ", process.env.MYSQL_PASSWORD);
-  console.log("host: ", process.env.MYSQL_HOSTNAME);
-  console.log("database: ", process.env.MYSQL_DATABASE);
+  // console.log("pass: ", process.env.MYSQL_PASSWORD);
+  // console.log("host: ", process.env.MYSQL_HOSTNAME);
+  // console.log("database: ", process.env.MYSQL_DATABASE);
   var con = mysql
     .createPool({
       // host: process.env.MYSQL_HOSTNAME,
@@ -36,20 +36,20 @@ async function initializeBranchTable(databaseName, branchData) {
     .promise();
   // Check if the connection is valid by executing a test query
   const som = await con.query("SHOW TABLES");
-  console.log("Connection established successfully.");
-  console.log("som: ", som);
+  // console.log("Connection established successfully.");
+  // console.log("som: ", som);
 
   try {
     const tableExists = await checkTableExists(con, "branches");
     if (tableExists) {
-      console.log("Branches table already exists.");
+      // console.log("Branches table already exists.");
       return; // Exit the function if the table exists
     }
 
     await createTable(con, "branches", branchSchema);
-    console.log(branchData);
+    // console.log(branchData);
     await insertManyIntoTable(con, "branches", `(branch)`, branchData);
-    console.log("Branches table initialized successfully.");
+    // console.log("Branches table initialized successfully.");
   } catch (error) {
     console.log(error);
   }

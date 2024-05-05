@@ -30,12 +30,12 @@ async function initializeUsersTable(databaseName, userData) {
       insecureAuth: true,
     })
     .promise();
-  console.log(usersSchema);
+  // console.log(usersSchema);
 
   try {
     const tableExists = await checkTableExists(con, "users");
     if (tableExists) {
-      console.log("Users table already exists.");
+      // console.log("Users table already exists.");
       return; // Exit the function if the table exists
     }
 
@@ -49,7 +49,7 @@ async function initializeUsersTable(databaseName, userData) {
     console.log("Users table initialized successfully.");
     // Fetch data from the "users" table
     const [rows] = await con.query("SELECT * FROM users");
-    console.log("Data in the 'users' table:", rows);
+    // console.log("Data in the 'users' table:", rows);
   } catch (error) {
     console.log(error);
   }

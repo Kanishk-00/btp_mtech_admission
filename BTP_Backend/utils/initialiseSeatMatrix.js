@@ -29,7 +29,7 @@ async function initialiseSeatMatrix(branch, seatAllotedData) {
 
     // Check if the table exists
     var tableExists = await sqlQueries.checkTableExists(con, tableName);
-    console.log("seat matrix for tableexists: ", tableExists);
+    // console.log("seat matrix for tableexists: ", tableExists);
 
     // If table does not exist, create it with additional 'branch' column
     if (!tableExists) {
@@ -48,7 +48,7 @@ async function initialiseSeatMatrix(branch, seatAllotedData) {
       seatAllotedData.map((row) => [...row, branch])
     );
 
-    console.log(`Seat matrix table ${tableName} initialized successfully`);
+    // console.log(`Seat matrix table ${tableName} initialized successfully`);
   } catch (error) {
     console.error("Error:", error);
     // Handle errors appropriately

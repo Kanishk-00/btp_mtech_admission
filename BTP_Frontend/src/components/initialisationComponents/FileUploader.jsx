@@ -83,7 +83,7 @@ function FileUploader(props) {
     const formData = new FormData();
     formData.append("name", file.name);
     formData.append("file", file);
-    console.log("inside here");
+    // console.log("inside here");
 
     try {
       const response = await axios.post(
@@ -113,8 +113,8 @@ function FileUploader(props) {
       // </Alert>;
     } catch (error) {
       console.error("Upload error:", error);
-      console.log("the error, ", error.response);
-      console.log("the error, ", error.response.status);
+      // console.log("the error, ", error.response);
+      // console.log("the error, ", error.response.status);
       if (error.response && error.response.status === 401) {
         toast.error(
           "File upload failed. Please log in with correct credentials.",
@@ -165,7 +165,7 @@ function FileUploader(props) {
           withCredentials: true,
         }
       );
-      console.log(response);
+      // console.log(response);
       fileDownload(response.data, "uploadedFile.xlsx");
     } catch (error) {
       console.log(error);

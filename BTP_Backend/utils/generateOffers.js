@@ -42,7 +42,6 @@ const {
 } = require("./shortlistFunctions/femaleUpgradation");
 
 async function generateOffers(databaseName, round, filePath, branch) {
-  console.log("generated offers 1: ", branch);
   var con = mysql
     .createPool({
       // host: process.env.MYSQL_HOSTNAME,
@@ -56,7 +55,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
     .promise();
 
   try {
-    console.log("generated offers 2: ", branch);
     var generalFemaleUpdates = updateFemaleCandidatesOfferedCategory(
       con,
       "GEN",
@@ -65,7 +63,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       branch
     );
 
-    console.log("generated offers 3: ", branch);
     var EWSFemaleUpdates = updateFemaleCandidatesOfferedCategory(
       con,
       "EWS",
@@ -74,7 +71,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       branch
     );
 
-    console.log("generated offers 4: ", branch);
     var OBCFemaleUpdates = updateFemaleCandidatesOfferedCategory(
       con,
       "OBC",
@@ -83,7 +79,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       branch
     );
 
-    console.log("generated offers 5: ", branch);
     var SCFemaleUpdates = updateFemaleCandidatesOfferedCategory(
       con,
       "SC",
@@ -91,7 +86,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       await findAvailableSeats(con, "SC_Female", round, branch),
       branch
     );
-    console.log("generated offers 6: ", branch);
 
     var STFemaleUpdates = updateFemaleCandidatesOfferedCategory(
       con,
@@ -100,7 +94,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       await findAvailableSeats(con, "ST_Female", round, branch),
       branch
     );
-    console.log("generated offers 7: ", branch);
 
     var commonPWDCandidates = await shortlistCommonPWDCandidates(
       con,
@@ -108,7 +101,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       round,
       branch
     );
-    console.log("generated offers 8: ", branch);
 
     var generalPWDCandidates = await shortListPWDCandidates(
       con,
@@ -118,7 +110,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       "GEN_FandM_PWD",
       branch
     );
-    console.log("generated offers 9: ", branch);
 
     var OBCPWDCandidates = await shortListPWDCandidates(
       con,
@@ -128,7 +119,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       "OBC_FandM_PWD",
       branch
     );
-    console.log("generated offers 10: ", branch);
 
     var SCPWDCandidates = await shortListPWDCandidates(
       con,
@@ -138,7 +128,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       "SC_FandM_PWD",
       branch
     );
-    console.log("generated offers 11: ", branch);
 
     var STPWDCandidates = await shortListPWDCandidates(
       con,
@@ -148,7 +137,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       "ST_FandM_PWD",
       branch
     );
-    console.log("generated offers 12: ", branch);
 
     var EWSPWDCandidates = await shortListEWSPWDCandidates(
       con,
@@ -158,9 +146,7 @@ async function generateOffers(databaseName, round, filePath, branch) {
       "EWS_FandM_PWD",
       branch
     );
-    console.log("generated offers 13: ", branch);
 
-    console.log("\naaya reeeeeee: \n\n", branch);
     var generalFemaleCandidates = await shortListGeneralFemaleCandidates(
       con,
       await findAvailableSeatsGeneral(con, "GEN_Female", round, branch),
@@ -201,7 +187,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       round,
       branch
     );
-    console.log("generated offers 18: ", branch);
 
     var OBCCandidates = await shortListReservedCandidates(
       con,
@@ -211,7 +196,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       round,
       branch
     );
-    console.log("generated offers 19: ", branch);
 
     var SCCandidatesFemales = await shortListReservedCandidates(
       con,
@@ -221,7 +205,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       round,
       branch
     );
-    console.log("generated offers 20: ", branch);
 
     var SCCandidates = await shortListReservedCandidates(
       con,
@@ -231,7 +214,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       round,
       branch
     );
-    console.log("generated offers 21: ", branch);
 
     var STCandidatesFemales = await shortListReservedCandidates(
       con,
@@ -241,7 +223,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       round,
       branch
     );
-    console.log("generated offers 22: ", branch);
 
     var STCandidates = await shortListReservedCandidates(
       con,
@@ -256,11 +237,7 @@ async function generateOffers(databaseName, round, filePath, branch) {
   }
 
   try {
-    console.log("generated offers 23: ", branch);
-
     await writeToExcelAllOffers(con, "Offers-List", round, filePath, branch);
-
-    console.log("generated offers 2444: ", branch);
 
     await writeToExcel2024(con, "Offer-24-format", round, filePath, branch);
 
@@ -375,8 +352,6 @@ async function generateOffers(databaseName, round, filePath, branch) {
       filePath,
       branch
     );
-
-    console.log("generated offers YEHHHHHHH HO gaya bro: ", branch);
   } catch (error) {
     throw error;
   }

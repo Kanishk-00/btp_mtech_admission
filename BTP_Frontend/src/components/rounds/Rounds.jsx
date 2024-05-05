@@ -34,7 +34,7 @@ function Rounds(props) {
           withCredentials: true,
         })
         .then((res) => {
-          console.log(res.data.rounds);
+          // console.log(res.data.rounds);
           let r = [];
           for (let i = 1; i <= res.data.rounds; i++) {
             r.push(`Round-${i}`);
@@ -44,7 +44,7 @@ function Rounds(props) {
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           if (err.response && err.response.status === 401) {
             navigate("/");
           }
@@ -73,12 +73,12 @@ function Rounds(props) {
         )
 
         .then((res) => {
-          console.log(res.data.result);
+          // console.log(res.data.result);
           window.location.reload();
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           setIsLoading(false);
         });
     } catch (error) {

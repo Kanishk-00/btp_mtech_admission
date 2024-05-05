@@ -33,7 +33,7 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
 
   // Check if the table exists
   var tableExists = await sqlQueries.checkTableExists(con, "mtechappl");
-  console.log("table exists hai ki nahi?", tableExists);
+  // console.log("table exists hai ki nahi?", tableExists);
 
   if (!tableExists) {
     // Table does not exist, create it with the schema and add the 'branch' column
@@ -42,7 +42,7 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
       "mtechappl",
       applicantsSchema
     );
-    console.log("Created mtechappl table with branch column.");
+    // console.log("Created mtechappl table with branch column.");
   }
 
   /*
@@ -146,16 +146,16 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
   // columnNames += ")";
 
   var columnNames = "(" + applicantsSchemaColumnNames.join(",") + ")";
-  console.log("the console column names is: ", columnNames);
+  // console.log("the console column names is: ", columnNames);
   /*
     inserting into database
   */
-  console.log("5");
-  console.log(
-    "Number of columns in schema:",
-    applicantsSchemaColumnNames.length
-  );
-  console.log("Number of values to be inserted:", valuesToBeInserted[0].length);
+  // console.log("5");
+  // console.log(
+  //   "Number of columns in schema:",
+  //   applicantsSchemaColumnNames.length
+  // );
+  // console.log("Number of values to be inserted:", valuesToBeInserted[0].length);
 
   var insertIntoTableRes = await sqlQueries.insertManyIntoTable(
     con,
@@ -163,7 +163,7 @@ async function enterCandidateDetailsToDatabase(branch, filePath, databaseName) {
     columnNames,
     valuesToBeInserted
   );
-  console.log("Inserted candidate details into mtechappl table.");
+  // console.log("Inserted candidate details into mtechappl table.");
 
   return;
 }

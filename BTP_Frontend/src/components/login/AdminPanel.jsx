@@ -71,14 +71,14 @@ function AdminPanel() {
             withCredentials: true,
           }
         );
-        console.log("the response is: ", response.data);
+        // console.log("the response is: ", response.data);
         if (!response.data.isAdmin) {
           // alert("You need to be an admin to access admin console");
           navigate("/home");
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          console.log("User is not authenticated. Navigating to '/'...");
+          // console.log("User is not authenticated. Navigating to '/'...");
           navigate("/");
         } else {
           console.error("Error checking authentication:", error);
@@ -266,7 +266,7 @@ function AdminPanel() {
       }),
     })
       .then((response) => {
-        console.log("response for adding the branch: ", response);
+        // console.log("response for adding the branch: ", response);
         if (response.ok) {
           setPrograms([...programs, trimmedBranch]); // Update the programs state with the new uppercase branch
           setBranch(trimmedBranch); // Set the new branch in the select dropdown

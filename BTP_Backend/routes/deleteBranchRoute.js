@@ -44,7 +44,7 @@ router.delete("/:branchName", (req, res) => {
                     .json({ error: "Failed to delete branch and users." });
                 });
               } else {
-                console.log("Branch and users deleted:", branchName);
+                // console.log("Branch and users deleted:", branchName);
                 res.sendStatus(200);
               }
             });

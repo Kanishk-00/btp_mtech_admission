@@ -13,7 +13,7 @@ async function updateDecision(
 ) {
   currCOAP = applicant[coapIdColumnName];
   currDecision = applicant[candidateDecisonColumnName];
-  console.log(currCOAP, currDecision);
+  // console.log(currCOAP, currDecision);
   try {
     var [checkPreviousStatus] =
       await con.query(`SELECT OfferedRound, RetainRound, RejectOrAcceptRound FROM applicationstatus WHERE 
@@ -33,7 +33,7 @@ async function updateDecision(
   } catch (error) {
     throw error;
   }
-  console.log(`updated candidate Desion ${currCOAP}`);
+  // console.log(`updated candidate Desion ${currCOAP}`);
 }
 
 async function updateStatusIITGNotInterested(

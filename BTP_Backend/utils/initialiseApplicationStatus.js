@@ -25,13 +25,13 @@ async function initializeApplicantsStatus(branch, databaseName) {
     const tableExists = await sqlQueries.checkTableExists(con, tableName);
     if (!tableExists) {
       const schema = applicantsStatusSchema(branch);
-      console.log("Creating table with schema:", schema);
+      // console.log("Creating table with schema:", schema);
       const createTableResult = await createTable(con, tableName, schema);
     }
 
-    console.log(
-      `Applicants status table '${tableName}' initialized successfully`
-    );
+    // console.log(
+    //   `Applicants status table '${tableName}' initialized successfully`
+    // );
   } catch (error) {
     console.error("Error:", error);
     // Handle errors appropriately

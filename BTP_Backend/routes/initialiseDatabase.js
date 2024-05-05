@@ -84,11 +84,11 @@ router.post("/getFile", isAuthenticated, (req, res) => {
 
 router.post("/saveToDataBase", isAuthenticated, async (req, res) => {
   const branch = req.user.branch;
-  console.log("Branch:", branch);
-  console.log("save to database ke andar hu ab");
+  // console.log("Branch:", branch);
+  // console.log("save to database ke andar hu ab");
   var branchFolder = `${userFilePath}/${req.user.branch}`;
   var filePath = `${branchFolder}/uploadedFile.xlsx`;
-  console.log("request body: ", req.body);
+  // console.log("request body: ", req.body);
   var matchedColumns = req.body.result;
   // console.log(req.body);
   //reading the uploaded file

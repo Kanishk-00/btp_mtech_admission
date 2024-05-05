@@ -43,7 +43,7 @@ async function shortListEWSCandidates(con, limit, round, branch) {
         "EWS_FandM",
         branch,
       ]);
-      console.log(`Seat offered to ${candidate.COAP} in EWS_FandM category`);
+      // console.log(`Seat offered to ${candidate.COAP} in EWS_FandM category`);
     }
 
     // Insert values into the table
@@ -105,7 +105,7 @@ async function shortListEWSFemaleCandidates(con, limit, round, branch) {
         "EWS_Female",
         branch,
       ]);
-      console.log(`Seat offered to ${candidate.COAP} in EWS_Female category`);
+      // console.log(`Seat offered to ${candidate.COAP} in EWS_Female category`);
     }
 
     // Insert values into the table

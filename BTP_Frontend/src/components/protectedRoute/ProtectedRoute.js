@@ -29,7 +29,7 @@ const ProtectedRoutes = () => {
             withCredentials: true,
           }
         );
-        console.log("the response is: ", response.data);
+        // console.log("the response is: ", response.data);
         if (!response.data.isAdmin) {
           setAuth({ token: true });
         } else {

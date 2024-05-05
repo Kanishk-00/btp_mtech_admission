@@ -26,8 +26,8 @@ router.post("/checkAdmin", async (req, res) => {
         if (user.branch === "admin" || user.isAdmin === 1) {
           // Check if the password matches
           if (bcrypt.compareSync(password, user.password)) {
-            console.log("user is", user.username);
-            console.log("user pass is", user.password);
+            // console.log("user is", user.username);
+            // console.log("user pass is", user.password);
             return res.json({ isAdmin: true });
           } else {
             return res.json({ isAdmin: false });

@@ -50,7 +50,7 @@ async function shortListPWDCandidates(
         "Y",
         branch,
       ]);
-      console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category `);
+      // console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category `);
     }
 
     if (valuesToBeInserted.length > 0) {
@@ -117,7 +117,7 @@ async function shortListEWSPWDCandidates(
         "Y",
         branch,
       ]);
-      console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category `);
+      // console.log(`Shortlisted ${candidate.COAP} in ${offerCat} category `);
     }
 
     if (valuesToBeInserted.length > 0) {
@@ -178,7 +178,7 @@ async function shortListPWDFemaleCandidates(con, limit, round, branch) {
         "Y",
         branch,
       ]);
-      console.log(`Shortlisted ${candidate.COAP} in PWD_Female category `);
+      // console.log(`Shortlisted ${candidate.COAP} in PWD_Female category `);
     }
 
     if (valuesToBeInserted.length > 0) {

@@ -158,7 +158,7 @@ const MatchColumns = () => {
         }
       )
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         window.location.reload();
       })
       .catch((err) => {
@@ -194,7 +194,7 @@ const MatchColumns = () => {
           }
         )
         .then((res) => {
-          console.log(res);
+          // console.log(res);
           fileDownload(res.data, "modifiedFile.xlsx");
         })
         .catch((err) => {

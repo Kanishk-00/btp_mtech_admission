@@ -41,7 +41,7 @@ router.put("/addBranch", (req, res) => {
           if (err) {
             throw err;
           }
-          console.log("New branch added:", newBranch);
+          // console.log("New branch added:", newBranch);
           res.sendStatus(200);
         }
       );

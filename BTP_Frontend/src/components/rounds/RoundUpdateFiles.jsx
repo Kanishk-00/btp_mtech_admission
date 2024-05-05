@@ -43,7 +43,7 @@ function RoundUpdateFiles(props) {
     setFile(e.target.files[0]);
     setColumnNames(null);
     // setFileExists(true);
-    console.log(e.target.files[0]);
+    // console.log(e.target.files[0]);
   };
   const getColumnNames = () => {
     function getCookie(name) {
@@ -71,7 +71,7 @@ function RoundUpdateFiles(props) {
           }
         )
         .then((res) => {
-          console.log("the names column", res.data.result);
+          // console.log("the names column", res.data.result);
           setColumnNames(res.data.result);
           setisLoading(false);
         })
@@ -96,14 +96,14 @@ function RoundUpdateFiles(props) {
     try {
       const jwtToken = getCookie("jwtToken");
       const formData = new FormData();
-      console.log("Coap value:", coap); // Log coap value
-      console.log("Candidate Decision value:", candidateDecision); // Log candidateDecision value
+      // console.log("Coap value:", coap); // Log coap value
+      // console.log("Candidate Decision value:", candidateDecision); // Log candidateDecision value
       formData.append("name", file.name);
       formData.append("file", file);
       formData.append("coap", coap);
       formData.append("candidateDecision", candidateDecision);
-      console.log("this is the file", file);
-      console.log("inside upload");
+      // console.log("this is the file", file);
+      // console.log("inside upload");
       axios
         .post(
           `${process.env.REACT_APP_BACKEND_URL}/api/rounds/putFile/${props.fileName}/${props.roundNumber}`,
@@ -165,7 +165,7 @@ function RoundUpdateFiles(props) {
         }
       )
       .then((res) => {
-        console.log(res);
+        // console.log(res);
 
         fileDownload(res.data, `${props.fileName}.xlsx`);
       })

@@ -152,9 +152,9 @@ router.get("/getRoundDetails/:roundId", isAuthenticated, async (req, res) => {
 
   try {
     // Reading files from generateoffers directory
-    console.log(generatedOffersDirectoryPath);
+    // console.log(generatedOffersDirectoryPath);
     OffersfilesList = await getFilesInDirectory(generatedOffersDirectoryPath);
-    console.log(OffersfilesList);
+    // console.log(OffersfilesList);
   } catch (error) {
     console.log(error);
     return res.status(500).send({ result: "Internal Server Error" });
@@ -210,11 +210,11 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
       branchDirectory,
       "generatedOffers"
     );
-    console.log(`Generating... round ${roundId} results`);
+    // console.log(`Generating... round ${roundId} results`);
 
     // Check if the modifiedFile.xlsx exists
     if (!fs.existsSync(modifiedFilePath)) {
-      console.log("Database is not initialised.");
+      // console.log("Database is not initialised.");
       return res
         .status(400)
         .send({ result: "You haven't initialised the Database" });
@@ -235,7 +235,7 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
           throw error; // Throw an error if file creation fails
         }
 
-        console.log("getoffers hit hogaya re abab: ", req.user.branch);
+        // console.log("getoffers hit hogaya re abab: ", req.user.branch);
         // Generate offers using the specified function
         let generated = await generateOffers(
           process.env.MYSQL_DATABASE,
@@ -244,7 +244,7 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
           req.user.branch
         );
 
-        console.log("generated offer ne result de diya.....");
+        // console.log("generated offer ne result de diya.....");
 
         res.status(200).send({ result: "Offers Generated Successfully" });
       }
@@ -255,7 +255,7 @@ router.get("/generateOffers/:roundId", isAuthenticated, async (req, res) => {
       // Attempt to reset the round if an error occurs
       let result = await resetRound(req.params.roundId, req.user.branch);
     } catch (resetError) {
-      console.log(resetError);
+      // console.log(resetError);
     }
     res.status(500).send({ result: "Internal Server Error" });
   }
@@ -272,7 +272,7 @@ router.post(
   "/putFile/:fileName/:roundNumber",
   isAuthenticated,
   async (req, res) => {
-    console.log("putfile");
+    // console.log("putfile");
     let roundNumber = req.params.roundNumber;
     let fileName = req.params.fileName;
     let branchDirectory = path.join(__dirname, "..", "files", req.user.branch);
@@ -290,7 +290,7 @@ router.post(
       // console.log("idcoap",coapIdColumnName);
       // console.log("decision",candidateDecisonColumnName);
       var newpath = `${updatesFromRoundsDirectoryPath}/round${roundNumber}_${fileName}.xlsx`;
-      console.log("oldPath", oldpath);
+      // console.log("oldPath", oldpath);
       // console.log("new function start");
       fs1.move(oldpath, newpath, async function (err) {
         if (err) {

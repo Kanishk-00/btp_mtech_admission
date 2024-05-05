@@ -59,7 +59,7 @@ async function shortListGeneralCandidates(con, limit, round, branch) {
           "GEN_FandM",
           branch,
         ]);
-        console.log(`Shortlisted ${candidate.COAP} in GEN_FandM category`);
+        // console.log(`Shortlisted ${candidate.COAP} in GEN_FandM category`);
       }
     }
 
@@ -134,7 +134,7 @@ async function shortListGeneralFemaleCandidates(con, limit, round, branch) {
           "GEN_Female",
           branch,
         ]);
-        console.log(`Shortlisted ${candidate.COAP} in GEN_Female category`);
+        // console.log(`Shortlisted ${candidate.COAP} in GEN_Female category`);
       }
     }
 

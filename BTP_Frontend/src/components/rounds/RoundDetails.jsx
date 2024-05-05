@@ -51,7 +51,7 @@ function RoundDetails(props) {
         progress: undefined,
         onClose: () => {
           // Handle closing event
-          console.log("User closed the notification");
+          // console.log("User closed the notification");
         },
       });
       setIsLoading(false);
@@ -76,7 +76,7 @@ function RoundDetails(props) {
         )
 
         .then((res) => {
-          console.log(res.data.result);
+          // console.log(res.data.result);
           setOffersGenerated(res.data.result.offersGenerated);
           // setUpdatedStatus(res.data.result.updatedRound);
           setRoundstatus(res.data.result);
@@ -108,7 +108,7 @@ function RoundDetails(props) {
         )
 
         .then((res) => {
-          console.log(res);
+          // console.log(res);s
           fileDownload(res.data, `round${props.roundNumber}.xlsx`);
         })
         .catch((err) => {

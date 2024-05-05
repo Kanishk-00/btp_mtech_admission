@@ -23,9 +23,9 @@ async function updateCandidateStatus(con, candidate, offerCat, round, branch) {
         "(COAP, Offered, Accepted, OfferedRound, RetainRound, RejectOrAcceptRound, OfferCat, IsOfferPwd, branch)",
         valuesToBeInserted
       );
-      console.log(
-        `Seat offered to ${candidate.COAP} in ${offerCat} category (COMMON_PWD)`
-      );
+      // console.log(
+      //   `Seat offered to ${candidate.COAP} in ${offerCat} category (COMMON_PWD)`
+      // );
     }
   } catch (error) {
     throw error;

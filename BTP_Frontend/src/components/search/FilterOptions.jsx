@@ -46,11 +46,11 @@ function FilterOptions(props) {
         })
         .then((res) => {
           setCoapIds(res.data.result);
-          console.log(res.data.result);
+          // console.log(res.data.result);
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           if (err.response && err.response.status === 401) {
             navigate("/");
           } else {
@@ -92,11 +92,11 @@ function FilterOptions(props) {
         )
         .then((res) => {
           setData(res.data.result);
-          console.log(res.data.result);
+          // console.log(res.data.result);
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           toast.error(err.message, {
             position: "top-center",
             autoClose: true, // Do not auto-close

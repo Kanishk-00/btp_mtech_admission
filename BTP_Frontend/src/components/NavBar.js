@@ -38,7 +38,7 @@ function NavBar(props) {
           }
         );
         if (response.data.isAuthenticated) {
-          console.log("the response is: ", response.data);
+          // console.log("the response is: ", response.data);
           setAuth({
             token: true,
             username: response.data.username,
@@ -46,7 +46,7 @@ function NavBar(props) {
             isAdmin: response.data.isAdmin,
           });
         } else {
-          console.log("Not Authenticated");
+          // console.log("Not Authenticated");
           setAuth({ token: false });
         }
       } catch (error) {

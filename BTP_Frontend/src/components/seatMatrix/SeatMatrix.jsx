@@ -42,15 +42,15 @@ function SeatMatrix(props) {
         )
         .then((res) => {
           setData(res.data.result);
-          console.log(res.data.result);
+          // console.log(res.data.result);
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           if (err.response && err.response.status === 401) {
             navigate("/");
           } else {
-            console.log(err);
+            // console.log(err);
             toast.error(err.response.data.error, {
               position: "top-center",
               autoClose: true,

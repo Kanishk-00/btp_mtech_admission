@@ -31,7 +31,7 @@ const ProtectedRoutesLogin = () => {
             withCredentials: true,
           }
         );
-        console.log("the response is: ", response.data);
+        // console.log("the response is: ", response.data);
 
         if (response.data.isAdmin) {
           setAdmin(true);
@@ -42,7 +42,7 @@ const ProtectedRoutesLogin = () => {
         setLoading(false);
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          console.log("User is not authenticated. Navigating to '/'...");
+          // console.log("User is not authenticated. Navigating to '/'...");
           setAuth({ token: false });
           setAdmin(false);
           setLoading(false);

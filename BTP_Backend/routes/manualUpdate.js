@@ -84,7 +84,7 @@ async function getRoundNumber() {
 */
 router.post("/manualUpdate", isAuthenticated, async (req, res) => {
   const currentBranch = req.user.branch;
-  console.log("this is the current branch: ", currentBranch);
+  // console.log("this is the current branch: ", currentBranch);
   //connecting to database
   var con;
   try {
@@ -120,7 +120,7 @@ router.post("/manualUpdate", isAuthenticated, async (req, res) => {
     // console.log(resultSeatMatrix);
     res.status(200).send({ result: "success" });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(500).send({ result: "Update Not Possible" });
   }
 });

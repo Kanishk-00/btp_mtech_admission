@@ -23,14 +23,14 @@ async function findAvailableSeats(con, category, round, branch) {
       0,
       availableSeats[0].SeatsAllocated - availableSeats[0].SeatsTaken
     );
-  console.log(
-    "Seats available for",
-    category,
-    "in branch",
-    branch,
-    "is:",
-    seatsAvailable
-  );
+  // console.log(
+  //   "Seats available for",
+  //   category,
+  //   "in branch",
+  //   branch,
+  //   "is:",
+  //   seatsAvailable
+  // );
 
   return seatsAvailable;
 }
@@ -47,14 +47,14 @@ async function findAvailableSeatsPWD(con, category, round, branch) {
     throw error;
   }
 
-  console.log(
-    "Seats available for",
-    category,
-    "in branch",
-    branch,
-    "is:",
-    Math.max(0, availableSeats[0].SeatsAllocated - availableSeats[0].SeatsTaken)
-  );
+  // console.log(
+  //   "Seats available for",
+  //   category,
+  //   "in branch",
+  //   branch,
+  //   "is:",
+  //   Math.max(0, availableSeats[0].SeatsAllocated - availableSeats[0].SeatsTaken)
+  // );
 
   return Math.max(
     0,
@@ -74,12 +74,12 @@ async function findAvailableSeatsCommonPWD(con, round, branch) {
     throw error;
   }
 
-  console.log(
-    "Seats available for common_PWD in branch",
-    branch,
-    "is:",
-    Math.max(0, availableSeats[0].SeatsAllocated - availableSeats[0].SeatsTaken)
-  );
+  // console.log(
+  //   "Seats available for common_PWD in branch",
+  //   branch,
+  //   "is:",
+  //   Math.max(0, availableSeats[0].SeatsAllocated - availableSeats[0].SeatsTaken)
+  // );
 
   return Math.max(
     0,
@@ -109,14 +109,14 @@ async function findAvailableSeatsGeneral(con, category, round, branch) {
     availablePWDSeats[0].SeatsAllocated -
     availablePWDSeats[0].SeatsTaken +
     Math.max(0, availableSeats[0].SeatsAllocated);
-  console.log(
-    "Seats available for",
-    category,
-    "in branch",
-    branch,
-    "is:",
-    seatsAvailable
-  );
+  // console.log(
+  //   "Seats available for",
+  //   category,
+  //   "in branch",
+  //   branch,
+  //   "is:",
+  //   seatsAvailable
+  // );
 
   return seatsAvailable;
 }
