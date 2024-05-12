@@ -102,12 +102,15 @@ async function writeToExcel2024(con, sheetName, round, fileName, branch) {
       row["Offered Program Code"] = row["Offered Program Code"];
 
       if (
-        row["Offered Category"][0] === "G" ||
-        row["Offered Category"][0] === "E"
+        row["Offered Category"][0] === "G"
       ) {
-        row["Offered Category"] = "General";
-      } else if (row["Offered Category"][0] === "O") {
-        row["Offered Category"] = "OBC";
+        row["Offered Category"] = "GN";
+      }
+      else if (row["Offered Category"][0] === "E") {
+        row["Offered Category"] = "EWS";
+      }
+       else if (row["Offered Category"][0] === "O") {
+        row["Offered Category"] = "OBC(NCL)";
       } else if (row["Offered Category"][0] === "S") {
         if (row["Offered Category"][1] === "C") {
           row["Offered Category"] = "SC";
