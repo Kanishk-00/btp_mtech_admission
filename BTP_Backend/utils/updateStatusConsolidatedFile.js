@@ -31,6 +31,15 @@ async function updateDecision(
         throw error;
       }
     }
+      
+    else {
+            try {
+                var [updatequery]=await con.query(UPDATE applicationstatus SET Accepted = 'N' WHERE COAP = '${currCOAP}');
+            } catch (error) {
+                throw error;
+            }
+        }
+    
   } catch (error) {
     throw error;
   }
