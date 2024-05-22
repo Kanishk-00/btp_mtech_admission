@@ -98,6 +98,10 @@ app.use("/admin/deleteBranch", deleteBranchRoute);
 
 app.use("/auth", authRoutes);
 
+app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 app.get("/", (req, res) => {
   res.send("Home page of Mtech Application site!");
 });
