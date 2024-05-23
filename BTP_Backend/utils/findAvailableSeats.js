@@ -4,12 +4,12 @@ async function findAvailableSeats(con, category, round, branch) {
 
   try {
     [availableSeats] = await con.query(
-      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat=? AND branch=?) AS SeatsTaken FROM seatmatrix WHERE category=? AND branch=?;`,
+      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat=? AND branch=?) AS SeatsTaken FROM seatMatrix WHERE category=? AND branch=?;`,
       [category, branch, category, branch]
     );
 
     [availablePWDSeats] = await con.query(
-      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R' OR OfferedRound=?) AND offercat=? AND branch=?) AS SeatsTaken FROM seatmatrix WHERE category=? AND branch=?;`,
+      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R' OR OfferedRound=?) AND offercat=? AND branch=?) AS SeatsTaken FROM seatMatrix WHERE category=? AND branch=?;`,
       [round, category + "_PWD", branch, category + "_PWD", branch]
     );
   } catch (error) {
@@ -40,7 +40,7 @@ async function findAvailableSeatsPWD(con, category, round, branch) {
 
   try {
     [availableSeats] = await con.query(
-      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat=? AND branch=?) AS SeatsTaken FROM seatmatrix WHERE category=? AND branch=?;`,
+      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat=? AND branch=?) AS SeatsTaken FROM seatMatrix WHERE category=? AND branch=?;`,
       [category, branch, category, branch]
     );
   } catch (error) {
@@ -67,7 +67,7 @@ async function findAvailableSeatsCommonPWD(con, round, branch) {
 
   try {
     [availableSeats] = await con.query(
-      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat REGEXP 'PWD$' AND branch=?) AS SeatsTaken FROM seatmatrix WHERE category REGEXP 'COMMON_PWD' AND branch=?;`,
+      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R') AND offercat REGEXP 'PWD$' AND branch=?) AS SeatsTaken FROM seatMatrix WHERE category REGEXP 'COMMON_PWD' AND branch=?;`,
       [branch, branch]
     );
   } catch (error) {
@@ -93,12 +93,12 @@ async function findAvailableSeatsGeneral(con, category, round, branch) {
 
   try {
     [availableSeats] = await con.query(
-      `SELECT SeatsAllocated FROM seatmatrix WHERE category=? AND branch=?;`,
+      `SELECT SeatsAllocated FROM seatMatrix WHERE category=? AND branch=?;`,
       [category, branch]
     );
 
     [availablePWDSeats] = await con.query(
-      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R' OR OfferedRound=?) AND offercat=? AND branch=?) AS SeatsTaken FROM seatmatrix WHERE category=? AND branch=?;`,
+      `SELECT SeatsAllocated, (SELECT COUNT(*) FROM applicationstatus WHERE (accepted='Y' OR accepted='R' OR OfferedRound=?) AND offercat=? AND branch=?) AS SeatsTaken FROM seatMatrix WHERE category=? AND branch=?;`,
       [round, category + "_PWD", branch, category + "_PWD", branch]
     );
   } catch (error) {
