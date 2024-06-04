@@ -34,7 +34,7 @@ async function updateDecision(
       
     else {
             try {
-                var [updatequery]=await con.query(`UPDATE applicationstatus SET Accepted = 'N' WHERE COAP = '${currCOAP}'`);
+                var [updatequery]=await con.query(`UPDATE applicationstatus SET Accepted = 'N' WHERE COAP = '${currCOAP}' AND Accepted != 'Y'`);
             } catch (error) {
                 throw error;
             }
